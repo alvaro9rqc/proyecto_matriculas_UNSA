@@ -1,0 +1,11 @@
+{
+  "languageserver": {
+    "sql": {
+      "command": "~/go/bin/sqls",
+      "args": ["up", "--method", "stdio"],
+      "filetypes": ["sql"],
+      "rootPatterns": [".git/", ".sqllsrc.json"],
+      "trace.server": "verbose"
+    }
+  }
+}
