@@ -2,7 +2,7 @@
   "languageserver": {
     "sql": {
       "command": "~/go/bin/sqls",
-      "args": ["up", "--method", "stdio"],
+      "args": ["-config", "/home/alvaro9rqc/1_Pacha/1-unsa/5_S/ips/proyecto_matriculas_UNSA/.vim/lspsql.yaml"],
       "filetypes": ["sql"],
       "rootPatterns": [".git/", ".sqllsrc.json"],
       "trace.server": "verbose"
