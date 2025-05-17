@@ -1,19 +1,24 @@
+/*
+NOTE: students table relies on this, there isn't a students without a group
+*/
+CREATE TABLE groups (
+  id SMALLSERIAL PRIMARY KEY,
+  name VARCHAR(30) NOT NULL,
+  priority SMALLINT NOT NULL
+);
 
--- TODO: add role attribute
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   email VARCHAR(40) UNIQUE NOT NULL, 
   first_name VARCHAR(30) NOT NULL,
   remaining_names VARCHAR(128),
   last_names VARCHAR(30) NOT NULL,
-  CONSTRAINT email_format CHECK (email ~* '^[A-Za-z0-9._]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
+  group_id SMALLINT,
+  CONSTRAINT email_format CHECK (email ~* '^[A-Za-z0-9._]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+  FOREIGN KEY (group_id)
+  REFERENCES groups(id) ON DELETE RESTRICT
 );
 
-CREATE TABLE groups (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(30) NOT NULL,
-  priority SMALLINT NOT NULL
-);
 
 CREATE TABLE installations (
   id SERIAL PRIMARY KEY,
@@ -54,3 +59,5 @@ CREATE TABLE programs (
   id SERIAL PRIMARY KEY,
   name VARCHAR(128) NOT NULL
 );
+
+-- Cross reference tables

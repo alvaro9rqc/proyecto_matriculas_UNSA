@@ -1,7 +1,15 @@
+INSERT INTO groups (name, priority)
+VALUES( 'Primer tercio', 1 ),
+      ( 'Segundo tercio', 2 ),
+      ( 'Tercer tercio', 3 );
+-- SELECT * FROM groups;
+
 -- test for user
-INSERT INTO users (email, first_name, remaining_names, last_names)
-VALUES ('alvaro9rqc@gmail.com', 'Álvaro',  'Raul', 'Quispe Condori');
---SELECT * FROM users;
+INSERT INTO users (email, first_name, remaining_names, last_names, group_id)
+VALUES 
+      ('alvaro9rqc@gmail.com', 'Álvaro',  'Raul', 'Quispe Condori', 1),
+      ('romina@gmail.com', 'Romina',  'Marlene', 'Davila Quispe', 2);
+-- SELECT * FROM users;
 
 -- test for installations
 INSERT INTO installations(name, description)
@@ -34,9 +42,3 @@ VALUES ('Fundamentos de la programación', 3);
 INSERT INTO programs (name)
 VALUES ('Ingeniería de sistemas');
 -- SELECT * FROM programs;
-
-INSERT INTO groups (name, priority)
-VALUES( 'Primer tercio', 1 ),
-      ( 'Segundo tercio', 2 ),
-      ( 'Tercer tercio', 3 );
-SELECT * FROM groups;
