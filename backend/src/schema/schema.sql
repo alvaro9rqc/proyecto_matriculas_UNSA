@@ -17,7 +17,7 @@ CREATE TABLE installations (
 
 CREATE TABLE students (
   id SERIAL PRIMARY KEY,
-  student_code VARCHAR(30) UNIQUE NOT NULL,
+  code VARCHAR(30) UNIQUE NOT NULL,
   user_id INTEGER UNIQUE NOT NULL,
   FOREIGN KEY (user_id) 
   REFERENCES users(id)
@@ -36,4 +36,15 @@ CREATE TABLE semesters (
   year SMALLINT,
   number SMALLINT,
   PRIMARY KEY(year, number)
+);
+
+CREATE TABLE courses (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(128) NOT NULL,
+  credits SMALLINT NOT NULL
+);
+
+CREATE TABLE programs (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(128) NOT NULL
 );
