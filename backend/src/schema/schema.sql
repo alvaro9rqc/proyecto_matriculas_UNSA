@@ -33,7 +33,7 @@ CREATE TABLE professors (
 );
 
 CREATE TABLE semesters (
-  year INTEGER,
-  number INTEGER,
+  year SMALLINT,
+  number SMALLINT,
   PRIMARY KEY(year, number)
 );
