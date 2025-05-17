@@ -34,3 +34,9 @@ VALUES ('Fundamentos de la programación', 3);
 INSERT INTO programs (name)
 VALUES ('Ingeniería de sistemas');
 -- SELECT * FROM programs;
+
+INSERT INTO groups (name, priority)
+VALUES( 'Primer tercio', 1 ),
+      ( 'Segundo tercio', 2 ),
+      ( 'Tercer tercio', 3 );
+SELECT * FROM groups;

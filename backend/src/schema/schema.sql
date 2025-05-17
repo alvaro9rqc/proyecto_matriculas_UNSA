@@ -9,6 +9,12 @@ CREATE TABLE users (
   CONSTRAINT email_format CHECK (email ~* '^[A-Za-z0-9._]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
 );
 
+CREATE TABLE groups (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(30) NOT NULL,
+  priority SMALLINT NOT NULL
+);
+
 CREATE TABLE installations (
   id SERIAL PRIMARY KEY,
   name VARCHAR(40) NOT NULL,
