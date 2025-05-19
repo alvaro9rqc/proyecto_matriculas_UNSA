@@ -43,16 +43,13 @@ CREATE TABLE professor (
   ON DELETE CASCADE
 );
 
-CREATE TABLE semester (
-  year SMALLINT,
-  number SMALLINT,
-  PRIMARY KEY(year, number)
-);
-
 CREATE TABLE course (
   id SERIAL PRIMARY KEY,
   name VARCHAR(128) NOT NULL,
-  credits SMALLINT NOT NULL
+  credits SMALLINT NOT NULL,
+  semester_number SMALLINT NOT NULL,
+  CONSTRAINT credits_value CHECK (credits > 0),
+  CONSTRAINT semester_number_value CHECK (semester_number >= 0)
 );
 
 CREATE TABLE program (
@@ -62,10 +59,14 @@ CREATE TABLE program (
 
 -- Cross reference tables
 
+-- TODO: What I should do if a semester is deleted
 CREATE TABLE student_program (
   student_id INTEGER,
   program_id INTEGER,
+  semester_number SMALLINT NOT NULL,
   PRIMARY KEY (program_id, student_id),
   FOREIGN KEY (program_id) REFERENCES program(id),
-  FOREIGN KEY (student_id) REFERENCES student(id)
+  FOREIGN KEY (student_id) REFERENCES student(id),
+  CONSTRAINT semester_number_value CHECK (semester_number >= 0)
 );
+
