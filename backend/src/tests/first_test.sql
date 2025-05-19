@@ -31,12 +31,12 @@ INSERT INTO professor (account_user_id)
 VALUES ((SELECT id FROM account_user WHERE email = 'apaz@unsa.edu.pe'));
 --SELECT * FROM professors;
 
-INSERT INTO semester (year, number)
-VALUES (2025, 1);
---SELECT * FROM semesters;
+-- INSERT INTO cicle (year, number)
+-- VALUES (2025, 1);
+-- --SELECT * FROM cicles;
 
-INSERT INTO course (name, credits)
-VALUES ('Fundamentos de la programación', 3);
+INSERT INTO course (name, credits, cicle_number)
+VALUES ('Fundamentos de la programación', 3, 1);
 -- SELECT * FROM courses;
 
 INSERT INTO program (name)
@@ -51,3 +51,5 @@ VALUES (
   (SELECT id FROM program WHERE name = 'Ingeniería de sistemas')
 );
 SELECT * FROM student_program;
+
+
