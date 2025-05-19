@@ -1,63 +1,71 @@
 /*
-NOTE: students table relies on this, there isn't a students without a group
+NOTE: student table relies on this, there isn't a student without a student_group
 */
-CREATE TABLE groups (
+CREATE TABLE student_group (
   id SMALLSERIAL PRIMARY KEY,
   name VARCHAR(30) NOT NULL,
   priority SMALLINT NOT NULL
 );
 
-CREATE TABLE users (
+CREATE TABLE account_user (
   id SERIAL PRIMARY KEY,
   email VARCHAR(40) UNIQUE NOT NULL, 
   first_name VARCHAR(30) NOT NULL,
   remaining_names VARCHAR(128),
   last_names VARCHAR(30) NOT NULL,
-  group_id SMALLINT,
+  student_group_id SMALLINT,
   CONSTRAINT email_format CHECK (email ~* '^[A-Za-z0-9._]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
-  FOREIGN KEY (group_id)
-  REFERENCES groups(id) ON DELETE RESTRICT
+  FOREIGN KEY (student_group_id)
+  REFERENCES student_group(id) ON DELETE RESTRICT
 );
 
 
-CREATE TABLE installations (
+CREATE TABLE installation (
   id SERIAL PRIMARY KEY,
   name VARCHAR(40) NOT NULL,
   description VARCHAR(255)
 );
 
-CREATE TABLE students (
+CREATE TABLE student (
   id SERIAL PRIMARY KEY,
   code VARCHAR(30) UNIQUE NOT NULL,
-  user_id INTEGER UNIQUE NOT NULL,
-  FOREIGN KEY (user_id) 
-  REFERENCES users(id)
+  account_user_id INTEGER UNIQUE NOT NULL,
+  FOREIGN KEY (account_user_id) 
+  REFERENCES account_user(id)
   ON DELETE CASCADE
 );
 
-CREATE TABLE professors (
+CREATE TABLE professor (
   id SERIAL PRIMARY KEY,
-  user_id INTEGER UNIQUE NOT NULL,
-  FOREIGN KEY (user_id) 
-  REFERENCES users(id) 
+  account_user_id INTEGER UNIQUE NOT NULL,
+  FOREIGN KEY (account_user_id) 
+  REFERENCES account_user(id) 
   ON DELETE CASCADE
 );
 
-CREATE TABLE semesters (
+CREATE TABLE semester (
   year SMALLINT,
   number SMALLINT,
   PRIMARY KEY(year, number)
 );
 
-CREATE TABLE courses (
+CREATE TABLE course (
   id SERIAL PRIMARY KEY,
   name VARCHAR(128) NOT NULL,
   credits SMALLINT NOT NULL
 );
 
-CREATE TABLE programs (
+CREATE TABLE program (
   id SERIAL PRIMARY KEY,
-  name VARCHAR(128) NOT NULL
+  name VARCHAR(128) UNIQUE NOT NULL
 );
 
 -- Cross reference tables
+
+CREATE TABLE student_program (
+  student_id INTEGER,
+  program_id INTEGER,
+  PRIMARY KEY (program_id, student_id),
+  FOREIGN KEY (program_id) REFERENCES program(id),
+  FOREIGN KEY (student_id) REFERENCES student(id)
+);
