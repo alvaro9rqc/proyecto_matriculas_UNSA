@@ -50,6 +50,8 @@ VALUES (
   -- program_id
   (SELECT id FROM program WHERE name = 'Ingeniería de sistemas')
 );
-SELECT * FROM student_program;
+--SELECT * FROM student_program;
 
-
+INSERT INTO department (name, email)
+VALUES ( 'Departamento de informática', 'informaticaunsa@unsa.edu.pe' );
+SELECT * FROM department;
