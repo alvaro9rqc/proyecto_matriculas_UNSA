@@ -82,4 +82,25 @@ VALUES ( 'Departamento de informática', 'informaticaunsa@unsa.edu.pe' );
 -------------------
 INSERT INTO course_deparment (course_id, department_id) 
 VALUES (1, 1);
-SELECT * FROM course_deparment;
+-- SELECT * FROM course_deparment;
+
+
+
+
+
+-------------------
+--test course_program
+-------------------
+INSERT INTO course_program(course_id, program_id)
+VALUES ( 1, 1 );
+--SELECT * FROM course_program;
+
+
+
+
+
+-------------------
+--test course_prerequisite
+-------------------
+INSERT INTO course_prerequisite(course_id, prerequisite_id)
+VALUES (1,2)

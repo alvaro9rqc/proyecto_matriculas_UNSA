@@ -1,3 +1,14 @@
+/*
+This schema is divided in entities and cross reference tables
+
+- They are some rules:
+  - A program from course should be inside a program from the student
+    - Maybe a trigger can solve this during enrollment process
+
+*/ 
+
+
+
 ---------------
 -- DOMAIN types
 ---------------
@@ -81,17 +92,27 @@ CREATE TABLE department (
 
 --CREATE TABLE depa
 
+
+
+
+-------------------------
+-------------------------
+-------------------------
 -------------------------
 -- Cross reference tables
 -------------------------
+-------------------------
+-------------------------
+-------------------------
 
--- TODO: What I should do if a cicle is deleted
+-- TODO: What I should do if a program is deleted
+
 CREATE TABLE student_program (
   student_id INTEGER,
   program_id INTEGER,
   PRIMARY KEY (program_id, student_id),
-  FOREIGN KEY (program_id) REFERENCES program(id),
-  FOREIGN KEY (student_id) REFERENCES student(id)
+  FOREIGN KEY (program_id) REFERENCES program(id) ON DELETE CASCADE,
+  FOREIGN KEY (student_id) REFERENCES student(id) ON DELETE CASCADE
 );
 
 -- Poblem: un estudiante solo se puede matricular a los cursos que su carrera permita. 
@@ -99,6 +120,7 @@ CREATE TABLE student_program (
     -- no, porque el curso es independiente de la carrera.
 
 -- I need to CHECK that a course and student have at least one course in common
+
 CREATE TABLE student_course(
   student_id INTEGER,
   course_id INTEGER,
@@ -115,4 +137,21 @@ CREATE TABLE course_deparment (
   PRIMARY KEY (course_id, department_id),
   FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE CASCADE,
   FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE RESTRICT
+);
+
+CREATE TABLE course_program (
+  course_id INTEGER,
+  program_id INTEGER,
+  PRIMARY KEY (course_id, program_id),
+  FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE CASCADE,
+  FOREIGN KEY (program_id) REFERENCES program(id) ON DELETE CASCADE
+);
+
+CREATE TABLE course_prerequisite (
+  course_id INTEGER, 
+  prerequisite_id INTEGER,
+  PRIMARY KEY (course_id, prerequisite_id),
+  FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE CASCADE,
+  FOREIGN KEY (prerequisite_id) REFERENCES course(id) ON DELETE CASCADE,
+  CHECK (course_id <> prerequisite_id)
 );
