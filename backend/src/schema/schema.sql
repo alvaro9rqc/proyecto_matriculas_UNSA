@@ -4,6 +4,7 @@ This schema is divided in entities and cross reference tables
 - They are some rules:
   - A program from course should be inside a program from the student
     - Maybe a trigger can solve this during enrollment process
+  - There shouldn't be a cicly in course_prerequisite
 
 */ 
 
@@ -90,7 +91,10 @@ CREATE TABLE department (
   email email_type NOT NULL
 );
 
---CREATE TABLE depa
+CREATE TABLE modality(
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(40) UNIQUE NOT NULL
+);
 
 
 
@@ -154,4 +158,12 @@ CREATE TABLE course_prerequisite (
   FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE CASCADE,
   FOREIGN KEY (prerequisite_id) REFERENCES course(id) ON DELETE CASCADE,
   CHECK (course_id <> prerequisite_id)
+);
+
+CREATE TABLE course_modality(
+  course_id INTEGER,
+  modality_id INTEGER,
+  PRIMARY KEY (course_id, modality_id),
+  FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE CASCADE,
+  FOREIGN KEY (modality_id) REFERENCES modality(id) ON DELETE CASCADE
 );
