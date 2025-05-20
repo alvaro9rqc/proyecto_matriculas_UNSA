@@ -24,6 +24,9 @@ VALUES (
 );
 -- SELECT * FROM student;
 
+
+
+
 -- test for professors
 INSERT INTO account_user (email, first_name, remaining_names, last_names)
 VALUES ('apaz@unsa.edu.pe', 'Alfredo',  '', 'Paz Valderrama');
@@ -35,13 +38,22 @@ VALUES ((SELECT id FROM account_user WHERE email = 'apaz@unsa.edu.pe'));
 -- VALUES (2025, 1);
 -- --SELECT * FROM cicles;
 
+
+
+
 INSERT INTO course (name, credits, cicle_number)
 VALUES ('Fundamentos de la programación', 3, 1);
 -- SELECT * FROM courses;
 
+
+
+
 INSERT INTO program (name)
 VALUES ('Ingeniería de sistemas');
 -- SELECT * FROM program;
+
+
+
 
 INSERT INTO student_program(student_id, program_id)
 VALUES (
@@ -52,6 +64,22 @@ VALUES (
 );
 --SELECT * FROM student_program;
 
+
+
+-------------------
+--test for department
+-------------------
 INSERT INTO department (name, email)
 VALUES ( 'Departamento de informática', 'informaticaunsa@unsa.edu.pe' );
-SELECT * FROM department;
+--SELECT * FROM department;
+
+
+
+
+
+-------------------
+--test course_deparment
+-------------------
+INSERT INTO course_deparment (course_id, department_id) 
+VALUES (1, 1);
+SELECT * FROM course_deparment;

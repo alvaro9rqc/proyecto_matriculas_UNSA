@@ -109,3 +109,10 @@ CREATE TABLE student_course(
   FOREIGN KEY (course_id) REFERENCES course(id)
 );
 
+CREATE TABLE course_deparment (
+  course_id INTEGER,
+  department_id INTEGER,
+  PRIMARY KEY (course_id, department_id),
+  FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE CASCADE,
+  FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE RESTRICT
+);
