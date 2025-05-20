@@ -169,3 +169,12 @@ CREATE TABLE course_modality(
   FOREIGN KEY (modality_id) REFERENCES modality(id) ON DELETE CASCADE,
   CONSTRAINT hours_format CHECK(hours > 0)
 );
+
+/* 
+Como identiticar a un turno?
+  - Un turno puede tener el mismo curso
+  - Puede tener misma modalidad
+  - Pero tiene diferentes horas
+
+  - La suma de las horas del turno. debe ser igual a la suma de horas de las modalidades que incluye
+*/
