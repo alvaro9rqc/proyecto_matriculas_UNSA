@@ -44,7 +44,7 @@ VALUES ((SELECT id FROM account_user WHERE email = 'apaz@unsa.edu.pe'));
 INSERT INTO course (name, credits, cicle_number)
 VALUES ('Fundamentos de la programación', 3, 1),
        ('Programación web', 4, 2);
-SELECT * FROM course;
+-- SELECT * FROM course;
 
 
 
@@ -125,10 +125,10 @@ VALUES ('Laboratorio'), ('Teoría'), ('Práctica');
 -------------------
 --test modality
 -------------------
-INSERT INTO course_modality(course_id, modality_id)
+INSERT INTO course_modality(course_id, modality_id, hours)
 VALUES
-  (1, (SELECT id FROM modality WHERE name = 'Laboratorio')),
-  (1, (SELECT id FROM modality WHERE name = 'Teoría')),
-  (2, (SELECT id FROM modality WHERE name = 'Laboratorio')),
-  (2, (SELECT id FROM modality WHERE name = 'Práctica'));
+  (1, (SELECT id FROM modality WHERE name = 'Laboratorio'), 2),
+  (1, (SELECT id FROM modality WHERE name = 'Teoría'), 3),
+  (2, (SELECT id FROM modality WHERE name = 'Laboratorio'), 2),
+  (2, (SELECT id FROM modality WHERE name = 'Práctica'), 2);
 ;

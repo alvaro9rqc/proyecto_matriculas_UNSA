@@ -163,7 +163,9 @@ CREATE TABLE course_prerequisite (
 CREATE TABLE course_modality(
   course_id INTEGER,
   modality_id INTEGER,
+  hours SMALLINT NOT NULL,
   PRIMARY KEY (course_id, modality_id),
   FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE CASCADE,
-  FOREIGN KEY (modality_id) REFERENCES modality(id) ON DELETE CASCADE
+  FOREIGN KEY (modality_id) REFERENCES modality(id) ON DELETE CASCADE,
+  CONSTRAINT hours_format CHECK(hours > 0)
 );
