@@ -177,4 +177,5 @@ Como identiticar a un turno?
   - Pero tiene diferentes horas
 
   - La suma de las horas del turno. debe ser igual a la suma de horas de las modalidades que incluye
+   xd
 */
