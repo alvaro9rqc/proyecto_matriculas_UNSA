@@ -58,7 +58,7 @@ CREATE TABLE program (
   name VARCHAR(128) UNIQUE NOT NULL
 );
 
-CREATE TABLE enrolment_process (
+CREATE TABLE enrollment_process (
   program_id INTEGER,
   year SMALLINT NOT NULL,
   cicle_type SMALLINT NOT NULL,
