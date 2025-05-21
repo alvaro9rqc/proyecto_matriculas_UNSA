@@ -20,6 +20,9 @@ CHECK (VALUE ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
 /*
 NOTE: student table relies on this, there isn't a student without a student_group
 */
+
+-- xd 
+
 CREATE TABLE student_group (
   id SMALLSERIAL PRIMARY KEY,
   name VARCHAR(30) NOT NULL,
