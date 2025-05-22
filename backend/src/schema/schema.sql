@@ -192,6 +192,16 @@ CREATE TABLE tuition_speaker(
   FOREIGN KEY (speaker_id) REFERENCES speaker(id) ON DELETE CASCADE
 );
 
+CREATE TABLE tuition_modality_course(
+  tuition_id INTEGER,
+  modality_id INTEGER,
+  course_id INTEGER,
+  PRIMARY KEY (tuition_id, modality_id, course_id),
+  FOREIGN KEY (tuition_id) REFERENCES tuition(id) ON DELETE CASCADE,
+  FOREIGN KEY (modality_id) REFERENCES modality(id) ON DELETE CASCADE,
+  FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE CASCADE
+);
+
 
 
 /* 
