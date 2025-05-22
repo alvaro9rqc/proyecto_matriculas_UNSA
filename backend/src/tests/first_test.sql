@@ -109,4 +109,3 @@ VALUES
   (1, (SELECT id FROM modality WHERE name = 'Teoría'), 3),
   (2, (SELECT id FROM modality WHERE name = 'Laboratorio'), 2),
   (2, (SELECT id FROM modality WHERE name = 'Práctica'), 2);
-;

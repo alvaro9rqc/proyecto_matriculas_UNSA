@@ -5,6 +5,8 @@ This schema is divided in entities and cross reference tables
   - A program from course should be inside a program from the attendee
     - Maybe a trigger can solve this during enrollment process
   - There shouldn't be a cicly in course_prerequisite
+- To start a scheduling process:
+
 
 */ 
 
@@ -188,10 +190,15 @@ CREATE TABLE course_modality(
 CREATE TABLE tuition_speaker(
   tuition_id INTEGER,
   speaker_id INTEGER,
+  PRIMARY KEY (tuition_id, speaker_id),
   FOREIGN KEY (tuition_id) REFERENCES tuition(id) ON DELETE CASCADE,
   FOREIGN KEY (speaker_id) REFERENCES speaker(id) ON DELETE CASCADE
 );
 
+/*
+NOTE: this table needs the next validation:
+- modality and course have to have the same program
+*/
 CREATE TABLE tuition_modality_course(
   tuition_id INTEGER,
   modality_id INTEGER,
