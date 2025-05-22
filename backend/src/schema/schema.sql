@@ -2,7 +2,7 @@
 This schema is divided in entities and cross reference tables
 
 - They are some rules:
-  - A program from course should be inside a program from the student
+  - A program from course should be inside a program from the attendee
     - Maybe a trigger can solve this during enrollment process
   - There shouldn't be a cicly in course_prerequisite
 
@@ -18,12 +18,10 @@ CREATE DOMAIN email_type AS VARCHAR(40)
 CHECK (VALUE ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
 
 /*
-NOTE: student table relies on this, there isn't a student without a student_group
+NOTE: attendee table relies on this, there isn't a attendee without a attendee_group
 */
 
--- xd 
-
-CREATE TABLE student_group (
+CREATE TABLE attendee_group (
   id SMALLSERIAL PRIMARY KEY,
   name VARCHAR(30) NOT NULL,
   priority SMALLINT NOT NULL
@@ -35,9 +33,9 @@ CREATE TABLE account_user (
   first_name VARCHAR(30) NOT NULL,
   remaining_names VARCHAR(128),
   last_names VARCHAR(30) NOT NULL,
-  student_group_id SMALLINT,
-  FOREIGN KEY (student_group_id)
-  REFERENCES student_group(id) ON DELETE RESTRICT
+  attendee_group_id SMALLINT,
+  FOREIGN KEY (attendee_group_id)
+  REFERENCES attendee_group(id) ON DELETE RESTRICT
 );
 
 
@@ -47,7 +45,7 @@ CREATE TABLE installation (
   description VARCHAR(255)
 );
 
-CREATE TABLE student (
+CREATE TABLE attendee (
   id SERIAL PRIMARY KEY,
   code VARCHAR(30) UNIQUE NOT NULL,
   account_user_id INTEGER UNIQUE NOT NULL,
@@ -56,7 +54,7 @@ CREATE TABLE student (
   ON DELETE CASCADE
 );
 
-CREATE TABLE professor (
+CREATE TABLE speaker (
   id SERIAL PRIMARY KEY,
   account_user_id INTEGER UNIQUE NOT NULL,
   FOREIGN KEY (account_user_id) 
@@ -80,24 +78,45 @@ CREATE TABLE program (
 );
 
 CREATE TABLE enrollment_process (
+  id SERIAL PRIMARY KEY,
   program_id INTEGER,
   year SMALLINT NOT NULL,
   cicle_type SMALLINT NOT NULL,
-  PRIMARY KEY ( program_id, year, cicle_type ),
+  is_active BOOLEAN NOT NULL DEFAULT true,
   FOREIGN KEY (program_id) REFERENCES program(id) ON DELETE CASCADE,
-  CONSTRAINT cicle_format CHECK (cicle_type > 0)
-);
-
-CREATE TABLE department (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(128) NOT NULL,
-  email email_type NOT NULL
+  CONSTRAINT cicle_format CHECK (cicle_type > 0),
+  CONSTRAINT year_range CHECK (year > 2024),
+  UNIQUE (program_id, year, cicle_type)
 );
 
 CREATE TABLE modality(
   id SERIAL PRIMARY KEY,
   name VARCHAR(40) UNIQUE NOT NULL
 );
+
+CREATE TABLE tuition (
+  id SERIAL PRIMARY KEY,
+  total_places INTEGER,
+  taken_places INTEGER,
+  enrollment_process_id INTEGER,
+  FOREIGN KEY (enrollment_process_id) REFERENCES enrollment_process(id)
+);
+
+CREATE TABLE event (
+  id SERIAL PRIMARY KEY,
+  start_day DATE NOT NULL,
+  end_day DATE NOT NULL,
+  start_time TIME NOT NULL,
+  end_time TIME NOT NULL,
+  weekday SMALLINT NOT NULL,
+  tuition_id INTEGER,
+  installation_id INTEGER,
+  FOREIGN KEY(tuition_id) REFERENCES tuition(id) ON DELETE CASCADE,
+  FOREIGN KEY(installation_id) REFERENCES installation(id) ON DELETE CASCADE
+);
+
+
+
 
 
 
@@ -114,36 +133,28 @@ CREATE TABLE modality(
 
 -- TODO: What I should do if a program is deleted
 
-CREATE TABLE student_program (
-  student_id INTEGER,
+CREATE TABLE attendee_program (
+  attendee_id INTEGER,
   program_id INTEGER,
-  PRIMARY KEY (program_id, student_id),
+  PRIMARY KEY (program_id, attendee_id),
   FOREIGN KEY (program_id) REFERENCES program(id) ON DELETE CASCADE,
-  FOREIGN KEY (student_id) REFERENCES student(id) ON DELETE CASCADE
+  FOREIGN KEY (attendee_id) REFERENCES attendee(id) ON DELETE CASCADE
 );
 
 -- Poblem: un estudiante solo se puede matricular a los cursos que su carrera permita. 
 -- debería ser course una entidad debil porque depende también de su carrera?
     -- no, porque el curso es independiente de la carrera.
 
--- I need to CHECK that a course and student have at least one course in common
+-- I need to CHECK that a course and attendee have at least one course in common
 
-CREATE TABLE student_course(
-  student_id INTEGER,
+CREATE TABLE attendee_course(
+  attendee_id INTEGER,
   course_id INTEGER,
   attemps SMALLINT NOT NULL,
   passed BOOLEAN NOT NULL,
-  PRIMARY KEY (student_id, course_id), 
-  FOREIGN KEY (student_id) REFERENCES student(id) ON DELETE CASCADE,
+  PRIMARY KEY (attendee_id, course_id), 
+  FOREIGN KEY (attendee_id) REFERENCES attendee(id) ON DELETE CASCADE,
   FOREIGN KEY (course_id) REFERENCES course(id)
-);
-
-CREATE TABLE course_deparment (
-  course_id INTEGER,
-  department_id INTEGER,
-  PRIMARY KEY (course_id, department_id),
-  FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE CASCADE,
-  FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE RESTRICT
 );
 
 CREATE TABLE course_program (
@@ -163,6 +174,7 @@ CREATE TABLE course_prerequisite (
   CHECK (course_id <> prerequisite_id)
 );
 
+
 CREATE TABLE course_modality(
   course_id INTEGER,
   modality_id INTEGER,
@@ -173,9 +185,18 @@ CREATE TABLE course_modality(
   CONSTRAINT hours_format CHECK(hours > 0)
 );
 
+CREATE TABLE tuition_speaker(
+  tuition_id INTEGER,
+  speaker_id INTEGER,
+  FOREIGN KEY (tuition_id) REFERENCES tuition(id) ON DELETE CASCADE,
+  FOREIGN KEY (speaker_id) REFERENCES speaker(id) ON DELETE CASCADE
+);
+
+
+
 /* 
 Como identiticar a un turno?
-  - Un turno puede tener el mismo curso
+  - Está conformado por varias modalidades de un mismo programa
   - Puede tener misma modalidad
   - Pero tiene diferentes horas
 
