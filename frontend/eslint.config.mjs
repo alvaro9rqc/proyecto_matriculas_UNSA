@@ -1,8 +1,8 @@
-import eslintPluginAstro from 'eslint-plugin-astro';
 import tsParser from '@typescript-eslint/parser';
-import tsEslint from 'typescript-eslint';
+import eslintPluginAstro from 'eslint-plugin-astro';
 import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
 import { defineConfig } from 'eslint/config';
+import tsEslint from 'typescript-eslint';
 
 export default defineConfig([
   {
@@ -25,6 +25,7 @@ export default defineConfig([
       eslintPluginAstro.configs['jsx-a11y-recommended'],
     ],
     rules: {
+      quotes: ['error', 'single'],
       'astro/no-exports-from-components': 'error',
       'astro/no-set-html-directive': 'warn',
       'astro/no-set-text-directive': 'error',
