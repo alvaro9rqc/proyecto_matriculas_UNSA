@@ -7,13 +7,14 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "lint": "eslint 'src/**/*.{ts,astro}'",
-    "prepare": "cd .. && husky frontend/.husky"
+    "lint": "eslint 'src/**/*.{ts,astro}' && astro check"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.4",
     "@tailwindcss/vite": "^4.1.4",
     "astro": "^5.7.10",
-    "tailwindcss": "^4.1.4"
+    "tailwindcss": "^4.1.4",
+    "typescript": "^5.8.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",
