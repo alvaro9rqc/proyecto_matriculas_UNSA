@@ -1,2 +1,3 @@
 env
 .nvimrc
+node_modules/**/*
