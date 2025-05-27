@@ -6,7 +6,7 @@ import tsEslint from 'typescript-eslint';
 
 export default defineConfig([
   {
-    files: ['./src/**/*.ts', './*.mjs'],
+    files: ['./src/**/*.{ts,tsx}', './*.mjs'],
     plugins: {
       'typescript-eslint': tsEslint,
     },

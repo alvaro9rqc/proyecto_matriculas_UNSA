@@ -6,6 +6,8 @@ import Layout from './Layout.astro';
 
 <Layout title="Tuitions es para ti">
   <NavBar />
-  <slot />
+  <main class="mx-auto max-w-7xl flex flex-col items-center px-2 sm:px-4 md:px-8">
+    <slot />
+  </main>
   <Footer />
 </Layout>
