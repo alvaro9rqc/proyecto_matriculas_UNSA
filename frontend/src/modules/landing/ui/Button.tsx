@@ -17,6 +17,8 @@ export default function Button<T extends SupportedTags = 'button'>({
 }: ButtonProps<T>) {
   const Tag = as;
   return (
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     <Tag className={cn(buttonVariants({ variant, size }), className)} {...rest}>
       {children}
     </Tag>
