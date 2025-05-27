@@ -1,5 +1,6 @@
 ---
 import Logo from '@/assets/logo.svg';
+import SignInModal from '@/modules/auth/components/SignInModal';
 import Button from '@/modules/landing/ui/Button.astro';
 ---
 <nav class="flex justify-between px-4 py-2">
@@ -14,9 +15,7 @@ import Button from '@/modules/landing/ui/Button.astro';
     <Button variant="muted">
       Precios
     </Button>
-    <Button>
-      Iniciar sesión
-    </Button>
+    <SignInModal client:load />
     <Button variant="secondary">
       Contactar a ventas
     </Button>
