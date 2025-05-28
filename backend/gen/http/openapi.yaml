@@ -1,0 +1,135 @@
+swagger: "2.0"
+info:
+    title: ""
+    version: 0.0.1
+host: localhost:80
+consumes:
+    - application/json
+    - application/xml
+    - application/gob
+produces:
+    - application/json
+    - application/xml
+    - application/gob
+paths:
+    /auth/google/login:
+        get:
+            tags:
+                - Auth
+            summary: Google login Auth
+            description: Initiates the Google OAuth 2.0 login flow by redirecting to the Google authorization endpoint.
+            operationId: Auth#Google login
+            responses:
+                "307":
+                    description: Temporary Redirect response.
+            schemes:
+                - http
+    /auth/google/logout:
+        get:
+            tags:
+                - Auth
+            summary: Google logout Auth
+            description: Logs the user out by clearing the session and redirecting to the appropriate post-logout URL.
+            operationId: Auth#Google logout
+            responses:
+                "307":
+                    description: Temporary Redirect response.
+            schemes:
+                - http
+    /auth/me:
+        get:
+            tags:
+                - Auth
+            summary: Me Auth
+            description: Returns information about the currently authenticated user.
+            operationId: Auth#Me
+            responses:
+                "200":
+                    description: OK response.
+                    schema:
+                        $ref: '#/definitions/AccountUser'
+                        required:
+                            - id
+                            - email
+                            - firstName
+                            - lastNames
+                            - remainingNames
+                            - attendeeGroupName
+                            - attendeeGroupPriority
+                "401":
+                    description: Unauthorized response.
+                    schema:
+                        $ref: '#/definitions/AccountUser'
+                        required:
+                            - id
+                            - email
+                            - firstName
+                            - lastNames
+                            - remainingNames
+                            - attendeeGroupName
+                            - attendeeGroupPriority
+            schemes:
+                - http
+    /google/callback:
+        get:
+            tags:
+                - Auth
+            summary: GoogleCallback Auth
+            description: Google OAuth callback. Creates or reuses a session and redirects to the frontend.
+            operationId: Auth#GoogleCallback
+            responses:
+                "307":
+                    description: Temporary Redirect response.
+                "401":
+                    description: Unauthorized response.
+            schemes:
+                - http
+definitions:
+    AccountUser:
+        title: AccountUser
+        type: object
+        properties:
+            attendeeGroupName:
+                type: string
+                description: User attendee group name
+                example: Fugit dolor non ut consectetur non nulla.
+            attendeeGroupPriority:
+                type: string
+                description: User attendee group priority
+                example: Molestiae iste sit.
+            email:
+                type: string
+                description: User email
+                example: Autem veniam.
+            firstName:
+                type: string
+                description: User first name
+                example: Autem assumenda earum odit cum.
+            id:
+                type: string
+                description: Unique user ID
+                example: Quod voluptate eum.
+            lastNames:
+                type: string
+                description: User last names
+                example: Autem sed fuga.
+            remainingNames:
+                type: string
+                description: User remaining names
+                example: Autem eius maiores neque.
+        example:
+            attendeeGroupName: Et et.
+            attendeeGroupPriority: Ut culpa et et a qui.
+            email: Qui facilis dicta neque.
+            firstName: Et enim aperiam molestiae rerum.
+            id: Quis aut.
+            lastNames: Fugiat voluptatum molestiae.
+            remainingNames: Architecto eum doloremque et cum.
+        required:
+            - id
+            - email
+            - firstName
+            - lastNames
+            - remainingNames
+            - attendeeGroupName
+            - attendeeGroupPriority

@@ -1,0 +1,129 @@
+openapi: 3.0.3
+info:
+    title: Goa API
+    version: 0.0.1
+servers:
+    - url: http://localhost:80
+      description: Default server for Auth
+paths:
+    /auth/google/login:
+        get:
+            tags:
+                - Auth
+            summary: Google login Auth
+            description: Initiates the Google OAuth 2.0 login flow by redirecting to the Google authorization endpoint.
+            operationId: Auth#Google login
+            responses:
+                "307":
+                    description: Temporary Redirect response.
+    /auth/google/logout:
+        get:
+            tags:
+                - Auth
+            summary: Google logout Auth
+            description: Logs the user out by clearing the session and redirecting to the appropriate post-logout URL.
+            operationId: Auth#Google logout
+            responses:
+                "307":
+                    description: Temporary Redirect response.
+    /auth/me:
+        get:
+            tags:
+                - Auth
+            summary: Me Auth
+            description: Returns information about the currently authenticated user.
+            operationId: Auth#Me
+            responses:
+                "200":
+                    description: OK response.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AccountUser'
+                            example:
+                                attendeeGroupName: Nisi aut in beatae quam laborum rerum.
+                                attendeeGroupPriority: Explicabo similique omnis quasi quia.
+                                email: Hic temporibus voluptas voluptate et.
+                                firstName: Itaque perferendis fugiat sapiente aperiam autem.
+                                id: Qui et voluptas architecto enim maxime.
+                                lastNames: Natus omnis nihil harum fugiat et hic.
+                                remainingNames: Dolorem quia eaque qui quo.
+                "401":
+                    description: Unauthorized response.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AccountUser'
+                            example:
+                                attendeeGroupName: Aut vero.
+                                attendeeGroupPriority: Ullam nemo quod.
+                                email: Exercitationem ut.
+                                firstName: Nihil et repellat eligendi ut.
+                                id: Numquam et debitis illum eos ab excepturi.
+                                lastNames: Ipsam aut ratione.
+                                remainingNames: Exercitationem omnis fuga est labore et quia.
+    /google/callback:
+        get:
+            tags:
+                - Auth
+            summary: GoogleCallback Auth
+            description: Google OAuth callback. Creates or reuses a session and redirects to the frontend.
+            operationId: Auth#GoogleCallback
+            responses:
+                "307":
+                    description: Temporary Redirect response.
+                "401":
+                    description: Unauthorized response.
+components:
+    schemas:
+        AccountUser:
+            type: object
+            properties:
+                attendeeGroupName:
+                    type: string
+                    description: User attendee group name
+                    example: Pariatur rerum ea dolorem et nemo molestiae.
+                attendeeGroupPriority:
+                    type: string
+                    description: User attendee group priority
+                    example: Repudiandae consectetur.
+                email:
+                    type: string
+                    description: User email
+                    example: Explicabo modi dolorum qui.
+                firstName:
+                    type: string
+                    description: User first name
+                    example: Consequatur nobis molestiae.
+                id:
+                    type: string
+                    description: Unique user ID
+                    example: Accusantium sed maiores fuga ipsa.
+                lastNames:
+                    type: string
+                    description: User last names
+                    example: Beatae nihil dolorem laboriosam dolor vitae.
+                remainingNames:
+                    type: string
+                    description: User remaining names
+                    example: Occaecati autem vel perferendis.
+            description: AccountUser type
+            example:
+                attendeeGroupName: Ut inventore veritatis.
+                attendeeGroupPriority: Saepe quia inventore ut omnis nesciunt.
+                email: Natus aspernatur et.
+                firstName: Ex rerum commodi omnis.
+                id: Fuga quis veritatis.
+                lastNames: Quidem et et cum voluptatem est.
+                remainingNames: Mollitia molestiae qui.
+            required:
+                - id
+                - email
+                - firstName
+                - lastNames
+                - remainingNames
+                - attendeeGroupName
+                - attendeeGroupPriority
+tags:
+    - name: Auth
+      description: Service to handle authentication and authorization
