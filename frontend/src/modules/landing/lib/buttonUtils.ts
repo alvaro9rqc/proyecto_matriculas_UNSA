@@ -4,9 +4,9 @@ export const buttonVariants = tv({
   base: 'rounded-md px-3 py-1 font-medium transition-colors duration-300',
   variants: {
     variant: {
-      primary: 'bg-blue-600 text-white hover:bg-blue-500',
-      secondary: 'bg-gray-100 text-black hover:bg-gray-200',
-      muted: 'text-black hover:bg-gray-100',
+      primary: 'bg-blue-600 text-white hover:bg-blue-700',
+      secondary: 'bg-gray-200 text-black hover:bg-gray-300',
+      muted: 'text-black hover:bg-gray-300',
     },
     size: {
       sm: 'text-sm',
