@@ -29,5 +29,24 @@ REFERENCES attendee_group(id);
 
 -- +goose Down
 -- +goose StatementBegin
+ALTER TABLE attendee 
+DROP CONSTRAINT IF EXISTS attendee_attendee_group_id_fkey;
 
+ALTER TABLE attendee 
+DROP COLUMN IF EXISTS attendee_group_id;
+
+ALTER TABLE account_user
+DROP CONSTRAINT IF EXISTS account_user_oauth_provider_id_fkey;
+
+ALTER TABLE account_user 
+DROP COLUMN IF EXISTS provider_user_id,
+DROP COLUMN IF EXISTS profile_picture,
+DROP COLUMN IF EXISTS oauth_provider_id,
+ADD COLUMN attendee_group_id SMALLINT;
+
+ALTER TABLE account_user
+ADD CONSTRAINT account_user_attendee_group_id_fkey
+FOREIGN KEY (attendee_group_id)
+REFERENCES attendee_group(id)
+ON DELETE RESTRICT;
 -- +goose StatementEnd
