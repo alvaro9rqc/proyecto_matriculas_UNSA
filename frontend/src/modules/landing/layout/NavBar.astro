@@ -1,11 +1,12 @@
 ---
 import Logo from '@/assets/logo.svg';
+import SignInModal from '@/modules/auth/components/SignInModal';
 import Button from '@/modules/landing/ui/Button.astro';
 ---
 <nav class="flex justify-between px-4 py-2">
-  <div class="inline-flex items-center">
+  <div class="inline-flex items-center gap-x-2">
     <Logo class="h-6" />
-    <span class="ml-2 text-lg font-semibold">Tuitions</span>
+    <span class="text-lg font-semibold">Tuitions</span>
   </div>
   <div class="flex gap-2">
     <Button variant="muted">
@@ -14,9 +15,7 @@ import Button from '@/modules/landing/ui/Button.astro';
     <Button variant="muted">
       Precios
     </Button>
-    <Button>
-      Iniciar sesión
-    </Button>
+    <SignInModal client:load />
     <Button variant="secondary">
       Contactar a ventas
     </Button>

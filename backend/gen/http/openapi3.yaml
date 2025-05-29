@@ -1,0 +1,418 @@
+openapi: 3.0.3
+info:
+    title: Goa API
+    version: 0.0.1
+servers:
+    - url: http://localhost:80
+      description: Default server for enrollment
+paths:
+    /auth/google/login:
+        get:
+            tags:
+                - Auth
+            summary: Google login Auth
+            description: Initiates the Google OAuth 2.0 login flow by redirecting to the Google authorization endpoint.
+            operationId: Auth#Google login
+            responses:
+                "307":
+                    description: Temporary Redirect response.
+    /auth/google/logout:
+        get:
+            tags:
+                - Auth
+            summary: Google logout Auth
+            description: Logs the user out by clearing the session and redirecting to the appropriate post-logout URL.
+            operationId: Auth#Google logout
+            responses:
+                "307":
+                    description: Temporary Redirect response.
+    /auth/me:
+        get:
+            tags:
+                - Auth
+            summary: Me Auth
+            description: Returns information about the currently authenticated user.
+            operationId: Auth#Me
+            responses:
+                "200":
+                    description: OK response.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AccountUser'
+                            example:
+                                attendeeGroupName: Accusantium a non nihil sunt unde.
+                                attendeeGroupPriority: Dolorum quia.
+                                email: Earum dolores sunt ea temporibus.
+                                firstName: Asperiores ratione quas ad.
+                                id: Dolor voluptatem.
+                                lastNames: Corporis impedit molestiae sunt consectetur.
+                                remainingNames: Quo qui.
+                "401":
+                    description: Unauthorized response.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AccountUser'
+                            example:
+                                attendeeGroupName: Laudantium quod.
+                                attendeeGroupPriority: Dignissimos incidunt aut autem dolores magnam aut.
+                                email: Commodi similique aut dignissimos labore est sed.
+                                firstName: Hic ut voluptas facilis quos.
+                                id: Labore odit.
+                                lastNames: Aut est necessitatibus et minus tempora.
+                                remainingNames: Voluptatem necessitatibus autem illum.
+    /enrollment:
+        post:
+            tags:
+                - enrollment
+            summary: enroll enrollment
+            description: Inscribir un asistente en un curso
+            operationId: enrollment#enroll
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/EnrollmentPayload'
+                        example:
+                            attendee_id: 973980986
+                            course_id: 429573902
+                            passed: true
+            responses:
+                "201":
+                    description: Created response.
+                "400":
+                    description: 'bad_request: Petición inválida'
+                    content:
+                        application/vnd.goa.error:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+        put:
+            tags:
+                - enrollment
+            summary: update_enrollment enrollment
+            description: Actualizar el estado de una inscripción
+            operationId: enrollment#update_enrollment
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateEnrollmentPayload'
+                        example:
+                            attendee_id: 108527587
+                            course_id: 999067554
+                            passed: false
+            responses:
+                "200":
+                    description: OK response.
+                "404":
+                    description: 'not_found: No se encontró el recurso'
+                    content:
+                        application/vnd.goa.error:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+    /enrollment/{attendee_id}/{course_id}:
+        delete:
+            tags:
+                - enrollment
+            summary: delete_enrollment enrollment
+            description: Eliminar una inscripción de un asistente en un curso
+            operationId: enrollment#delete_enrollment
+            parameters:
+                - name: attendee_id
+                  in: path
+                  description: ID del asistente
+                  required: true
+                  schema:
+                    type: integer
+                    description: ID del asistente
+                    example: 157845693
+                    format: int32
+                  example: 998256652
+                - name: course_id
+                  in: path
+                  description: ID del curso
+                  required: true
+                  schema:
+                    type: integer
+                    description: ID del curso
+                    example: 1923257305
+                    format: int32
+                  example: 1200474170
+            responses:
+                "204":
+                    description: No Content response.
+                "404":
+                    description: 'not_found: No se encontró el recurso'
+                    content:
+                        application/vnd.goa.error:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+    /enrollment/course/{course_id}/users:
+        get:
+            tags:
+                - enrollment
+            summary: list_enrolled_users enrollment
+            description: Listar usuarios inscritos en un curso
+            operationId: enrollment#list_enrolled_users
+            parameters:
+                - name: course_id
+                  in: path
+                  description: ID del curso
+                  required: true
+                  schema:
+                    type: integer
+                    description: ID del curso
+                    example: 1098127318
+                    format: int32
+                  example: 1511426776
+            responses:
+                "200":
+                    description: OK response.
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/EnrolledUser'
+                                example:
+                                    - email: lucius@sporer.info
+                                      first_name: Fugiat debitis provident.
+                                      last_names: Ducimus enim ut sint.
+                                      remaining_names: Reiciendis est deleniti.
+                                    - email: lucius@sporer.info
+                                      first_name: Fugiat debitis provident.
+                                      last_names: Ducimus enim ut sint.
+                                      remaining_names: Reiciendis est deleniti.
+                            example:
+                                - email: lucius@sporer.info
+                                  first_name: Fugiat debitis provident.
+                                  last_names: Ducimus enim ut sint.
+                                  remaining_names: Reiciendis est deleniti.
+                                - email: lucius@sporer.info
+                                  first_name: Fugiat debitis provident.
+                                  last_names: Ducimus enim ut sint.
+                                  remaining_names: Reiciendis est deleniti.
+                                - email: lucius@sporer.info
+                                  first_name: Fugiat debitis provident.
+                                  last_names: Ducimus enim ut sint.
+                                  remaining_names: Reiciendis est deleniti.
+                                - email: lucius@sporer.info
+                                  first_name: Fugiat debitis provident.
+                                  last_names: Ducimus enim ut sint.
+                                  remaining_names: Reiciendis est deleniti.
+                "404":
+                    description: 'not_found: Not Found response.'
+                    content:
+                        application/vnd.goa.error:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+    /google/callback:
+        get:
+            tags:
+                - Auth
+            summary: GoogleCallback Auth
+            description: Google OAuth callback. Creates or reuses a session and redirects to the frontend.
+            operationId: Auth#GoogleCallback
+            responses:
+                "307":
+                    description: Temporary Redirect response.
+                "401":
+                    description: Unauthorized response.
+components:
+    schemas:
+        AccountUser:
+            type: object
+            properties:
+                attendeeGroupName:
+                    type: string
+                    description: User attendee group name
+                    example: Ea error eaque eum autem perspiciatis.
+                attendeeGroupPriority:
+                    type: string
+                    description: User attendee group priority
+                    example: Nihil consectetur.
+                email:
+                    type: string
+                    description: User email
+                    example: Dolores animi eaque quia accusamus dignissimos.
+                firstName:
+                    type: string
+                    description: User first name
+                    example: Fugiat quia est.
+                id:
+                    type: string
+                    description: Unique user ID
+                    example: Quia ut ut deleniti iste iusto.
+                lastNames:
+                    type: string
+                    description: User last names
+                    example: Voluptatem voluptatem.
+                remainingNames:
+                    type: string
+                    description: User remaining names
+                    example: Cupiditate eaque qui.
+            description: AccountUser type
+            example:
+                attendeeGroupName: Sapiente vel quia.
+                attendeeGroupPriority: Expedita quidem sint hic adipisci soluta provident.
+                email: Esse velit rerum.
+                firstName: Eos ipsa provident dolorum.
+                id: Ut magnam in atque magni dolorum est.
+                lastNames: Voluptatibus repellendus tempore et maiores voluptatem.
+                remainingNames: Eos ut dolor.
+            required:
+                - id
+                - email
+                - firstName
+                - lastNames
+                - remainingNames
+                - attendeeGroupName
+                - attendeeGroupPriority
+        DeleteEnrollmentPayload:
+            type: object
+            properties:
+                attendee_id:
+                    type: integer
+                    description: ID del asistente
+                    example: 899122228
+                    format: int32
+                course_id:
+                    type: integer
+                    description: ID del curso
+                    example: 1899810481
+                    format: int32
+            description: Eliminar inscripción
+            example:
+                attendee_id: 2084685314
+                course_id: 535512704
+            required:
+                - attendee_id
+                - course_id
+        EnrolledUser:
+            type: object
+            properties:
+                email:
+                    type: string
+                    example: bert@schultz.org
+                    format: email
+                first_name:
+                    type: string
+                    example: At odio nostrum et.
+                last_names:
+                    type: string
+                    example: Sit eaque quis ratione molestiae.
+                remaining_names:
+                    type: string
+                    example: Quia fuga qui temporibus et voluptatem ea.
+            description: Datos de usuario inscrito
+            example:
+                email: gerardo@gleichner.com
+                first_name: Sed est voluptas autem qui et.
+                last_names: In tempore sapiente sapiente mollitia necessitatibus molestias.
+                remaining_names: Possimus non tenetur occaecati tenetur.
+            required:
+                - first_name
+                - last_names
+                - email
+        EnrollmentPayload:
+            type: object
+            properties:
+                attendee_id:
+                    type: integer
+                    description: ID del asistente
+                    example: 290120321
+                    format: int32
+                course_id:
+                    type: integer
+                    description: ID del curso
+                    example: 657179272
+                    format: int32
+                passed:
+                    type: boolean
+                    description: Si el curso fue aprobado
+                    example: true
+            description: Datos para inscribir un asistente en un curso
+            example:
+                attendee_id: 114158658
+                course_id: 1551549862
+                passed: false
+            required:
+                - attendee_id
+                - course_id
+                - passed
+        Error:
+            type: object
+            properties:
+                fault:
+                    type: boolean
+                    description: Is the error a server-side fault?
+                    example: true
+                id:
+                    type: string
+                    description: ID is a unique identifier for this particular occurrence of the problem.
+                    example: 123abc
+                message:
+                    type: string
+                    description: Message is a human-readable explanation specific to this occurrence of the problem.
+                    example: parameter 'p' must be an integer
+                name:
+                    type: string
+                    description: Name is the name of this class of errors.
+                    example: bad_request
+                temporary:
+                    type: boolean
+                    description: Is the error temporary?
+                    example: true
+                timeout:
+                    type: boolean
+                    description: Is the error a timeout?
+                    example: false
+            description: Petición inválida
+            example:
+                fault: false
+                id: 123abc
+                message: parameter 'p' must be an integer
+                name: bad_request
+                temporary: false
+                timeout: false
+            required:
+                - name
+                - id
+                - message
+                - temporary
+                - timeout
+                - fault
+        UpdateEnrollmentPayload:
+            type: object
+            properties:
+                attendee_id:
+                    type: integer
+                    description: ID del asistente
+                    example: 1137472895
+                    format: int32
+                course_id:
+                    type: integer
+                    description: ID del curso
+                    example: 370277079
+                    format: int32
+                passed:
+                    type: boolean
+                    description: Nuevo estado aprobado
+                    example: true
+            description: Actualizar estado de inscripción
+            example:
+                attendee_id: 201649067
+                course_id: 1961071990
+                passed: false
+            required:
+                - attendee_id
+                - course_id
+                - passed
+tags:
+    - name: enrollment
+      description: Gestión de inscripción de asistentes en cursos
+    - name: Auth
+      description: Service to handle authentication and authorization
