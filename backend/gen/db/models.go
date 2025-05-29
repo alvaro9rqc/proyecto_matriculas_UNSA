@@ -14,13 +14,16 @@ type AccountUser struct {
 	FirstName       string
 	RemainingNames  pgtype.Text
 	LastNames       string
-	AttendeeGroupID pgtype.Int2
+	ProviderUserID  pgtype.Text
+	ProfilePicture  pgtype.Text
+	OauthProviderID pgtype.Int2
 }
 
 type Attendee struct {
-	ID            int32
-	Code          string
-	AccountUserID int32
+	ID              int32
+	Code            string
+	AccountUserID   int32
+	AttendeeGroupID int16
 }
 
 type AttendeeCourse struct {
@@ -39,6 +42,11 @@ type AttendeeGroup struct {
 type AttendeeProgram struct {
 	AttendeeID int32
 	ProgramID  int32
+}
+
+type AuthProvider struct {
+	ID   int16
+	Name string
 }
 
 type Course struct {
