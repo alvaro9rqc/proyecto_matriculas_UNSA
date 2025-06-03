@@ -15,22 +15,22 @@ import (
 // EnrollRequestBody is the type of the "enrollment" service "enroll" endpoint
 // HTTP request body.
 type EnrollRequestBody struct {
-	// ID del asistente
+	// Attendee ID
 	AttendeeID *int32 `form:"attendee_id,omitempty" json:"attendee_id,omitempty" xml:"attendee_id,omitempty"`
-	// ID del curso
+	// Course ID
 	CourseID *int32 `form:"course_id,omitempty" json:"course_id,omitempty" xml:"course_id,omitempty"`
-	// Si el curso fue aprobado
+	// Whether the attendee passed the course
 	Passed *bool `form:"passed,omitempty" json:"passed,omitempty" xml:"passed,omitempty"`
 }
 
 // UpdateEnrollmentRequestBody is the type of the "enrollment" service
 // "update_enrollment" endpoint HTTP request body.
 type UpdateEnrollmentRequestBody struct {
-	// ID del asistente
+	// Attendee ID
 	AttendeeID *int32 `form:"attendee_id,omitempty" json:"attendee_id,omitempty" xml:"attendee_id,omitempty"`
-	// ID del curso
+	// Course ID
 	CourseID *int32 `form:"course_id,omitempty" json:"course_id,omitempty" xml:"course_id,omitempty"`
-	// Nuevo estado aprobado
+	// New passed status
 	Passed *bool `form:"passed,omitempty" json:"passed,omitempty" xml:"passed,omitempty"`
 }
 
@@ -113,10 +113,14 @@ type ListEnrolledUsersNotFoundResponseBody struct {
 
 // EnrolledUserResponse is used to define fields on response body types.
 type EnrolledUserResponse struct {
-	FirstName      string  `form:"first_name" json:"first_name" xml:"first_name"`
+	// First name of the user
+	FirstName string `form:"first_name" json:"first_name" xml:"first_name"`
+	// Remaining names (middle names) of the user
 	RemainingNames *string `form:"remaining_names,omitempty" json:"remaining_names,omitempty" xml:"remaining_names,omitempty"`
-	LastNames      string  `form:"last_names" json:"last_names" xml:"last_names"`
-	Email          string  `form:"email" json:"email" xml:"email"`
+	// Last names of the user
+	LastNames string `form:"last_names" json:"last_names" xml:"last_names"`
+	// Email address
+	Email string `form:"email" json:"email" xml:"email"`
 }
 
 // NewListEnrolledUsersResponseBody builds the HTTP response body from the

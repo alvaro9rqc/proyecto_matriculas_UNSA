@@ -70,12 +70,97 @@ paths:
                             - attendeeGroupPriority
             schemes:
                 - http
+    /courses:
+        get:
+            tags:
+                - course
+            summary: get_all_courses course
+            description: Get all courses, only admin can use this method
+            operationId: course#get_all_courses
+            parameters:
+                - name: get_all_courses_request_body
+                  in: body
+                  required: true
+                  schema:
+                    $ref: '#/definitions/CourseGetAllCoursesRequestBody'
+                    required:
+                        - page
+                        - limit
+            responses:
+                "200":
+                    description: OK response.
+                    schema:
+                        type: array
+                        items:
+                            $ref: '#/definitions/Course'
+                "400":
+                    description: Bad Request response.
+                    schema:
+                        $ref: '#/definitions/CourseGetAllCoursesBadRequestResponseBody'
+                "401":
+                    description: Unauthorized response.
+                    schema:
+                        $ref: '#/definitions/CourseGetAllCoursesUnAuthorizedResponseBody'
+            schemes:
+                - http
+    /courses/available:
+        get:
+            tags:
+                - course
+            summary: get_user_available_courses course
+            description: Get all courses available for the user, only user can use this method
+            operationId: course#get_user_available_courses
+            responses:
+                "200":
+                    description: OK response.
+                    schema:
+                        type: array
+                        items:
+                            $ref: '#/definitions/Course'
+                "400":
+                    description: Bad Request response.
+                    schema:
+                        $ref: '#/definitions/CourseGetUserAvailableCoursesBadRequestResponseBody'
+                "401":
+                    description: Unauthorized response.
+                    schema:
+                        $ref: '#/definitions/CourseGetUserAvailableCoursesUnAuthorizedResponseBody'
+            schemes:
+                - http
+    /courses/upload:
+        post:
+            tags:
+                - course
+            summary: upload_all_courses course
+            description: Upload all courses from data of file, only admin can use this method
+            operationId: course#upload_all_courses
+            parameters:
+                - name: upload_all_courses_request_body
+                  in: body
+                  required: true
+                  schema:
+                    $ref: '#/definitions/UploadAllCoursesPayload'
+                    required:
+                        - courses
+            responses:
+                "201":
+                    description: Created response.
+                "400":
+                    description: Bad Request response.
+                    schema:
+                        $ref: '#/definitions/CourseUploadAllCoursesBadRequestResponseBody'
+                "401":
+                    description: Unauthorized response.
+                    schema:
+                        $ref: '#/definitions/CourseUploadAllCoursesUnAuthorizedResponseBody'
+            schemes:
+                - http
     /enrollment:
         put:
             tags:
                 - enrollment
             summary: update_enrollment enrollment
-            description: Actualizar el estado de una inscripción
+            description: Update the enrollment status of an attendee in a course
             operationId: enrollment#update_enrollment
             parameters:
                 - name: update_enrollment_request_body
@@ -100,7 +185,7 @@ paths:
             tags:
                 - enrollment
             summary: enroll enrollment
-            description: Inscribir un asistente en un curso
+            description: Enroll an attendee in a course
             operationId: enrollment#enroll
             parameters:
                 - name: EnrollRequestBody
@@ -126,18 +211,18 @@ paths:
             tags:
                 - enrollment
             summary: delete_enrollment enrollment
-            description: Eliminar una inscripción de un asistente en un curso
+            description: Delete an attendee's enrollment from a course
             operationId: enrollment#delete_enrollment
             parameters:
                 - name: attendee_id
                   in: path
-                  description: ID del asistente
+                  description: Attendee ID
                   required: true
                   type: integer
                   format: int32
                 - name: course_id
                   in: path
-                  description: ID del curso
+                  description: Course ID
                   required: true
                   type: integer
                   format: int32
@@ -155,12 +240,12 @@ paths:
             tags:
                 - enrollment
             summary: list_enrolled_users enrollment
-            description: Listar usuarios inscritos en un curso
+            description: List enrolled users for a specific course
             operationId: enrollment#list_enrolled_users
             parameters:
                 - name: course_id
                   in: path
-                  description: ID del curso
+                  description: Course ID
                   required: true
                   type: integer
                   format: int32
@@ -199,39 +284,39 @@ definitions:
             attendeeGroupName:
                 type: string
                 description: User attendee group name
-                example: Et non sapiente itaque.
+                example: Possimus itaque minus dolore nemo.
             attendeeGroupPriority:
                 type: string
                 description: User attendee group priority
-                example: Assumenda itaque aspernatur nam quis ratione et.
+                example: Numquam perspiciatis est ipsa iste.
             email:
                 type: string
                 description: User email
-                example: Eaque velit nobis ut ab.
+                example: Dolores odit quod ea qui sed.
             firstName:
                 type: string
                 description: User first name
-                example: Excepturi rerum perspiciatis laboriosam voluptas eaque.
+                example: Est non incidunt nam rerum velit.
             id:
                 type: string
                 description: Unique user ID
-                example: Qui veritatis exercitationem ut aut iusto.
+                example: Praesentium animi eum in saepe quia.
             lastNames:
                 type: string
                 description: User last names
-                example: Doloribus eveniet voluptates.
+                example: Doloribus atque ex repellendus.
             remainingNames:
                 type: string
                 description: User remaining names
-                example: Ducimus excepturi eligendi et necessitatibus autem aut.
+                example: Vel molestias non.
         example:
-            attendeeGroupName: Non nihil est eius.
-            attendeeGroupPriority: Reiciendis quisquam consequatur quia voluptatem.
-            email: In quis eligendi ipsam aut.
-            firstName: Modi quis sequi eum hic facere accusamus.
-            id: Tenetur ipsam.
-            lastNames: Commodi ab voluptas sed.
-            remainingNames: Quibusdam aut.
+            attendeeGroupName: Quidem atque.
+            attendeeGroupPriority: Tempore porro rem reprehenderit iusto corporis sit.
+            email: In voluptatum.
+            firstName: Aut tenetur est omnis et asperiores.
+            id: Dolorum exercitationem fuga.
+            lastNames: Eius sed aperiam voluptas porro vero.
+            remainingNames: Veritatis sint.
         required:
             - id
             - email
@@ -240,34 +325,44 @@ definitions:
             - remainingNames
             - attendeeGroupName
             - attendeeGroupPriority
-    EnrolledUser:
-        title: EnrolledUser
+    Course:
+        title: Course
         type: object
         properties:
-            email:
+            cicle_number:
+                type: integer
+                description: Cicle number of the course
+                example: 1
+                format: int64
+                minimum: 1
+            credits:
+                type: integer
+                description: Number of credits for the course
+                example: 3
+                format: int64
+                minimum: 1
+            id:
                 type: string
-                example: aurelia@daniel.name
-                format: email
-            first_name:
+                description: Unique identifier for the course
+                example: "144"
+            name:
                 type: string
-                example: Et sunt quisquam.
-            last_names:
-                type: string
-                example: Tenetur accusamus et deleniti non nihil animi.
-            remaining_names:
-                type: string
-                example: Voluptatem aperiam cupiditate.
-        description: Datos de usuario inscrito
+                description: Name of the course
+                example: Introduction to Programming
+                minLength: 1
+                maxLength: 128
+        description: Course represents a course in the system
         example:
-            email: jayda@adams.com
-            first_name: Nesciunt ex recusandae expedita explicabo inventore rerum.
-            last_names: Necessitatibus sed magni est omnis qui.
-            remaining_names: Non excepturi.
+            cicle_number: 1
+            credits: 3
+            id: "144"
+            name: Introduction to Programming
         required:
-            - first_name
-            - last_names
-            - email
-    EnrollmentDeleteEnrollmentNotFoundResponseBody:
+            - id
+            - name
+            - credits
+            - cicle_number
+    CourseGetAllCoursesBadRequestResponseBody:
         title: 'Mediatype identifier: application/vnd.goa.error; view=default'
         type: object
         properties:
@@ -294,14 +389,358 @@ definitions:
             timeout:
                 type: boolean
                 description: Is the error a timeout?
+                example: false
+        description: Invalid request (default view)
+        example:
+            fault: true
+            id: 123abc
+            message: parameter 'p' must be an integer
+            name: bad_request
+            temporary: false
+            timeout: false
+        required:
+            - name
+            - id
+            - message
+            - temporary
+            - timeout
+            - fault
+    CourseGetAllCoursesRequestBody:
+        title: CourseGetAllCoursesRequestBody
+        type: object
+        properties:
+            limit:
+                type: integer
+                description: Number of items per page
+                default: 10
+                example: 1046704728642672811
+                format: int64
+                minimum: 1
+            page:
+                type: integer
+                description: Page number for pagination
+                default: 1
+                example: 4028475894792449718
+                format: int64
+                minimum: 1
+        example:
+            limit: 3421895765292000180
+            page: 2278653720454714500
+        required:
+            - page
+            - limit
+    CourseGetAllCoursesUnAuthorizedResponseBody:
+        title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+        type: object
+        properties:
+            fault:
+                type: boolean
+                description: Is the error a server-side fault?
+                example: false
+            id:
+                type: string
+                description: ID is a unique identifier for this particular occurrence of the problem.
+                example: 123abc
+            message:
+                type: string
+                description: Message is a human-readable explanation specific to this occurrence of the problem.
+                example: parameter 'p' must be an integer
+            name:
+                type: string
+                description: Name is the name of this class of errors.
+                example: bad_request
+            temporary:
+                type: boolean
+                description: Is the error temporary?
                 example: true
-        description: No se encontró el recurso (default view)
+            timeout:
+                type: boolean
+                description: Is the error a timeout?
+                example: true
+        description: Unauthorized access (default view)
+        example:
+            fault: true
+            id: 123abc
+            message: parameter 'p' must be an integer
+            name: bad_request
+            temporary: true
+            timeout: false
+        required:
+            - name
+            - id
+            - message
+            - temporary
+            - timeout
+            - fault
+    CourseGetUserAvailableCoursesBadRequestResponseBody:
+        title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+        type: object
+        properties:
+            fault:
+                type: boolean
+                description: Is the error a server-side fault?
+                example: true
+            id:
+                type: string
+                description: ID is a unique identifier for this particular occurrence of the problem.
+                example: 123abc
+            message:
+                type: string
+                description: Message is a human-readable explanation specific to this occurrence of the problem.
+                example: parameter 'p' must be an integer
+            name:
+                type: string
+                description: Name is the name of this class of errors.
+                example: bad_request
+            temporary:
+                type: boolean
+                description: Is the error temporary?
+                example: false
+            timeout:
+                type: boolean
+                description: Is the error a timeout?
+                example: false
+        description: Invalid request (default view)
         example:
             fault: false
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
             temporary: false
+            timeout: true
+        required:
+            - name
+            - id
+            - message
+            - temporary
+            - timeout
+            - fault
+    CourseGetUserAvailableCoursesUnAuthorizedResponseBody:
+        title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+        type: object
+        properties:
+            fault:
+                type: boolean
+                description: Is the error a server-side fault?
+                example: false
+            id:
+                type: string
+                description: ID is a unique identifier for this particular occurrence of the problem.
+                example: 123abc
+            message:
+                type: string
+                description: Message is a human-readable explanation specific to this occurrence of the problem.
+                example: parameter 'p' must be an integer
+            name:
+                type: string
+                description: Name is the name of this class of errors.
+                example: bad_request
+            temporary:
+                type: boolean
+                description: Is the error temporary?
+                example: true
+            timeout:
+                type: boolean
+                description: Is the error a timeout?
+                example: false
+        description: Unauthorized access (default view)
+        example:
+            fault: true
+            id: 123abc
+            message: parameter 'p' must be an integer
+            name: bad_request
+            temporary: false
+            timeout: false
+        required:
+            - name
+            - id
+            - message
+            - temporary
+            - timeout
+            - fault
+    CoursePayload:
+        title: CoursePayload
+        type: object
+        properties:
+            cicle_number:
+                type: integer
+                description: Cicle number of the course
+                example: 1
+                format: int64
+                minimum: 1
+            credits:
+                type: integer
+                description: Number of credits for the course
+                example: 3
+                format: int64
+                minimum: 1
+            name:
+                type: string
+                description: Name of the course
+                example: Introduction to Programming
+                minLength: 1
+                maxLength: 128
+        description: Payload for uploading a single course
+        example:
+            cicle_number: 1
+            credits: 3
+            name: Introduction to Programming
+        required:
+            - name
+            - credits
+            - cicle_number
+    CourseUploadAllCoursesBadRequestResponseBody:
+        title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+        type: object
+        properties:
+            fault:
+                type: boolean
+                description: Is the error a server-side fault?
+                example: false
+            id:
+                type: string
+                description: ID is a unique identifier for this particular occurrence of the problem.
+                example: 123abc
+            message:
+                type: string
+                description: Message is a human-readable explanation specific to this occurrence of the problem.
+                example: parameter 'p' must be an integer
+            name:
+                type: string
+                description: Name is the name of this class of errors.
+                example: bad_request
+            temporary:
+                type: boolean
+                description: Is the error temporary?
+                example: false
+            timeout:
+                type: boolean
+                description: Is the error a timeout?
+                example: true
+        description: Invalid request (default view)
+        example:
+            fault: true
+            id: 123abc
+            message: parameter 'p' must be an integer
+            name: bad_request
+            temporary: false
+            timeout: false
+        required:
+            - name
+            - id
+            - message
+            - temporary
+            - timeout
+            - fault
+    CourseUploadAllCoursesUnAuthorizedResponseBody:
+        title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+        type: object
+        properties:
+            fault:
+                type: boolean
+                description: Is the error a server-side fault?
+                example: false
+            id:
+                type: string
+                description: ID is a unique identifier for this particular occurrence of the problem.
+                example: 123abc
+            message:
+                type: string
+                description: Message is a human-readable explanation specific to this occurrence of the problem.
+                example: parameter 'p' must be an integer
+            name:
+                type: string
+                description: Name is the name of this class of errors.
+                example: bad_request
+            temporary:
+                type: boolean
+                description: Is the error temporary?
+                example: false
+            timeout:
+                type: boolean
+                description: Is the error a timeout?
+                example: true
+        description: Unauthorized access (default view)
+        example:
+            fault: true
+            id: 123abc
+            message: parameter 'p' must be an integer
+            name: bad_request
+            temporary: true
+            timeout: false
+        required:
+            - name
+            - id
+            - message
+            - temporary
+            - timeout
+            - fault
+    EnrolledUser:
+        title: EnrolledUser
+        type: object
+        properties:
+            email:
+                type: string
+                description: Email address
+                example: kathleen.walker@graham.name
+                format: email
+            first_name:
+                type: string
+                description: First name of the user
+                example: Sunt sit excepturi exercitationem.
+            last_names:
+                type: string
+                description: Last names of the user
+                example: Itaque accusantium magnam in.
+            remaining_names:
+                type: string
+                description: Remaining names (middle names) of the user
+                example: Maxime omnis aut ipsam accusamus odio accusantium.
+        description: Details of a user enrolled in a course
+        example:
+            email: nannie.fritsch@osinskiframi.net
+            first_name: Culpa illum tempore dicta atque similique enim.
+            last_names: Dolor voluptates debitis necessitatibus tempora doloremque.
+            remaining_names: Minus eligendi eum nihil.
+        required:
+            - first_name
+            - last_names
+            - email
+    EnrollmentDeleteEnrollmentNotFoundResponseBody:
+        title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+        type: object
+        properties:
+            fault:
+                type: boolean
+                description: Is the error a server-side fault?
+                example: false
+            id:
+                type: string
+                description: ID is a unique identifier for this particular occurrence of the problem.
+                example: 123abc
+            message:
+                type: string
+                description: Message is a human-readable explanation specific to this occurrence of the problem.
+                example: parameter 'p' must be an integer
+            name:
+                type: string
+                description: Name is the name of this class of errors.
+                example: bad_request
+            temporary:
+                type: boolean
+                description: Is the error temporary?
+                example: true
+            timeout:
+                type: boolean
+                description: Is the error a timeout?
+                example: true
+        description: The resource was not found (default view)
+        example:
+            fault: true
+            id: 123abc
+            message: parameter 'p' must be an integer
+            name: bad_request
+            temporary: true
             timeout: false
         required:
             - name
@@ -338,9 +777,9 @@ definitions:
                 type: boolean
                 description: Is the error a timeout?
                 example: true
-        description: Petición inválida (default view)
+        description: Invalid request (default view)
         example:
-            fault: false
+            fault: true
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
@@ -360,7 +799,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: true
+                example: false
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -376,19 +815,19 @@ definitions:
             temporary:
                 type: boolean
                 description: Is the error temporary?
-                example: true
+                example: false
             timeout:
                 type: boolean
                 description: Is the error a timeout?
-                example: false
+                example: true
         description: list_enrolled_users_not_found_response_body result type (default view)
         example:
-            fault: false
+            fault: true
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
-            temporary: false
-            timeout: true
+            temporary: true
+            timeout: false
         required:
             - name
             - id
@@ -402,21 +841,21 @@ definitions:
         properties:
             attendee_id:
                 type: integer
-                description: ID del asistente
-                example: 466223378
+                description: Attendee ID
+                example: 2109623980
                 format: int32
             course_id:
                 type: integer
-                description: ID del curso
-                example: 1391554063
+                description: Course ID
+                example: 179521894
                 format: int32
             passed:
                 type: boolean
-                description: Si el curso fue aprobado
-                example: false
+                description: Whether the attendee passed the course
+                example: true
         example:
-            attendee_id: 921510809
-            course_id: 2146821637
+            attendee_id: 782546384
+            course_id: 1346191132
             passed: false
         required:
             - attendee_id
@@ -445,18 +884,18 @@ definitions:
             temporary:
                 type: boolean
                 description: Is the error temporary?
-                example: false
+                example: true
             timeout:
                 type: boolean
                 description: Is the error a timeout?
-                example: false
-        description: No se encontró el recurso (default view)
+                example: true
+        description: The resource was not found (default view)
         example:
-            fault: true
+            fault: false
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
-            temporary: false
+            temporary: true
             timeout: false
         required:
             - name
@@ -471,23 +910,60 @@ definitions:
         properties:
             attendee_id:
                 type: integer
-                description: ID del asistente
-                example: 828113516
+                description: Attendee ID
+                example: 1123891163
                 format: int32
             course_id:
                 type: integer
-                description: ID del curso
-                example: 1124555278
+                description: Course ID
+                example: 1370334540
                 format: int32
             passed:
                 type: boolean
-                description: Nuevo estado aprobado
-                example: false
+                description: New passed status
+                example: true
         example:
-            attendee_id: 571486384
-            course_id: 1992032917
+            attendee_id: 640842196
+            course_id: 2132969153
             passed: true
         required:
             - attendee_id
             - course_id
             - passed
+    UploadAllCoursesPayload:
+        title: UploadAllCoursesPayload
+        type: object
+        properties:
+            courses:
+                type: array
+                items:
+                    $ref: '#/definitions/CoursePayload'
+                example:
+                    - cicle_number: 1
+                      credits: 3
+                      name: Introduction to Programming
+                    - cicle_number: 1
+                      credits: 3
+                      name: Introduction to Programming
+                    - cicle_number: 1
+                      credits: 3
+                      name: Introduction to Programming
+                    - cicle_number: 1
+                      credits: 3
+                      name: Introduction to Programming
+        example:
+            courses:
+                - cicle_number: 1
+                  credits: 3
+                  name: Introduction to Programming
+                - cicle_number: 1
+                  credits: 3
+                  name: Introduction to Programming
+                - cicle_number: 1
+                  credits: 3
+                  name: Introduction to Programming
+                - cicle_number: 1
+                  credits: 3
+                  name: Introduction to Programming
+        required:
+            - courses

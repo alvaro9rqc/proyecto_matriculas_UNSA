@@ -27,7 +27,7 @@ type Service interface {
 }
 
 // APIName is the name of the API as defined in the design.
-const APIName = "enrollment"
+const APIName = "course"
 
 // APIVersion is the version of the API as defined in the design.
 const APIVersion = "0.0.1"
