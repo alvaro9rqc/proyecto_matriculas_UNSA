@@ -7,22 +7,31 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createStudentGroup = `-- name: CreateStudentGroup :exec
 INSERT INTO student_group (
-  name, priority
+  name, priority, start_day, end_day
 ) VALUES (
-  $1, $2
+  $1, $2, $3, $4
 )
 `
 
 type CreateStudentGroupParams struct {
 	Name     string
 	Priority int16
+	StartDay pgtype.Date
+	EndDay   pgtype.Date
 }
 
 func (q *Queries) CreateStudentGroup(ctx context.Context, arg CreateStudentGroupParams) error {
-	_, err := q.db.Exec(ctx, createStudentGroup, arg.Name, arg.Priority)
+	_, err := q.db.Exec(ctx, createStudentGroup,
+		arg.Name,
+		arg.Priority,
+		arg.StartDay,
+		arg.EndDay,
+	)
 	return err
 }

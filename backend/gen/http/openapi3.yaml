@@ -41,13 +41,13 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/AccountUser'
                             example:
-                                attendeeGroupName: Quis nobis dolor molestiae qui.
-                                attendeeGroupPriority: Qui soluta voluptate pariatur et.
-                                email: Harum eaque sed voluptatem adipisci expedita.
-                                firstName: Consequatur debitis nobis.
-                                id: Accusantium architecto nihil.
-                                lastNames: Eos odio.
-                                remainingNames: Ut incidunt commodi ut in.
+                                attendeeGroupName: Pariatur fuga placeat magni nemo.
+                                attendeeGroupPriority: Et eveniet deserunt iure est et recusandae.
+                                email: Pariatur et ea porro illo fugit sed.
+                                firstName: Nulla sunt.
+                                id: Nobis dolor molestiae qui velit qui soluta.
+                                lastNames: Similique iure adipisci nobis ut enim.
+                                remainingNames: Fugiat corporis officia praesentium omnis consectetur.
                 "401":
                     description: Unauthorized response.
                     content:
@@ -55,13 +55,13 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/AccountUser'
                             example:
-                                attendeeGroupName: Iure est.
-                                attendeeGroupPriority: Recusandae itaque asperiores quia sit.
-                                email: Natus similique iure adipisci nobis ut.
-                                firstName: Libero fugiat corporis.
-                                id: Porro illo fugit sed accusantium nulla.
-                                lastNames: Praesentium omnis consectetur ipsum pariatur fuga placeat.
-                                remainingNames: Nemo sed et eveniet.
+                                attendeeGroupName: Repellendus iste facere alias.
+                                attendeeGroupPriority: Illo soluta iure cupiditate rerum.
+                                email: Corrupti neque est aut earum minima.
+                                firstName: Neque exercitationem.
+                                id: Asperiores quia sit inventore recusandae unde est.
+                                lastNames: Adipisci cumque.
+                                remainingNames: Voluptate delectus.
     /courses:
         get:
             tags:
@@ -76,8 +76,8 @@ paths:
                         schema:
                             $ref: '#/components/schemas/GetAllCoursesRequestBody'
                         example:
-                            limit: 5311961257852150556
-                            page: 4362039140164176453
+                            limit: 3466669028225860434
+                            page: 1330338610430196549
             responses:
                 "200":
                     description: OK response.
@@ -100,7 +100,19 @@ paths:
                                       credits: 3
                                       id: "144"
                                       name: Introduction to Programming
+                                    - cicle_number: 1
+                                      credits: 3
+                                      id: "144"
+                                      name: Introduction to Programming
                             example:
+                                - cicle_number: 1
+                                  credits: 3
+                                  id: "144"
+                                  name: Introduction to Programming
+                                - cicle_number: 1
+                                  credits: 3
+                                  id: "144"
+                                  name: Introduction to Programming
                                 - cicle_number: 1
                                   credits: 3
                                   id: "144"
@@ -138,14 +150,6 @@ paths:
                                 items:
                                     $ref: '#/components/schemas/Course'
                                 example:
-                                    - cicle_number: 1
-                                      credits: 3
-                                      id: "144"
-                                      name: Introduction to Programming
-                                    - cicle_number: 1
-                                      credits: 3
-                                      id: "144"
-                                      name: Introduction to Programming
                                     - cicle_number: 1
                                       credits: 3
                                       id: "144"
@@ -203,6 +207,9 @@ paths:
                                 - cicle_number: 1
                                   credits: 3
                                   name: Introduction to Programming
+                                - cicle_number: 1
+                                  credits: 3
+                                  name: Introduction to Programming
             responses:
                 "201":
                     description: Created response.
@@ -232,8 +239,8 @@ paths:
                         schema:
                             $ref: '#/components/schemas/EnrollmentPayload'
                         example:
-                            attendee_id: 778384593
-                            course_id: 795706758
+                            attendee_id: 480923202
+                            course_id: 1669339732
                             passed: true
             responses:
                 "201":
@@ -257,8 +264,8 @@ paths:
                         schema:
                             $ref: '#/components/schemas/UpdateEnrollmentPayload'
                         example:
-                            attendee_id: 480923202
-                            course_id: 1669339732
+                            attendee_id: 222231779
+                            course_id: 676456966
                             passed: true
             responses:
                 "200":
@@ -284,9 +291,9 @@ paths:
                   schema:
                     type: integer
                     description: Attendee ID
-                    example: 2010083261
+                    example: 1353594971
                     format: int32
-                  example: 1156030421
+                  example: 1311213151
                 - name: course_id
                   in: path
                   description: Course ID
@@ -294,9 +301,9 @@ paths:
                   schema:
                     type: integer
                     description: Course ID
-                    example: 1464463353
+                    example: 1084817498
                     format: int32
-                  example: 834704004
+                  example: 1648620320
             responses:
                 "204":
                     description: No Content response.
@@ -321,9 +328,9 @@ paths:
                   schema:
                     type: integer
                     description: Course ID
-                    example: 1354363310
+                    example: 909073278
                     format: int32
-                  example: 1309088000
+                  example: 5919641
             responses:
                 "200":
                     description: OK response.
@@ -334,39 +341,23 @@ paths:
                                 items:
                                     $ref: '#/components/schemas/EnrolledUser'
                                 example:
-                                    - email: neva_dubuque@beier.net
-                                      first_name: Voluptatem omnis rerum quasi qui quod ut.
-                                      last_names: Iusto maxime eaque.
-                                      remaining_names: Consectetur quia.
-                                    - email: neva_dubuque@beier.net
-                                      first_name: Voluptatem omnis rerum quasi qui quod ut.
-                                      last_names: Iusto maxime eaque.
-                                      remaining_names: Consectetur quia.
-                                    - email: neva_dubuque@beier.net
-                                      first_name: Voluptatem omnis rerum quasi qui quod ut.
-                                      last_names: Iusto maxime eaque.
-                                      remaining_names: Consectetur quia.
-                                    - email: neva_dubuque@beier.net
-                                      first_name: Voluptatem omnis rerum quasi qui quod ut.
-                                      last_names: Iusto maxime eaque.
-                                      remaining_names: Consectetur quia.
+                                    - email: eugenia_jones@howell.name
+                                      first_name: Ut eius consectetur quia doloremque iusto.
+                                      last_names: Reprehenderit voluptas ea accusamus repudiandae maxime.
+                                      remaining_names: Eaque ut ea quo exercitationem eum adipisci.
+                                    - email: eugenia_jones@howell.name
+                                      first_name: Ut eius consectetur quia doloremque iusto.
+                                      last_names: Reprehenderit voluptas ea accusamus repudiandae maxime.
+                                      remaining_names: Eaque ut ea quo exercitationem eum adipisci.
                             example:
-                                - email: neva_dubuque@beier.net
-                                  first_name: Voluptatem omnis rerum quasi qui quod ut.
-                                  last_names: Iusto maxime eaque.
-                                  remaining_names: Consectetur quia.
-                                - email: neva_dubuque@beier.net
-                                  first_name: Voluptatem omnis rerum quasi qui quod ut.
-                                  last_names: Iusto maxime eaque.
-                                  remaining_names: Consectetur quia.
-                                - email: neva_dubuque@beier.net
-                                  first_name: Voluptatem omnis rerum quasi qui quod ut.
-                                  last_names: Iusto maxime eaque.
-                                  remaining_names: Consectetur quia.
-                                - email: neva_dubuque@beier.net
-                                  first_name: Voluptatem omnis rerum quasi qui quod ut.
-                                  last_names: Iusto maxime eaque.
-                                  remaining_names: Consectetur quia.
+                                - email: eugenia_jones@howell.name
+                                  first_name: Ut eius consectetur quia doloremque iusto.
+                                  last_names: Reprehenderit voluptas ea accusamus repudiandae maxime.
+                                  remaining_names: Eaque ut ea quo exercitationem eum adipisci.
+                                - email: eugenia_jones@howell.name
+                                  first_name: Ut eius consectetur quia doloremque iusto.
+                                  last_names: Reprehenderit voluptas ea accusamus repudiandae maxime.
+                                  remaining_names: Eaque ut ea quo exercitationem eum adipisci.
                 "404":
                     description: 'not_found: Not Found response.'
                     content:
@@ -385,6 +376,45 @@ paths:
                     description: Temporary Redirect response.
                 "401":
                     description: Unauthorized response.
+    /oauth/login:
+        post:
+            tags:
+                - oauth
+            summary: login oauth
+            description: Login using OAuth with a specific provider
+            operationId: oauth#login
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/LoginRequestBody'
+                        example:
+                            code: 90v
+                            oauth_provider_id: 3028730909651000065
+            responses:
+                "200":
+                    description: OK response.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserOauthInfo'
+                            example:
+                                oauth_provider_id: 1
+                                profile_picture: https://avatars.githubusercontent.com/u/123456?v=4
+                                provider_user_id: ya29.a0AfH6SM...
+                "401":
+                    description: 'unauthorized: Invalid or expired code'
+                    content:
+                        application/vnd.goa.error:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                "404":
+                    description: 'not_found: Not registered provider'
+                    content:
+                        application/vnd.goa.error:
+                            schema:
+                                $ref: '#/components/schemas/Error'
 components:
     schemas:
         AccountUser:
@@ -393,40 +423,40 @@ components:
                 attendeeGroupName:
                     type: string
                     description: User attendee group name
-                    example: Est officia est in eos.
+                    example: Eius illo dolores possimus eaque voluptatum odio.
                 attendeeGroupPriority:
                     type: string
                     description: User attendee group priority
-                    example: Accusantium qui accusantium.
+                    example: Ut quaerat sapiente sed.
                 email:
                     type: string
                     description: User email
-                    example: Aliquam est occaecati omnis et aut.
+                    example: Soluta iste consequuntur minus voluptate qui enim.
                 firstName:
                     type: string
                     description: User first name
-                    example: Dolorem fuga perferendis voluptatum et consectetur eos.
+                    example: Et aut pariatur similique dolor nisi ut.
                 id:
                     type: string
                     description: Unique user ID
-                    example: Enim dolores earum repellendus eaque.
+                    example: Magni ducimus ea iste.
                 lastNames:
                     type: string
                     description: User last names
-                    example: Temporibus voluptas a.
+                    example: Et est autem magni id laborum.
                 remainingNames:
                     type: string
                     description: User remaining names
-                    example: Est magni architecto ea.
+                    example: Voluptas itaque iure minus reprehenderit voluptas.
             description: AccountUser type
             example:
-                attendeeGroupName: Voluptas itaque iure minus reprehenderit voluptas.
-                attendeeGroupPriority: Eius illo dolores possimus eaque voluptatum odio.
-                email: Magni ducimus ea iste.
-                firstName: Soluta iste consequuntur minus voluptate qui enim.
-                id: Dolorem magnam.
-                lastNames: Et aut pariatur similique dolor nisi ut.
-                remainingNames: Et est autem magni id laborum.
+                attendeeGroupName: Repellat ut et quibusdam voluptas.
+                attendeeGroupPriority: Ratione ab pariatur.
+                email: Sed voluptatem.
+                firstName: Ut blanditiis non sint vitae non in.
+                id: Sit nisi consequatur voluptatem incidunt.
+                lastNames: Itaque quibusdam aut.
+                remainingNames: Beatae deleniti dicta ut amet.
             required:
                 - id
                 - email
@@ -507,17 +537,17 @@ components:
                 attendee_id:
                     type: integer
                     description: Attendee ID
-                    example: 869492797
+                    example: 184914250
                     format: int32
                 course_id:
                     type: integer
                     description: Course ID
-                    example: 675438407
+                    example: 1076783044
                     format: int32
             description: Input data to delete an enrollment
             example:
-                attendee_id: 480850972
-                course_id: 680543881
+                attendee_id: 788414399
+                course_id: 814386302
             required:
                 - attendee_id
                 - course_id
@@ -527,26 +557,26 @@ components:
                 email:
                     type: string
                     description: Email address
-                    example: maurice.feeney@heathcote.info
+                    example: tatum_sipes@mckenzie.org
                     format: email
                 first_name:
                     type: string
                     description: First name of the user
-                    example: Et et maxime voluptatem ab libero.
+                    example: Dolor qui.
                 last_names:
                     type: string
                     description: Last names of the user
-                    example: Eligendi occaecati quod consequatur beatae voluptas.
+                    example: Et occaecati beatae nulla maxime.
                 remaining_names:
                     type: string
                     description: Remaining names (middle names) of the user
-                    example: Voluptatem minus similique eos.
+                    example: Rerum dolorem ut maxime.
             description: Details of a user enrolled in a course
             example:
-                email: raymundo_fritsch@schroeder.net
-                first_name: Omnis magni sit earum occaecati sit.
-                last_names: Aut tenetur id et aliquid eum.
-                remaining_names: Vero voluptas.
+                email: lyda@schowalter.name
+                first_name: Repellendus praesentium modi fugit enim natus qui.
+                last_names: Fugit et velit ex ullam qui recusandae.
+                remaining_names: Dolore illo qui natus.
             required:
                 - first_name
                 - last_names
@@ -557,12 +587,12 @@ components:
                 attendee_id:
                     type: integer
                     description: Attendee ID
-                    example: 651227573
+                    example: 1528217355
                     format: int32
                 course_id:
                     type: integer
                     description: Course ID
-                    example: 399508035
+                    example: 306306776
                     format: int32
                 passed:
                     type: boolean
@@ -570,8 +600,8 @@ components:
                     example: false
             description: Input data to enroll an attendee in a course
             example:
-                attendee_id: 1395619466
-                course_id: 1576891121
+                attendee_id: 895470153
+                course_id: 1449292637
                 passed: true
             required:
                 - attendee_id
@@ -583,7 +613,7 @@ components:
                 fault:
                     type: boolean
                     description: Is the error a server-side fault?
-                    example: false
+                    example: true
                 id:
                     type: string
                     description: ID is a unique identifier for this particular occurrence of the problem.
@@ -599,19 +629,19 @@ components:
                 temporary:
                     type: boolean
                     description: Is the error temporary?
-                    example: false
+                    example: true
                 timeout:
                     type: boolean
                     description: Is the error a timeout?
-                    example: true
+                    example: false
             description: Invalid request
             example:
-                fault: false
+                fault: true
                 id: 123abc
                 message: parameter 'p' must be an integer
                 name: bad_request
-                temporary: false
-                timeout: false
+                temporary: true
+                timeout: true
             required:
                 - name
                 - id
@@ -626,34 +656,82 @@ components:
                     type: integer
                     description: Number of items per page
                     default: 10
-                    example: 2648247019636092388
+                    example: 3815022636455529696
                     format: int64
                     minimum: 1
                 page:
                     type: integer
                     description: Page number for pagination
                     default: 1
-                    example: 6031043969269785759
+                    example: 9129038840992139560
                     format: int64
                     minimum: 1
             example:
-                limit: 3003480818418308337
-                page: 710179025609226981
+                limit: 2246134022935431878
+                page: 4290152828008623076
             required:
                 - page
                 - limit
+        LoginRequestBody:
+            type: object
+            properties:
+                code:
+                    type: string
+                    description: OAuth code given by the provider
+                    example: qow
+                    minLength: 10
+                oauth_provider_id:
+                    type: integer
+                    description: ID of the OAuth provider
+                    example: 3095440499328124413
+                    format: int64
+                    minimum: 1
+            example:
+                code: zpa
+                oauth_provider_id: 7326377224202952624
+            required:
+                - oauth_provider_id
+                - code
+        OAuthProvider:
+            type: object
+            properties:
+                auth_url:
+                    type: string
+                    description: Provider authentication URL
+                    example: https://accounts.google.com/o/oauth2/auth
+                    format: uri
+                id:
+                    type: integer
+                    description: unique identifier
+                    example: 1
+                    format: int64
+                    minimum: 1
+                name:
+                    type: string
+                    description: Intern provider name
+                    example: google
+                    minLength: 2
+            description: registered provider in th system
+            example:
+                auth_url: https://accounts.google.com/o/oauth2/auth
+                id: 1
+                name: google
+            required:
+                - id
+                - name
+                - auth_url
         UpdateEnrollmentPayload:
             type: object
             properties:
                 attendee_id:
                     type: integer
                     description: Attendee ID
-                    example: 1007992458
+                    example: 373260515
                     format: int32
                 course_id:
                     type: integer
                     description: Course ID
-                    example: 966961404
+                    example: 841112562
                     format: int32
                 passed:
                     type: boolean
@@ -661,8 +739,8 @@ components:
                     example: true
             description: Input data to update the enrollment status
             example:
-                attendee_id: 220373802
-                course_id: 1845159246
+                attendee_id: 112351084
+                course_id: 136969197
                 passed: false
             required:
                 - attendee_id
@@ -700,15 +778,38 @@ components:
                     - cicle_number: 1
                       credits: 3
                       name: Introduction to Programming
-                    - cicle_number: 1
-                      credits: 3
-                      name: Introduction to Programming
             required:
                 - courses
+        UserOauthInfo:
+            type: object
+            properties:
+                oauth_provider_id:
+                    type: integer
+                    description: ID of the provider used
+                    example: 1
+                    format: int64
+                    minimum: 1
+                profile_picture:
+                    type: string
+                    description: Profile picture URL
+                    example: https://avatars.githubusercontent.com/u/123456?v=4
+                    format: uri
+                provider_user_id:
+                    type: string
+                    description: Access token given by the provider
+                    example: ya29.a0AfH6SM...
+                    minLength: 10
+            description: User information via Oauth
+            example:
+                oauth_provider_id: 1
+                profile_picture: https://avatars.githubusercontent.com/u/123456?v=4
+                provider_user_id: ya29.a0AfH6SM...
 tags:
     - name: course
       description: Manage the courses to enrollements
     - name: enrollment
       description: Manages attendee enrollment in courses
+    - name: oauth
+      description: Oauth Authentication service
     - name: Auth
       description: Service to handle authentication and authorization
