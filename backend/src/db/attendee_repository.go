@@ -7,28 +7,28 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type AttendeeRepository struct {
+type StudentRepository struct {
 	querys *db.Queries
 }
 
-func NewAttendeeRepository(psqlDB *pgx.Conn) *AttendeeRepository {
-	return &AttendeeRepository{
+func NewStudentRepository(psqlDB *pgx.Conn) *StudentRepository {
+	return &StudentRepository{
 		querys: db.New(psqlDB),
 	}
 }
 
-func (r *AttendeeRepository) EnrollmentCourse(ctx context.Context, arg db.EnrollmentAttendeeCourseParams) error {
-	return r.querys.EnrollmentAttendeeCourse(ctx, arg)
+func (r *StudentRepository) EnrollmentCourse(ctx context.Context, arg db.EnrollmentStudentCourseParams) error {
+	return r.querys.EnrollmentStudentCourse(ctx, arg)
 }
 
-func (r *AttendeeRepository) UpdateEnrollmentCourse(ctx context.Context, arg db.UpdateEnrollmentAttendeeCourseParams) error {
-	return r.querys.UpdateEnrollmentAttendeeCourse(ctx, arg)
+func (r *StudentRepository) UpdateEnrollmentCourse(ctx context.Context, arg db.UpdateEnrollmentStudentCourseParams) error {
+	return r.querys.UpdateEnrollmentStudentCourse(ctx, arg)
 }
 
-func (r *AttendeeRepository) DeleteEnrollmentCourse(ctx context.Context, arg db.DeleteAttendeeCourseParams) error {
-	return r.querys.DeleteAttendeeCourse(ctx, arg)
+func (r *StudentRepository) DeleteEnrollmentCourse(ctx context.Context, arg db.DeleteStudentCourseParams) error {
+	return r.querys.DeleteStudentCourse(ctx, arg)
 }
 
-func (r *AttendeeRepository) GetEnrolledUsersByCourse(ctx context.Context, courseID int32) ([]db.GetEnrolledUsersByCourseRow, error) {
+func (r *StudentRepository) GetEnrolledUsersByCourse(ctx context.Context, courseID int32) ([]db.GetEnrolledUsersByCourseRow, error) {
 	return r.querys.GetEnrolledUsersByCourse(ctx, courseID)
 }

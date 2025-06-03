@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE attendee_group (
+CREATE TABLE student_group (
     id SMALLSERIAL PRIMARY KEY,
     name VARCHAR(30) NOT NULL,
     priority SMALLINT NOT NULL
@@ -12,8 +12,8 @@ CREATE TABLE account_user (
     first_name VARCHAR(30) NOT NULL,
     remaining_names VARCHAR(128),
     last_names VARCHAR(30) NOT NULL,
-    attendee_group_id SMALLINT,
-    FOREIGN KEY (attendee_group_id) REFERENCES attendee_group (id) ON DELETE RESTRICT
+    student_group_id SMALLINT,
+    FOREIGN KEY (student_group_id) REFERENCES student_group (id) ON DELETE RESTRICT
 );
 
 CREATE TABLE installation (
@@ -22,7 +22,7 @@ CREATE TABLE installation (
     description VARCHAR(255)
 );
 
-CREATE TABLE attendee (
+CREATE TABLE student (
     id SERIAL PRIMARY KEY,
     code VARCHAR(30) UNIQUE NOT NULL,
     account_user_id INTEGER UNIQUE NOT NULL,
@@ -35,7 +35,6 @@ CREATE TABLE speaker (
     FOREIGN KEY (account_user_id) REFERENCES account_user (id) ON DELETE CASCADE
 );
 
--- cicle_number is not requited, just
 CREATE TABLE course (
     id SERIAL PRIMARY KEY,
     name VARCHAR(128) NOT NULL,
@@ -88,21 +87,21 @@ CREATE TABLE event (
     FOREIGN KEY (installation_id) REFERENCES installation (id) ON DELETE CASCADE
 );
 
-CREATE TABLE attendee_program (
-    attendee_id INTEGER,
+CREATE TABLE student_program (
+    student_id INTEGER,
     program_id INTEGER,
-    PRIMARY KEY (program_id, attendee_id),
+    PRIMARY KEY (program_id, student_id),
     FOREIGN KEY (program_id) REFERENCES program (id) ON DELETE CASCADE,
-    FOREIGN KEY (attendee_id) REFERENCES attendee (id) ON DELETE CASCADE
+    FOREIGN KEY (student_id) REFERENCES student (id) ON DELETE CASCADE
 );
 
-CREATE TABLE attendee_course (
-    attendee_id INTEGER,
+CREATE TABLE student_course (
+    student_id INTEGER,
     course_id INTEGER,
     attemps SMALLINT NOT NULL,
     passed BOOLEAN NOT NULL,
-    PRIMARY KEY (attendee_id, course_id),
-    FOREIGN KEY (attendee_id) REFERENCES attendee (id) ON DELETE CASCADE,
+    PRIMARY KEY (student_id, course_id),
+    FOREIGN KEY (student_id) REFERENCES student (id) ON DELETE CASCADE,
     FOREIGN KEY (course_id) REFERENCES course (id)
 );
 
@@ -153,42 +152,40 @@ CREATE TABLE tuition_modality_course (
 -- +goose StatementEnd
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS attendee_group;
-
-DROP TABLE IF EXISTS account_user;
-
-DROP TABLE IF EXISTS installation;
-
-DROP TABLE IF EXISTS attendee;
-
-DROP TABLE IF EXISTS speaker;
-
-DROP TABLE IF EXISTS course;
-
-DROP TABLE IF EXISTS program;
-
-DROP TABLE IF EXISTS enrollment_process;
-
-DROP TABLE IF EXISTS modality;
-
-DROP TABLE IF EXISTS tuition;
-
-DROP TABLE IF EXISTS event;
-
-DROP TABLE IF EXISTS attendee_program;
-
-DROP TABLE IF EXISTS attendee_course;
-
-DROP TABLE IF EXISTS course_program;
-
-DROP TABLE IF EXISTS course_prerequisite;
-
-DROP TABLE IF EXISTS course_modality;
+DROP TABLE IF EXISTS tuition_modality_course;
 
 DROP TABLE IF EXISTS tuition_speaker;
 
-DROP TABLE IF EXISTS tuition_modality_course;
+DROP TABLE IF EXISTS course_modality;
+
+DROP TABLE IF EXISTS course_prerequisite;
 
 DROP TABLE IF EXISTS course_program;
+
+DROP TABLE IF EXISTS student_course;
+
+DROP TABLE IF EXISTS student_program;
+
+DROP TABLE IF EXISTS event;
+
+DROP TABLE IF EXISTS tuition;
+
+DROP TABLE IF EXISTS modality;
+
+DROP TABLE IF EXISTS enrollment_process;
+
+DROP TABLE IF EXISTS program;
+
+DROP TABLE IF EXISTS course;
+
+DROP TABLE IF EXISTS speaker;
+
+DROP TABLE IF EXISTS student;
+
+DROP TABLE IF EXISTS installation;
+
+DROP TABLE IF EXISTS account_user;
+
+DROP TABLE IF EXISTS student_group;
 
 -- +goose StatementEnd

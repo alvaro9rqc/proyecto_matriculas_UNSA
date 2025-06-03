@@ -12,7 +12,7 @@ export default function SignInModal() {
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/25 animate-fade-in" />
-        <Dialog.Content className="bg-white rounded-lg shadow-lg fixed top-1/2 left-1/2 -translate-1/2 p-4 md:p-8 flex flex-col gap-y-4 items-center w-[90vw] max-w-xl focus:outline-none animate-content-show">
+        <Dialog.Content className="bg-white outline-[1px] outline-gray-200 rounded-lg shadow-lg fixed top-1/2 left-1/2 -translate-1/2 p-4 md:p-8 flex flex-col gap-y-4 items-center w-[90vw] max-w-xl focus:outline-none animate-content-show">
           <Dialog.Title className="inline-flex items-center gap-x-2">
             <Logo className="h-8" />
             <span className="text-2xl font-semibold">Tuitions</span>
