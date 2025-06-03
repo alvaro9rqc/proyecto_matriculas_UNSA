@@ -23,7 +23,7 @@ type Props = {
 
 const { class: className, size } = Astro.props;
 ---
-<div class:list={[logoVariants({ size }), className]}>
+<div class:list={[logoVariants({ size }), className]} transition:name="logo">
   <Logo class="h-full" />
   <span class="font-semibold">Tuitions</span>
 </div>
