@@ -1,0 +1,27 @@
+---
+import LogoExtended from '@/modules/core/ui/LogoExtended.astro';
+import TitlePage from '@/modules/core/ui/TitlePage.astro';
+import SubtitlePage from '@/modules/core/ui/SubtitlePage.astro';
+import Button from '@/modules/landing/ui/Button.astro';
+import SimplePageLayout from '@/modules/core/layout/SimplePageLayout.astro';
+---
+<SimplePageLayout title="Registro de institución">
+  <LogoExtended class="col-span-2 self-end justify-self-center row-auto" size="xl" />
+  <div class="flex flex-col gap-4">
+    <TitlePage>Estás a un paso de iniciar tu proceso de matrícula</TitlePage>
+    <SubtitlePage>
+      Al continuar aceptas que:
+      <ul class="list-inside list-disc">
+        <li>
+          Deseas iniciar un proceso de matrícula
+        </li>
+        <li>
+          Requieres información sobre el pago a realizar
+        </li>
+      </ul>
+    </SubtitlePage>
+  </div>
+  <Button class="place-self-center">
+    Aceptar y continuar
+  </Button>
+</SimplePageLayout>

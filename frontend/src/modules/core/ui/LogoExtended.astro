@@ -1,0 +1,29 @@
+---
+import Logo from '@/assets/logo.svg';
+import { tv, type VariantProps } from 'tailwind-variants';
+
+const logoVariants = tv({
+  base: 'inline-flex items-center',
+  variants: {
+    size: {
+      sm: 'h-4 text-sm gap-x-0.5',
+      md: 'h-6 text-lg gap-x-1',
+      lg: 'h-8 text-xl gap-x-2',
+      xl: 'h-10 text-3xl gap-x-4',
+    },
+  },
+  defaultVariants: {
+    size: 'md',
+  },
+});
+
+type Props = {
+  class?: string;
+} & VariantProps<typeof logoVariants>;
+
+const { class: className, size } = Astro.props;
+---
+<div class:list={[logoVariants({ size }), className]}>
+  <Logo class="h-full" />
+  <span class="font-semibold">Tuitions</span>
+</div>
