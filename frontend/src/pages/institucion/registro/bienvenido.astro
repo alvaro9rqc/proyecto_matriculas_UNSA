@@ -1,5 +1,5 @@
 ---
-import SimplePagelayout from '@/modules/core/layouts/SimplePagelayout.astro';
+import SimplePagelayout from '@/modules/core/layouts/SimplePageLayout.astro';
 import LogoExtended from '@/modules/core/ui/LogoExtended.astro';
 import SubtitlePage from '@/modules/core/ui/SubtitlePage.astro';
 import TitlePage from '@/modules/core/ui/TitlePage.astro';
@@ -16,7 +16,7 @@ import Button from '@/modules/landing/ui/Button.astro';
       Hemos preparado tu llegada, por favor sigue los pasos para completar el registro.
     </SubtitlePage>
   </header>
-  <Button>
+  <Button as="a" href="/institucion/registro/nombre">
     ¡Empezar!
   </Button>
 </SimplePagelayout>
