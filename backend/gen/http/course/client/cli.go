@@ -23,7 +23,7 @@ func BuildUploadAllCoursesPayload(courseUploadAllCoursesBody string) (*course.Up
 	{
 		err = json.Unmarshal([]byte(courseUploadAllCoursesBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"courses\": [\n         {\n            \"cicle_number\": 1,\n            \"credits\": 3,\n            \"name\": \"Introduction to Programming\"\n         },\n         {\n            \"cicle_number\": 1,\n            \"credits\": 3,\n            \"name\": \"Introduction to Programming\"\n         },\n         {\n            \"cicle_number\": 1,\n            \"credits\": 3,\n            \"name\": \"Introduction to Programming\"\n         }\n      ]\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"courses\": [\n         {\n            \"cicle_number\": 1,\n            \"credits\": 3,\n            \"name\": \"Introduction to Programming\"\n         },\n         {\n            \"cicle_number\": 1,\n            \"credits\": 3,\n            \"name\": \"Introduction to Programming\"\n         },\n         {\n            \"cicle_number\": 1,\n            \"credits\": 3,\n            \"name\": \"Introduction to Programming\"\n         },\n         {\n            \"cicle_number\": 1,\n            \"credits\": 3,\n            \"name\": \"Introduction to Programming\"\n         }\n      ]\n   }'")
 		}
 		if body.Courses == nil {
 			err = goa.MergeErrors(err, goa.MissingFieldError("courses", "body"))
@@ -60,7 +60,7 @@ func BuildGetAllCoursesPayload(courseGetAllCoursesBody string) (*course.GetAllCo
 	{
 		err = json.Unmarshal([]byte(courseGetAllCoursesBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"limit\": 5311961257852150556,\n      \"page\": 4362039140164176453\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"limit\": 3466669028225860434,\n      \"page\": 1330338610430196549\n   }'")
 		}
 		if body.Page < 1 {
 			err = goa.MergeErrors(err, goa.InvalidRangeError("body.page", body.Page, 1, true))

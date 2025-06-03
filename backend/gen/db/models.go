@@ -8,21 +8,25 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type AccountUser struct {
+type Account struct {
 	ID              int32
 	Email           string
-	FirstName       string
-	RemainingNames  pgtype.Text
-	LastNames       string
-	StudentGroupID  pgtype.Int2
-	ProviderUserID  pgtype.Text
-	ProfilePicture  pgtype.Text
+	Name            string
+	Surname         pgtype.Text
+	AvatarUrl       pgtype.Text
+	CreatedAt       pgtype.Timestamp
 	OauthProviderID pgtype.Int2
+	AccessToken     pgtype.Text
+	RefreshToken    pgtype.Text
 }
 
-type AuthProvider struct {
-	ID   int16
-	Name string
+type AccountSession struct {
+	ID             int32
+	Token          pgtype.Text
+	ExpirationDate pgtype.Timestamptz
+	UserAgent      pgtype.Text
+	IpAddress      pgtype.Text
+	AccountID      pgtype.Int4
 }
 
 type Course struct {
@@ -78,21 +82,26 @@ type Modality struct {
 	Name string
 }
 
+type OauthProvider struct {
+	ID   int16
+	Name string
+}
+
 type Program struct {
 	ID   int32
 	Name string
 }
 
 type Speaker struct {
-	ID            int32
-	AccountUserID int32
+	ID        int32
+	AccountID int32
 }
 
 type Student struct {
 	ID             int32
 	Code           string
-	AccountUserID  int32
-	StudentGroupID int16
+	AccountID      int32
+	StudentGroupID pgtype.Int2
 }
 
 type StudentCourse struct {
@@ -106,6 +115,8 @@ type StudentGroup struct {
 	ID       int16
 	Name     string
 	Priority int16
+	StartDay pgtype.Date
+	EndDay   pgtype.Date
 }
 
 type StudentProgram struct {

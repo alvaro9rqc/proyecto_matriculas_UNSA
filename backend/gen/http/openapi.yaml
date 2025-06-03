@@ -276,6 +276,37 @@ paths:
                     description: Unauthorized response.
             schemes:
                 - http
+    /oauth/login:
+        post:
+            tags:
+                - oauth
+            summary: login oauth
+            description: Login using OAuth with a specific provider
+            operationId: oauth#login
+            parameters:
+                - name: LoginRequestBody
+                  in: body
+                  required: true
+                  schema:
+                    $ref: '#/definitions/OauthLoginRequestBody'
+                    required:
+                        - oauth_provider_id
+                        - code
+            responses:
+                "200":
+                    description: OK response.
+                    schema:
+                        $ref: '#/definitions/UserOauthInfo'
+                "401":
+                    description: Unauthorized response.
+                    schema:
+                        $ref: '#/definitions/OauthLoginUnauthorizedResponseBody'
+                "404":
+                    description: Not Found response.
+                    schema:
+                        $ref: '#/definitions/OauthLoginNotFoundResponseBody'
+            schemes:
+                - http
 definitions:
     AccountUser:
         title: AccountUser
@@ -284,39 +315,39 @@ definitions:
             attendeeGroupName:
                 type: string
                 description: User attendee group name
-                example: Possimus itaque minus dolore nemo.
+                example: Atque quidem atque quos tempore porro rem.
             attendeeGroupPriority:
                 type: string
                 description: User attendee group priority
-                example: Numquam perspiciatis est ipsa iste.
+                example: Iusto corporis sit culpa vitae dolor.
             email:
                 type: string
                 description: User email
-                example: Dolores odit quod ea qui sed.
+                example: Voluptatum voluptatum aut tenetur.
             firstName:
                 type: string
                 description: User first name
-                example: Est non incidunt nam rerum velit.
+                example: Omnis et.
             id:
                 type: string
                 description: Unique user ID
-                example: Praesentium animi eum in saepe quia.
+                example: Exercitationem fuga non.
             lastNames:
                 type: string
                 description: User last names
-                example: Doloribus atque ex repellendus.
+                example: Libero eius sed aperiam voluptas porro.
             remainingNames:
                 type: string
                 description: User remaining names
-                example: Vel molestias non.
+                example: Et veritatis.
         example:
-            attendeeGroupName: Quidem atque.
-            attendeeGroupPriority: Tempore porro rem reprehenderit iusto corporis sit.
-            email: In voluptatum.
-            firstName: Aut tenetur est omnis et asperiores.
-            id: Dolorum exercitationem fuga.
-            lastNames: Eius sed aperiam voluptas porro vero.
-            remainingNames: Veritatis sint.
+            attendeeGroupName: Qui eligendi occaecati quod consequatur beatae.
+            attendeeGroupPriority: Qui consequatur exercitationem consectetur vitae quidem.
+            email: Et aliquid.
+            firstName: Rem rerum.
+            id: Odio blanditiis quasi hic atque.
+            lastNames: Ea a veniam et et maxime voluptatem.
+            remainingNames: Libero voluptatem voluptatem minus similique.
         required:
             - id
             - email
@@ -385,7 +416,7 @@ definitions:
             temporary:
                 type: boolean
                 description: Is the error temporary?
-                example: true
+                example: false
             timeout:
                 type: boolean
                 description: Is the error a timeout?
@@ -397,7 +428,7 @@ definitions:
             message: parameter 'p' must be an integer
             name: bad_request
             temporary: false
-            timeout: false
+            timeout: true
         required:
             - name
             - id
@@ -413,19 +444,19 @@ definitions:
                 type: integer
                 description: Number of items per page
                 default: 10
-                example: 1046704728642672811
+                example: 3240746346700086538
                 format: int64
                 minimum: 1
             page:
                 type: integer
                 description: Page number for pagination
                 default: 1
-                example: 4028475894792449718
+                example: 6560399220365056429
                 format: int64
                 minimum: 1
         example:
-            limit: 3421895765292000180
-            page: 2278653720454714500
+            limit: 4827075792378600662
+            page: 225192654452051604
         required:
             - page
             - limit
@@ -456,7 +487,7 @@ definitions:
             timeout:
                 type: boolean
                 description: Is the error a timeout?
-                example: true
+                example: false
         description: Unauthorized access (default view)
         example:
             fault: true
@@ -464,7 +495,7 @@ definitions:
             message: parameter 'p' must be an integer
             name: bad_request
             temporary: true
-            timeout: false
+            timeout: true
         required:
             - name
             - id
@@ -479,7 +510,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: true
+                example: false
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -495,18 +526,18 @@ definitions:
             temporary:
                 type: boolean
                 description: Is the error temporary?
-                example: false
+                example: true
             timeout:
                 type: boolean
                 description: Is the error a timeout?
-                example: false
+                example: true
         description: Invalid request (default view)
         example:
-            fault: false
+            fault: true
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
-            temporary: false
+            temporary: true
             timeout: true
         required:
             - name
@@ -522,7 +553,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: false
+                example: true
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -550,7 +581,7 @@ definitions:
             message: parameter 'p' must be an integer
             name: bad_request
             temporary: false
-            timeout: false
+            timeout: true
         required:
             - name
             - id
@@ -623,7 +654,7 @@ definitions:
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
-            temporary: false
+            temporary: true
             timeout: false
         required:
             - name
@@ -659,15 +690,15 @@ definitions:
             timeout:
                 type: boolean
                 description: Is the error a timeout?
-                example: true
+                example: false
         description: Unauthorized access (default view)
         example:
             fault: true
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
-            temporary: true
-            timeout: false
+            temporary: false
+            timeout: true
         required:
             - name
             - id
@@ -682,26 +713,26 @@ definitions:
             email:
                 type: string
                 description: Email address
-                example: kathleen.walker@graham.name
+                example: lynn_stracke@turcotteyundt.name
                 format: email
             first_name:
                 type: string
                 description: First name of the user
-                example: Sunt sit excepturi exercitationem.
+                example: Recusandae nemo id veritatis.
             last_names:
                 type: string
                 description: Last names of the user
-                example: Itaque accusantium magnam in.
+                example: Modi dolorem.
             remaining_names:
                 type: string
                 description: Remaining names (middle names) of the user
-                example: Maxime omnis aut ipsam accusamus odio accusantium.
+                example: Eum recusandae illo unde sed quia odio.
         description: Details of a user enrolled in a course
         example:
-            email: nannie.fritsch@osinskiframi.net
-            first_name: Culpa illum tempore dicta atque similique enim.
-            last_names: Dolor voluptates debitis necessitatibus tempora doloremque.
-            remaining_names: Minus eligendi eum nihil.
+            email: braxton@tremblaykuvalis.org
+            first_name: In et.
+            last_names: Eum est eum dolores aut.
+            remaining_names: Cum repellat.
         required:
             - first_name
             - last_names
@@ -713,7 +744,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: false
+                example: true
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -729,14 +760,14 @@ definitions:
             temporary:
                 type: boolean
                 description: Is the error temporary?
-                example: true
+                example: false
             timeout:
                 type: boolean
                 description: Is the error a timeout?
-                example: true
+                example: false
         description: The resource was not found (default view)
         example:
-            fault: true
+            fault: false
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
@@ -756,7 +787,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: false
+                example: true
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -772,19 +803,19 @@ definitions:
             temporary:
                 type: boolean
                 description: Is the error temporary?
-                example: true
+                example: false
             timeout:
                 type: boolean
                 description: Is the error a timeout?
                 example: true
         description: Invalid request (default view)
         example:
-            fault: true
+            fault: false
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
-            temporary: false
-            timeout: false
+            temporary: true
+            timeout: true
         required:
             - name
             - id
@@ -799,7 +830,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: false
+                example: true
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -815,7 +846,7 @@ definitions:
             temporary:
                 type: boolean
                 description: Is the error temporary?
-                example: false
+                example: true
             timeout:
                 type: boolean
                 description: Is the error a timeout?
@@ -826,7 +857,7 @@ definitions:
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
-            temporary: true
+            temporary: false
             timeout: false
         required:
             - name
@@ -842,21 +873,21 @@ definitions:
             attendee_id:
                 type: integer
                 description: Attendee ID
-                example: 2109623980
+                example: 630542339
                 format: int32
             course_id:
                 type: integer
                 description: Course ID
-                example: 179521894
+                example: 1970489141
                 format: int32
             passed:
                 type: boolean
                 description: Whether the attendee passed the course
                 example: true
         example:
-            attendee_id: 782546384
-            course_id: 1346191132
-            passed: false
+            attendee_id: 598350453
+            course_id: 930462313
+            passed: true
         required:
             - attendee_id
             - course_id
@@ -868,7 +899,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: true
+                example: false
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -891,12 +922,119 @@ definitions:
                 example: true
         description: The resource was not found (default view)
         example:
+            fault: true
+            id: 123abc
+            message: parameter 'p' must be an integer
+            name: bad_request
+            temporary: true
+            timeout: true
+        required:
+            - name
+            - id
+            - message
+            - temporary
+            - timeout
+            - fault
+    OauthLoginNotFoundResponseBody:
+        title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+        type: object
+        properties:
+            fault:
+                type: boolean
+                description: Is the error a server-side fault?
+                example: false
+            id:
+                type: string
+                description: ID is a unique identifier for this particular occurrence of the problem.
+                example: 123abc
+            message:
+                type: string
+                description: Message is a human-readable explanation specific to this occurrence of the problem.
+                example: parameter 'p' must be an integer
+            name:
+                type: string
+                description: Name is the name of this class of errors.
+                example: bad_request
+            temporary:
+                type: boolean
+                description: Is the error temporary?
+                example: false
+            timeout:
+                type: boolean
+                description: Is the error a timeout?
+                example: true
+        description: Not registered provider (default view)
+        example:
+            fault: true
+            id: 123abc
+            message: parameter 'p' must be an integer
+            name: bad_request
+            temporary: true
+            timeout: true
+        required:
+            - name
+            - id
+            - message
+            - temporary
+            - timeout
+            - fault
+    OauthLoginRequestBody:
+        title: OauthLoginRequestBody
+        type: object
+        properties:
+            code:
+                type: string
+                description: OAuth code given by the provider
+                example: ot3
+                minLength: 10
+            oauth_provider_id:
+                type: integer
+                description: ID of the OAuth provider
+                example: 4943532779986871528
+                format: int64
+                minimum: 1
+        example:
+            code: "112"
+            oauth_provider_id: 8630192880191529213
+        required:
+            - oauth_provider_id
+            - code
+    OauthLoginUnauthorizedResponseBody:
+        title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+        type: object
+        properties:
+            fault:
+                type: boolean
+                description: Is the error a server-side fault?
+                example: false
+            id:
+                type: string
+                description: ID is a unique identifier for this particular occurrence of the problem.
+                example: 123abc
+            message:
+                type: string
+                description: Message is a human-readable explanation specific to this occurrence of the problem.
+                example: parameter 'p' must be an integer
+            name:
+                type: string
+                description: Name is the name of this class of errors.
+                example: bad_request
+            temporary:
+                type: boolean
+                description: Is the error temporary?
+                example: false
+            timeout:
+                type: boolean
+                description: Is the error a timeout?
+                example: false
+        description: Invalid or expired code (default view)
+        example:
             fault: false
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
             temporary: true
-            timeout: false
+            timeout: true
         required:
             - name
             - id
@@ -911,21 +1049,21 @@ definitions:
             attendee_id:
                 type: integer
                 description: Attendee ID
-                example: 1123891163
+                example: 499548550
                 format: int32
             course_id:
                 type: integer
                 description: Course ID
-                example: 1370334540
+                example: 40633746
                 format: int32
             passed:
                 type: boolean
                 description: New passed status
                 example: true
         example:
-            attendee_id: 640842196
-            course_id: 2132969153
-            passed: true
+            attendee_id: 1359223449
+            course_id: 1864566276
+            passed: false
         required:
             - attendee_id
             - course_id
@@ -939,12 +1077,6 @@ definitions:
                 items:
                     $ref: '#/definitions/CoursePayload'
                 example:
-                    - cicle_number: 1
-                      credits: 3
-                      name: Introduction to Programming
-                    - cicle_number: 1
-                      credits: 3
-                      name: Introduction to Programming
                     - cicle_number: 1
                       credits: 3
                       name: Introduction to Programming
@@ -967,3 +1099,27 @@ definitions:
                   name: Introduction to Programming
         required:
             - courses
+    UserOauthInfo:
+        title: UserOauthInfo
+        type: object
+        properties:
+            oauth_provider_id:
+                type: integer
+                description: ID of the provider used
+                example: 1
+                format: int64
+                minimum: 1
+            profile_picture:
+                type: string
+                description: Profile picture URL
+                example: https://avatars.githubusercontent.com/u/123456?v=4
+                format: uri
+            provider_user_id:
+                type: string
+                description: Access token given by the provider
+                example: ya29.a0AfH6SM...
+                minLength: 10
+        example:
+            oauth_provider_id: 1
+            profile_picture: https://avatars.githubusercontent.com/u/123456?v=4
+            provider_user_id: ya29.a0AfH6SM...

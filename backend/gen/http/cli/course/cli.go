@@ -16,6 +16,7 @@ import (
 	authc "github.com/enrollment/gen/http/auth/client"
 	coursec "github.com/enrollment/gen/http/course/client"
 	enrollmentc "github.com/enrollment/gen/http/enrollment/client"
+	oauthc "github.com/enrollment/gen/http/oauth/client"
 	goahttp "goa.design/goa/v3/http"
 	goa "goa.design/goa/v3/pkg"
 )
@@ -26,6 +27,7 @@ import (
 func UsageCommands() string {
 	return `course (upload-all-courses|get-all-courses|get-user-available-courses)
 enrollment (enroll|update-enrollment|delete-enrollment|list-enrolled-users)
+oauth login
 auth (me|google-login|google-logout|google-callback)
 `
 }
@@ -48,13 +50,22 @@ func UsageExamples() string {
             "cicle_number": 1,
             "credits": 3,
             "name": "Introduction to Programming"
+         },
+         {
+            "cicle_number": 1,
+            "credits": 3,
+            "name": "Introduction to Programming"
          }
       ]
    }'` + "\n" +
 		os.Args[0] + ` enrollment enroll --body '{
-      "attendee_id": 778384593,
-      "course_id": 795706758,
+      "attendee_id": 480923202,
+      "course_id": 1669339732,
       "passed": true
+   }'` + "\n" +
+		os.Args[0] + ` oauth login --body '{
+      "code": "90v",
+      "oauth_provider_id": 3028730909651000065
    }'` + "\n" +
 		os.Args[0] + ` auth me` + "\n" +
 		""
@@ -95,6 +106,11 @@ func ParseEndpoint(
 		enrollmentListEnrolledUsersFlags        = flag.NewFlagSet("list-enrolled-users", flag.ExitOnError)
 		enrollmentListEnrolledUsersCourseIDFlag = enrollmentListEnrolledUsersFlags.String("course-id", "REQUIRED", "Course ID")
 
+		oauthFlags = flag.NewFlagSet("oauth", flag.ContinueOnError)
+
+		oauthLoginFlags    = flag.NewFlagSet("login", flag.ExitOnError)
+		oauthLoginBodyFlag = oauthLoginFlags.String("body", "REQUIRED", "")
+
 		authFlags = flag.NewFlagSet("auth", flag.ContinueOnError)
 
 		authMeFlags = flag.NewFlagSet("me", flag.ExitOnError)
@@ -115,6 +131,9 @@ func ParseEndpoint(
 	enrollmentUpdateEnrollmentFlags.Usage = enrollmentUpdateEnrollmentUsage
 	enrollmentDeleteEnrollmentFlags.Usage = enrollmentDeleteEnrollmentUsage
 	enrollmentListEnrolledUsersFlags.Usage = enrollmentListEnrolledUsersUsage
+
+	oauthFlags.Usage = oauthUsage
+	oauthLoginFlags.Usage = oauthLoginUsage
 
 	authFlags.Usage = authUsage
 	authMeFlags.Usage = authMeUsage
@@ -141,6 +160,8 @@ func ParseEndpoint(
 			svcf = courseFlags
 		case "enrollment":
 			svcf = enrollmentFlags
+		case "oauth":
+			svcf = oauthFlags
 		case "auth":
 			svcf = authFlags
 		default:
@@ -184,6 +205,13 @@ func ParseEndpoint(
 
 			case "list-enrolled-users":
 				epf = enrollmentListEnrolledUsersFlags
+
+			}
+
+		case "oauth":
+			switch epn {
+			case "login":
+				epf = oauthLoginFlags
 
 			}
 
@@ -251,6 +279,13 @@ func ParseEndpoint(
 				endpoint = c.ListEnrolledUsers()
 				data, err = enrollmentc.BuildListEnrolledUsersPayload(*enrollmentListEnrolledUsersCourseIDFlag)
 			}
+		case "oauth":
+			c := oauthc.NewClient(scheme, host, doer, enc, dec, restore)
+			switch epn {
+			case "login":
+				endpoint = c.Login()
+				data, err = oauthc.BuildLoginPayload(*oauthLoginBodyFlag)
+			}
 		case "auth":
 			c := authc.NewClient(scheme, host, doer, enc, dec, restore)
 			switch epn {
@@ -310,6 +345,11 @@ Example:
             "cicle_number": 1,
             "credits": 3,
             "name": "Introduction to Programming"
+         },
+         {
+            "cicle_number": 1,
+            "credits": 3,
+            "name": "Introduction to Programming"
          }
       ]
    }'
@@ -324,8 +364,8 @@ Get all courses, only admin can use this method
 
 Example:
     %[1]s course get-all-courses --body '{
-      "limit": 5311961257852150556,
-      "page": 4362039140164176453
+      "limit": 3466669028225860434,
+      "page": 1330338610430196549
    }'
 `, os.Args[0])
 }
@@ -365,8 +405,8 @@ Enroll an attendee in a course
 
 Example:
     %[1]s enrollment enroll --body '{
-      "attendee_id": 778384593,
-      "course_id": 795706758,
+      "attendee_id": 480923202,
+      "course_id": 1669339732,
       "passed": true
    }'
 `, os.Args[0])
@@ -380,8 +420,8 @@ Update the enrollment status of an attendee in a course
 
 Example:
     %[1]s enrollment update-enrollment --body '{
-      "attendee_id": 480923202,
-      "course_id": 1669339732,
+      "attendee_id": 222231779,
+      "course_id": 676456966,
       "passed": true
    }'
 `, os.Args[0])
@@ -395,7 +435,7 @@ Delete an attendee's enrollment from a course
     -course-id INT32: Course ID
 
 Example:
-    %[1]s enrollment delete-enrollment --attendee-id 256589420 --course-id 746170887
+    %[1]s enrollment delete-enrollment --attendee-id 439431631 --course-id 400921235
 `, os.Args[0])
 }
 
@@ -406,7 +446,34 @@ List enrolled users for a specific course
     -course-id INT32: Course ID
 
 Example:
-    %[1]s enrollment list-enrolled-users --course-id 439431631
+    %[1]s enrollment list-enrolled-users --course-id 213453439
+`, os.Args[0])
+}
+
+// oauthUsage displays the usage of the oauth command and its subcommands.
+func oauthUsage() {
+	fmt.Fprintf(os.Stderr, `Oauth Authentication service
+Usage:
+    %[1]s [globalflags] oauth COMMAND [flags]
+
+COMMAND:
+    login: Login using OAuth with a specific provider
+
+Additional help:
+    %[1]s oauth COMMAND --help
+`, os.Args[0])
+}
+func oauthLoginUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] oauth login -body JSON
+
+Login using OAuth with a specific provider
+    -body JSON: 
+
+Example:
+    %[1]s oauth login --body '{
+      "code": "90v",
+      "oauth_provider_id": 3028730909651000065
+   }'
 `, os.Args[0])
 }
 
