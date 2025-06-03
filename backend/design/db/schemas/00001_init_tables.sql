@@ -152,40 +152,40 @@ CREATE TABLE tuition_modality_course (
 -- +goose StatementEnd
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS student_group;
-
-DROP TABLE IF EXISTS account_user;
-
-DROP TABLE IF EXISTS installation;
-
-DROP TABLE IF EXISTS student;
-
-DROP TABLE IF EXISTS speaker;
-
-DROP TABLE IF EXISTS course;
-
-DROP TABLE IF EXISTS program;
-
-DROP TABLE IF EXISTS enrollment_process;
-
-DROP TABLE IF EXISTS modality;
-
-DROP TABLE IF EXISTS tuition;
-
-DROP TABLE IF EXISTS event;
-
-DROP TABLE IF EXISTS student_program;
-
-DROP TABLE IF EXISTS student_course;
-
-DROP TABLE IF EXISTS course_program;
-
-DROP TABLE IF EXISTS course_prerequisite;
-
-DROP TABLE IF EXISTS course_modality;
+DROP TABLE IF EXISTS tuition_modality_course;
 
 DROP TABLE IF EXISTS tuition_speaker;
 
-DROP TABLE IF EXISTS tuition_modality_course;
+DROP TABLE IF EXISTS course_modality;
+
+DROP TABLE IF EXISTS course_prerequisite;
+
+DROP TABLE IF EXISTS course_program;
+
+DROP TABLE IF EXISTS student_course;
+
+DROP TABLE IF EXISTS student_program;
+
+DROP TABLE IF EXISTS event;
+
+DROP TABLE IF EXISTS tuition;
+
+DROP TABLE IF EXISTS modality;
+
+DROP TABLE IF EXISTS enrollment_process;
+
+DROP TABLE IF EXISTS program;
+
+DROP TABLE IF EXISTS course;
+
+DROP TABLE IF EXISTS speaker;
+
+DROP TABLE IF EXISTS student;
+
+DROP TABLE IF EXISTS installation;
+
+DROP TABLE IF EXISTS account_user;
+
+DROP TABLE IF EXISTS student_group;
 
 -- +goose StatementEnd

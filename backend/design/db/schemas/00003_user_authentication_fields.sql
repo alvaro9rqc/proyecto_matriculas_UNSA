@@ -1,10 +1,5 @@
 -- +goose Up
 -- +goose StatementBegin
-/*
-1. Agrega nuevos campos para oauth y corrige el uso de student_group_id
-2. Agrega la clave foránea a provider id
-3. Añade student_group_id a la tabla correcta
-*/
 ALTER TABLE account_user
 DROP CONSTRAINT IF EXISTS account_user_attendee_group_id_fkey,
 DROP COLUMN IF EXISTS attendee_group_id,
