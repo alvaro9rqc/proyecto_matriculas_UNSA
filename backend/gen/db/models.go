@@ -14,34 +14,10 @@ type AccountUser struct {
 	FirstName       string
 	RemainingNames  pgtype.Text
 	LastNames       string
+	StudentGroupID  pgtype.Int2
 	ProviderUserID  pgtype.Text
 	ProfilePicture  pgtype.Text
 	OauthProviderID pgtype.Int2
-}
-
-type Attendee struct {
-	ID              int32
-	Code            string
-	AccountUserID   int32
-	AttendeeGroupID int16
-}
-
-type AttendeeCourse struct {
-	AttendeeID int32
-	CourseID   int32
-	Attemps    int16
-	Passed     bool
-}
-
-type AttendeeGroup struct {
-	ID       int16
-	Name     string
-	Priority int16
-}
-
-type AttendeeProgram struct {
-	AttendeeID int32
-	ProgramID  int32
 }
 
 type AuthProvider struct {
@@ -110,6 +86,31 @@ type Program struct {
 type Speaker struct {
 	ID            int32
 	AccountUserID int32
+}
+
+type Student struct {
+	ID             int32
+	Code           string
+	AccountUserID  int32
+	StudentGroupID int16
+}
+
+type StudentCourse struct {
+	StudentID int32
+	CourseID  int32
+	Attemps   int16
+	Passed    bool
+}
+
+type StudentGroup struct {
+	ID       int16
+	Name     string
+	Priority int16
+}
+
+type StudentProgram struct {
+	StudentID int32
+	ProgramID int32
 }
 
 type Tuition struct {
