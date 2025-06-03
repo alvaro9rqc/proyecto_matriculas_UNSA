@@ -5,23 +5,22 @@ import SubtitlePage from '@/modules/core/ui/SubtitlePage.astro';
 import TitlePage from '@/modules/core/ui/TitlePage.astro';
 import Button from '@/modules/landing/ui/Button.astro';
 ---
-<GridPageLayout title="Iniciar proceso de matrícula">
+
+<GridPageLayout title="Datos de alumnos y estudiantes">
   <LogoExtended class="col-span-2 self-end justify-self-center row-auto" size="xl" />
   <div class="flex flex-col gap-4">
-    <TitlePage>Estás a un paso de iniciar tu proceso de matrícula</TitlePage>
+    <TitlePage>Tu proceso se ha iniciado</TitlePage>
     <SubtitlePage>
-      Al continuar aceptas que:
-      <ul class="list-inside list-disc">
-        <li>
-          Deseas iniciar un proceso de matrícula
-        </li>
-        <li>
-          Requieres información sobre el pago a realizar
-        </li>
-      </ul>
+      Necesitamos los datos de los estudiantes y cursos. Por favor, descarga el formato, completálo y súbelo. Podrás modificar los datos en la aplicación luego.
     </SubtitlePage>
   </div>
-  <Button class="place-self-center">
-    Aceptar y continuar
-  </Button>
+
+  <div class="flex flex-col gap-y-4 place-self-center items-center">
+    <Button>
+      Descargar formato
+    </Button>
+    <Button as="a" href="/matricula/admin/proceso/subir-constancia">
+      Subir datos
+    </Button>
+  </div>
 </GridPageLayout>
