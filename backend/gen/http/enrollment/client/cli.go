@@ -23,7 +23,7 @@ func BuildEnrollPayload(enrollmentEnrollBody string) (*enrollment.EnrollmentPayl
 	{
 		err = json.Unmarshal([]byte(enrollmentEnrollBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"attendee_id\": 973980986,\n      \"course_id\": 429573902,\n      \"passed\": true\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"attendee_id\": 778384593,\n      \"course_id\": 795706758,\n      \"passed\": true\n   }'")
 		}
 	}
 	v := &enrollment.EnrollmentPayload{
@@ -43,7 +43,7 @@ func BuildUpdateEnrollmentPayload(enrollmentUpdateEnrollmentBody string) (*enrol
 	{
 		err = json.Unmarshal([]byte(enrollmentUpdateEnrollmentBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"attendee_id\": 108527587,\n      \"course_id\": 999067554,\n      \"passed\": false\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"attendee_id\": 480923202,\n      \"course_id\": 1669339732,\n      \"passed\": true\n   }'")
 		}
 	}
 	v := &enrollment.UpdateEnrollmentPayload{

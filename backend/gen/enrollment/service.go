@@ -13,20 +13,20 @@ import (
 	goa "goa.design/goa/v3/pkg"
 )
 
-// Gestión de inscripción de asistentes en cursos
+// Manages attendee enrollment in courses
 type Service interface {
-	// Inscribir un asistente en un curso
+	// Enroll an attendee in a course
 	Enroll(context.Context, *EnrollmentPayload) (err error)
-	// Actualizar el estado de una inscripción
+	// Update the enrollment status of an attendee in a course
 	UpdateEnrollment(context.Context, *UpdateEnrollmentPayload) (err error)
-	// Eliminar una inscripción de un asistente en un curso
+	// Delete an attendee's enrollment from a course
 	DeleteEnrollment(context.Context, *DeleteEnrollmentPayload) (err error)
-	// Listar usuarios inscritos en un curso
+	// List enrolled users for a specific course
 	ListEnrolledUsers(context.Context, *ListEnrolledUsersPayload) (res []*EnrolledUser, err error)
 }
 
 // APIName is the name of the API as defined in the design.
-const APIName = "enrollment"
+const APIName = "course"
 
 // APIVersion is the version of the API as defined in the design.
 const APIVersion = "0.0.1"
@@ -44,46 +44,50 @@ var MethodNames = [4]string{"enroll", "update_enrollment", "delete_enrollment", 
 // DeleteEnrollmentPayload is the payload type of the enrollment service
 // delete_enrollment method.
 type DeleteEnrollmentPayload struct {
-	// ID del asistente
+	// Attendee ID
 	AttendeeID int32
-	// ID del curso
+	// Course ID
 	CourseID int32
 }
 
-// Datos de usuario inscrito
+// Details of a user enrolled in a course
 type EnrolledUser struct {
-	FirstName      string
+	// First name of the user
+	FirstName string
+	// Remaining names (middle names) of the user
 	RemainingNames *string
-	LastNames      string
-	Email          string
+	// Last names of the user
+	LastNames string
+	// Email address
+	Email string
 }
 
 // EnrollmentPayload is the payload type of the enrollment service enroll
 // method.
 type EnrollmentPayload struct {
-	// ID del asistente
+	// Attendee ID
 	AttendeeID int32
-	// ID del curso
+	// Course ID
 	CourseID int32
-	// Si el curso fue aprobado
+	// Whether the attendee passed the course
 	Passed bool
 }
 
 // ListEnrolledUsersPayload is the payload type of the enrollment service
 // list_enrolled_users method.
 type ListEnrolledUsersPayload struct {
-	// ID del curso
+	// Course ID
 	CourseID int32
 }
 
 // UpdateEnrollmentPayload is the payload type of the enrollment service
 // update_enrollment method.
 type UpdateEnrollmentPayload struct {
-	// ID del asistente
+	// Attendee ID
 	AttendeeID int32
-	// ID del curso
+	// Course ID
 	CourseID int32
-	// Nuevo estado aprobado
+	// New passed status
 	Passed bool
 }
 

@@ -33,8 +33,8 @@ func NewClient(enroll, updateEnrollment, deleteEnrollment, listEnrolledUsers goa
 
 // Enroll calls the "enroll" endpoint of the "enrollment" service.
 // Enroll may return the following errors:
-//   - "not_found" (type *goa.ServiceError): No se encontró el recurso
-//   - "bad_request" (type *goa.ServiceError): Petición inválida
+//   - "not_found" (type *goa.ServiceError): The resource was not found
+//   - "bad_request" (type *goa.ServiceError): Invalid request
 //   - error: internal error
 func (c *Client) Enroll(ctx context.Context, p *EnrollmentPayload) (err error) {
 	_, err = c.EnrollEndpoint(ctx, p)
@@ -44,8 +44,8 @@ func (c *Client) Enroll(ctx context.Context, p *EnrollmentPayload) (err error) {
 // UpdateEnrollment calls the "update_enrollment" endpoint of the "enrollment"
 // service.
 // UpdateEnrollment may return the following errors:
-//   - "not_found" (type *goa.ServiceError): No se encontró el recurso
-//   - "bad_request" (type *goa.ServiceError): Petición inválida
+//   - "not_found" (type *goa.ServiceError): The resource was not found
+//   - "bad_request" (type *goa.ServiceError): Invalid request
 //   - error: internal error
 func (c *Client) UpdateEnrollment(ctx context.Context, p *UpdateEnrollmentPayload) (err error) {
 	_, err = c.UpdateEnrollmentEndpoint(ctx, p)
@@ -55,8 +55,8 @@ func (c *Client) UpdateEnrollment(ctx context.Context, p *UpdateEnrollmentPayloa
 // DeleteEnrollment calls the "delete_enrollment" endpoint of the "enrollment"
 // service.
 // DeleteEnrollment may return the following errors:
-//   - "not_found" (type *goa.ServiceError): No se encontró el recurso
-//   - "bad_request" (type *goa.ServiceError): Petición inválida
+//   - "not_found" (type *goa.ServiceError): The resource was not found
+//   - "bad_request" (type *goa.ServiceError): Invalid request
 //   - error: internal error
 func (c *Client) DeleteEnrollment(ctx context.Context, p *DeleteEnrollmentPayload) (err error) {
 	_, err = c.DeleteEnrollmentEndpoint(ctx, p)
@@ -67,7 +67,7 @@ func (c *Client) DeleteEnrollment(ctx context.Context, p *DeleteEnrollmentPayloa
 // "enrollment" service.
 // ListEnrolledUsers may return the following errors:
 //   - "not_found" (type *goa.ServiceError)
-//   - "bad_request" (type *goa.ServiceError): Petición inválida
+//   - "bad_request" (type *goa.ServiceError): Invalid request
 //   - error: internal error
 func (c *Client) ListEnrolledUsers(ctx context.Context, p *ListEnrolledUsersPayload) (res []*EnrolledUser, err error) {
 	var ires any

@@ -15,22 +15,22 @@ import (
 // EnrollRequestBody is the type of the "enrollment" service "enroll" endpoint
 // HTTP request body.
 type EnrollRequestBody struct {
-	// ID del asistente
+	// Attendee ID
 	AttendeeID int32 `form:"attendee_id" json:"attendee_id" xml:"attendee_id"`
-	// ID del curso
+	// Course ID
 	CourseID int32 `form:"course_id" json:"course_id" xml:"course_id"`
-	// Si el curso fue aprobado
+	// Whether the attendee passed the course
 	Passed bool `form:"passed" json:"passed" xml:"passed"`
 }
 
 // UpdateEnrollmentRequestBody is the type of the "enrollment" service
 // "update_enrollment" endpoint HTTP request body.
 type UpdateEnrollmentRequestBody struct {
-	// ID del asistente
+	// Attendee ID
 	AttendeeID int32 `form:"attendee_id" json:"attendee_id" xml:"attendee_id"`
-	// ID del curso
+	// Course ID
 	CourseID int32 `form:"course_id" json:"course_id" xml:"course_id"`
-	// Nuevo estado aprobado
+	// New passed status
 	Passed bool `form:"passed" json:"passed" xml:"passed"`
 }
 
@@ -113,10 +113,14 @@ type ListEnrolledUsersNotFoundResponseBody struct {
 
 // EnrolledUserResponse is used to define fields on response body types.
 type EnrolledUserResponse struct {
-	FirstName      *string `form:"first_name,omitempty" json:"first_name,omitempty" xml:"first_name,omitempty"`
+	// First name of the user
+	FirstName *string `form:"first_name,omitempty" json:"first_name,omitempty" xml:"first_name,omitempty"`
+	// Remaining names (middle names) of the user
 	RemainingNames *string `form:"remaining_names,omitempty" json:"remaining_names,omitempty" xml:"remaining_names,omitempty"`
-	LastNames      *string `form:"last_names,omitempty" json:"last_names,omitempty" xml:"last_names,omitempty"`
-	Email          *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
+	// Last names of the user
+	LastNames *string `form:"last_names,omitempty" json:"last_names,omitempty" xml:"last_names,omitempty"`
+	// Email address
+	Email *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
 }
 
 // NewEnrollRequestBody builds the HTTP request body from the payload of the
