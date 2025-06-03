@@ -5,11 +5,11 @@ import (
 )
 
 // Oauth provider recognized by the system. eg: Google, GitHub, etc.
-var OAuthProvider = Type("OAuthProvider", func () {
+var OAuthProvider = Type("OAuthProvider", func() {
 	Description("registered provider in th system")
 	Attribute("id", Int, "unique identifier", func() {
 		Minimum(1)
-		Example("1")
+		Example(1)
 	})
 	Attribute("name", String, "Intern provider name", func() {
 		MinLength(2)
@@ -24,9 +24,9 @@ var OAuthProvider = Type("OAuthProvider", func () {
 
 var UserOauthInfo = Type("UserOauthInfo", func() {
 	Description("User information via Oauth")
-	Attribute("oauth_provider_id", Int, "ID of the provider used",func() {
+	Attribute("oauth_provider_id", Int, "ID of the provider used", func() {
 		Minimum(1)
-		Example("1")
+		Example(1)
 	})
 	Attribute("provider_user_id", String, "Access token given by the provider", func() {
 		MinLength(10)
