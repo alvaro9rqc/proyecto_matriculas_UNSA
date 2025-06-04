@@ -12,7 +12,6 @@ import (
 	"errors"
 	"io"
 	"net/http"
-	"strconv"
 
 	enrollment "github.com/enrollment/gen/enrollment"
 	goahttp "goa.design/goa/v3/http"
@@ -67,6 +66,19 @@ func EncodeEnrollError(encoder func(context.Context, http.ResponseWriter) goahtt
 			return encodeError(ctx, w, v)
 		}
 		switch en.GoaErrorName() {
+		case "un_authorized":
+			var res *goa.ServiceError
+			errors.As(v, &res)
+			enc := encoder(ctx, w)
+			var body any
+			if formatter != nil {
+				body = formatter(ctx, res)
+			} else {
+				body = NewEnrollUnAuthorizedResponseBody(res)
+			}
+			w.Header().Set("goa-error", res.GoaErrorName())
+			w.WriteHeader(http.StatusUnauthorized)
+			return enc.Encode(body)
 		case "bad_request":
 			var res *goa.ServiceError
 			errors.As(v, &res)
@@ -86,189 +98,21 @@ func EncodeEnrollError(encoder func(context.Context, http.ResponseWriter) goahtt
 	}
 }
 
-// EncodeUpdateEnrollmentResponse returns an encoder for responses returned by
-// the enrollment update_enrollment endpoint.
-func EncodeUpdateEnrollmentResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, any) error {
+// EncodeGetEnrollmentCoursesResponse returns an encoder for responses returned
+// by the enrollment get_enrollment_courses endpoint.
+func EncodeGetEnrollmentCoursesResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, any) error {
 	return func(ctx context.Context, w http.ResponseWriter, v any) error {
-		w.WriteHeader(http.StatusOK)
-		return nil
-	}
-}
-
-// DecodeUpdateEnrollmentRequest returns a decoder for requests sent to the
-// enrollment update_enrollment endpoint.
-func DecodeUpdateEnrollmentRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (any, error) {
-	return func(r *http.Request) (any, error) {
-		var (
-			body UpdateEnrollmentRequestBody
-			err  error
-		)
-		err = decoder(r).Decode(&body)
-		if err != nil {
-			if err == io.EOF {
-				return nil, goa.MissingPayloadError()
-			}
-			var gerr *goa.ServiceError
-			if errors.As(err, &gerr) {
-				return nil, gerr
-			}
-			return nil, goa.DecodePayloadError(err.Error())
-		}
-		err = ValidateUpdateEnrollmentRequestBody(&body)
-		if err != nil {
-			return nil, err
-		}
-		payload := NewUpdateEnrollmentPayload(&body)
-
-		return payload, nil
-	}
-}
-
-// EncodeUpdateEnrollmentError returns an encoder for errors returned by the
-// update_enrollment enrollment endpoint.
-func EncodeUpdateEnrollmentError(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder, formatter func(ctx context.Context, err error) goahttp.Statuser) func(context.Context, http.ResponseWriter, error) error {
-	encodeError := goahttp.ErrorEncoder(encoder, formatter)
-	return func(ctx context.Context, w http.ResponseWriter, v error) error {
-		var en goa.GoaErrorNamer
-		if !errors.As(v, &en) {
-			return encodeError(ctx, w, v)
-		}
-		switch en.GoaErrorName() {
-		case "not_found":
-			var res *goa.ServiceError
-			errors.As(v, &res)
-			enc := encoder(ctx, w)
-			var body any
-			if formatter != nil {
-				body = formatter(ctx, res)
-			} else {
-				body = NewUpdateEnrollmentNotFoundResponseBody(res)
-			}
-			w.Header().Set("goa-error", res.GoaErrorName())
-			w.WriteHeader(http.StatusNotFound)
-			return enc.Encode(body)
-		default:
-			return encodeError(ctx, w, v)
-		}
-	}
-}
-
-// EncodeDeleteEnrollmentResponse returns an encoder for responses returned by
-// the enrollment delete_enrollment endpoint.
-func EncodeDeleteEnrollmentResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, any) error {
-	return func(ctx context.Context, w http.ResponseWriter, v any) error {
-		w.WriteHeader(http.StatusNoContent)
-		return nil
-	}
-}
-
-// DecodeDeleteEnrollmentRequest returns a decoder for requests sent to the
-// enrollment delete_enrollment endpoint.
-func DecodeDeleteEnrollmentRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (any, error) {
-	return func(r *http.Request) (any, error) {
-		var (
-			attendeeID int32
-			courseID   int32
-			err        error
-
-			params = mux.Vars(r)
-		)
-		{
-			attendeeIDRaw := params["attendee_id"]
-			v, err2 := strconv.ParseInt(attendeeIDRaw, 10, 32)
-			if err2 != nil {
-				err = goa.MergeErrors(err, goa.InvalidFieldTypeError("attendee_id", attendeeIDRaw, "integer"))
-			}
-			attendeeID = int32(v)
-		}
-		{
-			courseIDRaw := params["course_id"]
-			v, err2 := strconv.ParseInt(courseIDRaw, 10, 32)
-			if err2 != nil {
-				err = goa.MergeErrors(err, goa.InvalidFieldTypeError("course_id", courseIDRaw, "integer"))
-			}
-			courseID = int32(v)
-		}
-		if err != nil {
-			return nil, err
-		}
-		payload := NewDeleteEnrollmentPayload(attendeeID, courseID)
-
-		return payload, nil
-	}
-}
-
-// EncodeDeleteEnrollmentError returns an encoder for errors returned by the
-// delete_enrollment enrollment endpoint.
-func EncodeDeleteEnrollmentError(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder, formatter func(ctx context.Context, err error) goahttp.Statuser) func(context.Context, http.ResponseWriter, error) error {
-	encodeError := goahttp.ErrorEncoder(encoder, formatter)
-	return func(ctx context.Context, w http.ResponseWriter, v error) error {
-		var en goa.GoaErrorNamer
-		if !errors.As(v, &en) {
-			return encodeError(ctx, w, v)
-		}
-		switch en.GoaErrorName() {
-		case "not_found":
-			var res *goa.ServiceError
-			errors.As(v, &res)
-			enc := encoder(ctx, w)
-			var body any
-			if formatter != nil {
-				body = formatter(ctx, res)
-			} else {
-				body = NewDeleteEnrollmentNotFoundResponseBody(res)
-			}
-			w.Header().Set("goa-error", res.GoaErrorName())
-			w.WriteHeader(http.StatusNotFound)
-			return enc.Encode(body)
-		default:
-			return encodeError(ctx, w, v)
-		}
-	}
-}
-
-// EncodeListEnrolledUsersResponse returns an encoder for responses returned by
-// the enrollment list_enrolled_users endpoint.
-func EncodeListEnrolledUsersResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, any) error {
-	return func(ctx context.Context, w http.ResponseWriter, v any) error {
-		res, _ := v.([]*enrollment.EnrolledUser)
+		res, _ := v.(*enrollment.EnrollmentPayload)
 		enc := encoder(ctx, w)
-		body := NewListEnrolledUsersResponseBody(res)
+		body := NewGetEnrollmentCoursesResponseBody(res)
 		w.WriteHeader(http.StatusOK)
 		return enc.Encode(body)
 	}
 }
 
-// DecodeListEnrolledUsersRequest returns a decoder for requests sent to the
-// enrollment list_enrolled_users endpoint.
-func DecodeListEnrolledUsersRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (any, error) {
-	return func(r *http.Request) (any, error) {
-		var (
-			courseID int32
-			err      error
-
-			params = mux.Vars(r)
-		)
-		{
-			courseIDRaw := params["course_id"]
-			v, err2 := strconv.ParseInt(courseIDRaw, 10, 32)
-			if err2 != nil {
-				err = goa.MergeErrors(err, goa.InvalidFieldTypeError("course_id", courseIDRaw, "integer"))
-			}
-			courseID = int32(v)
-		}
-		if err != nil {
-			return nil, err
-		}
-		payload := NewListEnrolledUsersPayload(courseID)
-
-		return payload, nil
-	}
-}
-
-// EncodeListEnrolledUsersError returns an encoder for errors returned by the
-// list_enrolled_users enrollment endpoint.
-func EncodeListEnrolledUsersError(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder, formatter func(ctx context.Context, err error) goahttp.Statuser) func(context.Context, http.ResponseWriter, error) error {
+// EncodeGetEnrollmentCoursesError returns an encoder for errors returned by
+// the get_enrollment_courses enrollment endpoint.
+func EncodeGetEnrollmentCoursesError(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder, formatter func(ctx context.Context, err error) goahttp.Statuser) func(context.Context, http.ResponseWriter, error) error {
 	encodeError := goahttp.ErrorEncoder(encoder, formatter)
 	return func(ctx context.Context, w http.ResponseWriter, v error) error {
 		var en goa.GoaErrorNamer
@@ -276,7 +120,7 @@ func EncodeListEnrolledUsersError(encoder func(context.Context, http.ResponseWri
 			return encodeError(ctx, w, v)
 		}
 		switch en.GoaErrorName() {
-		case "not_found":
+		case "un_authorized":
 			var res *goa.ServiceError
 			errors.As(v, &res)
 			enc := encoder(ctx, w)
@@ -284,10 +128,23 @@ func EncodeListEnrolledUsersError(encoder func(context.Context, http.ResponseWri
 			if formatter != nil {
 				body = formatter(ctx, res)
 			} else {
-				body = NewListEnrolledUsersNotFoundResponseBody(res)
+				body = NewGetEnrollmentCoursesUnAuthorizedResponseBody(res)
 			}
 			w.Header().Set("goa-error", res.GoaErrorName())
-			w.WriteHeader(http.StatusNotFound)
+			w.WriteHeader(http.StatusUnauthorized)
+			return enc.Encode(body)
+		case "bad_request":
+			var res *goa.ServiceError
+			errors.As(v, &res)
+			enc := encoder(ctx, w)
+			var body any
+			if formatter != nil {
+				body = formatter(ctx, res)
+			} else {
+				body = NewGetEnrollmentCoursesBadRequestResponseBody(res)
+			}
+			w.Header().Set("goa-error", res.GoaErrorName())
+			w.WriteHeader(http.StatusBadRequest)
 			return enc.Encode(body)
 		default:
 			return encodeError(ctx, w, v)
@@ -295,14 +152,27 @@ func EncodeListEnrolledUsersError(encoder func(context.Context, http.ResponseWri
 	}
 }
 
-// marshalEnrollmentEnrolledUserToEnrolledUserResponse builds a value of type
-// *EnrolledUserResponse from a value of type *enrollment.EnrolledUser.
-func marshalEnrollmentEnrolledUserToEnrolledUserResponse(v *enrollment.EnrolledUser) *EnrolledUserResponse {
-	res := &EnrolledUserResponse{
-		FirstName:      v.FirstName,
-		RemainingNames: v.RemainingNames,
-		LastNames:      v.LastNames,
-		Email:          v.Email,
+// unmarshalEnrollCourseTypeRequestBodyToEnrollmentEnrollCourseType builds a
+// value of type *enrollment.EnrollCourseType from a value of type
+// *EnrollCourseTypeRequestBody.
+func unmarshalEnrollCourseTypeRequestBodyToEnrollmentEnrollCourseType(v *EnrollCourseTypeRequestBody) *enrollment.EnrollCourseType {
+	res := &enrollment.EnrollCourseType{
+		ID:        *v.ID,
+		CourseID:  *v.CourseID,
+		ProgramID: *v.ProgramID,
+	}
+
+	return res
+}
+
+// marshalEnrollmentEnrollCourseTypeToEnrollCourseTypeResponseBody builds a
+// value of type *EnrollCourseTypeResponseBody from a value of type
+// *enrollment.EnrollCourseType.
+func marshalEnrollmentEnrollCourseTypeToEnrollCourseTypeResponseBody(v *enrollment.EnrollCourseType) *EnrollCourseTypeResponseBody {
+	res := &EnrollCourseTypeResponseBody{
+		ID:        v.ID,
+		CourseID:  v.CourseID,
+		ProgramID: v.ProgramID,
 	}
 
 	return res

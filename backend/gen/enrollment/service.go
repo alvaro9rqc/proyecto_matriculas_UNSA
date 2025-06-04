@@ -15,14 +15,10 @@ import (
 
 // Manages attendee enrollment in courses
 type Service interface {
-	// Enroll an attendee in a course
+	// Enroll an student in selected courses
 	Enroll(context.Context, *EnrollmentPayload) (err error)
-	// Update the enrollment status of an attendee in a course
-	UpdateEnrollment(context.Context, *UpdateEnrollmentPayload) (err error)
-	// Delete an attendee's enrollment from a course
-	DeleteEnrollment(context.Context, *DeleteEnrollmentPayload) (err error)
-	// List enrolled users for a specific course
-	ListEnrolledUsers(context.Context, *ListEnrolledUsersPayload) (res []*EnrolledUser, err error)
+	// Get all courses enrolled by an attendee
+	GetEnrollmentCourses(context.Context) (res *EnrollmentPayload, err error)
 }
 
 // APIName is the name of the API as defined in the design.
@@ -39,56 +35,23 @@ const ServiceName = "enrollment"
 // MethodNames lists the service method names as defined in the design. These
 // are the same values that are set in the endpoint request contexts under the
 // MethodKey key.
-var MethodNames = [4]string{"enroll", "update_enrollment", "delete_enrollment", "list_enrolled_users"}
+var MethodNames = [2]string{"enroll", "get_enrollment_courses"}
 
-// DeleteEnrollmentPayload is the payload type of the enrollment service
-// delete_enrollment method.
-type DeleteEnrollmentPayload struct {
-	// Attendee ID
-	AttendeeID int32
+// Represents a course enrollment
+type EnrollCourseType struct {
+	// Enrollment ID
+	ID int32
 	// Course ID
 	CourseID int32
-}
-
-// Details of a user enrolled in a course
-type EnrolledUser struct {
-	// First name of the user
-	FirstName string
-	// Remaining names (middle names) of the user
-	RemainingNames *string
-	// Last names of the user
-	LastNames string
-	// Email address
-	Email string
+	// Program ID
+	ProgramID int32
 }
 
 // EnrollmentPayload is the payload type of the enrollment service enroll
 // method.
 type EnrollmentPayload struct {
 	// Attendee ID
-	AttendeeID int32
-	// Course ID
-	CourseID int32
-	// Whether the attendee passed the course
-	Passed bool
-}
-
-// ListEnrolledUsersPayload is the payload type of the enrollment service
-// list_enrolled_users method.
-type ListEnrolledUsersPayload struct {
-	// Course ID
-	CourseID int32
-}
-
-// UpdateEnrollmentPayload is the payload type of the enrollment service
-// update_enrollment method.
-type UpdateEnrollmentPayload struct {
-	// Attendee ID
-	AttendeeID int32
-	// Course ID
-	CourseID int32
-	// New passed status
-	Passed bool
+	EnrollCourses []*EnrollCourseType
 }
 
 // MakeNotFound builds a goa.ServiceError from an error.
@@ -99,4 +62,9 @@ func MakeNotFound(err error) *goa.ServiceError {
 // MakeBadRequest builds a goa.ServiceError from an error.
 func MakeBadRequest(err error) *goa.ServiceError {
 	return goa.NewServiceError(err, "bad_request", false, false, false)
+}
+
+// MakeUnAuthorized builds a goa.ServiceError from an error.
+func MakeUnAuthorized(err error) *goa.ServiceError {
+	return goa.NewServiceError(err, "un_authorized", false, false, false)
 }

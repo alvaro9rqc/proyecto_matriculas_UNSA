@@ -62,11 +62,8 @@ type EnrollmentProcess struct {
 
 type Event struct {
 	ID             int32
-	StartDay       pgtype.Date
-	EndDay         pgtype.Date
-	StartTime      pgtype.Time
-	EndTime        pgtype.Time
-	Weekday        int16
+	StartDate      pgtype.Timestamp
+	EndDate        pgtype.Timestamp
 	TuitionID      pgtype.Int4
 	InstallationID pgtype.Int4
 }

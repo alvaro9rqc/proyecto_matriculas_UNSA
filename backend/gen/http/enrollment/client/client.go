@@ -20,17 +20,9 @@ type Client struct {
 	// Enroll Doer is the HTTP client used to make requests to the enroll endpoint.
 	EnrollDoer goahttp.Doer
 
-	// UpdateEnrollment Doer is the HTTP client used to make requests to the
-	// update_enrollment endpoint.
-	UpdateEnrollmentDoer goahttp.Doer
-
-	// DeleteEnrollment Doer is the HTTP client used to make requests to the
-	// delete_enrollment endpoint.
-	DeleteEnrollmentDoer goahttp.Doer
-
-	// ListEnrolledUsers Doer is the HTTP client used to make requests to the
-	// list_enrolled_users endpoint.
-	ListEnrolledUsersDoer goahttp.Doer
+	// GetEnrollmentCourses Doer is the HTTP client used to make requests to the
+	// get_enrollment_courses endpoint.
+	GetEnrollmentCoursesDoer goahttp.Doer
 
 	// RestoreResponseBody controls whether the response bodies are reset after
 	// decoding so they can be read again.
@@ -52,15 +44,13 @@ func NewClient(
 	restoreBody bool,
 ) *Client {
 	return &Client{
-		EnrollDoer:            doer,
-		UpdateEnrollmentDoer:  doer,
-		DeleteEnrollmentDoer:  doer,
-		ListEnrolledUsersDoer: doer,
-		RestoreResponseBody:   restoreBody,
-		scheme:                scheme,
-		host:                  host,
-		decoder:               dec,
-		encoder:               enc,
+		EnrollDoer:               doer,
+		GetEnrollmentCoursesDoer: doer,
+		RestoreResponseBody:      restoreBody,
+		scheme:                   scheme,
+		host:                     host,
+		decoder:                  dec,
+		encoder:                  enc,
 	}
 }
 
@@ -88,63 +78,20 @@ func (c *Client) Enroll() goa.Endpoint {
 	}
 }
 
-// UpdateEnrollment returns an endpoint that makes HTTP requests to the
-// enrollment service update_enrollment server.
-func (c *Client) UpdateEnrollment() goa.Endpoint {
+// GetEnrollmentCourses returns an endpoint that makes HTTP requests to the
+// enrollment service get_enrollment_courses server.
+func (c *Client) GetEnrollmentCourses() goa.Endpoint {
 	var (
-		encodeRequest  = EncodeUpdateEnrollmentRequest(c.encoder)
-		decodeResponse = DecodeUpdateEnrollmentResponse(c.decoder, c.RestoreResponseBody)
+		decodeResponse = DecodeGetEnrollmentCoursesResponse(c.decoder, c.RestoreResponseBody)
 	)
 	return func(ctx context.Context, v any) (any, error) {
-		req, err := c.BuildUpdateEnrollmentRequest(ctx, v)
+		req, err := c.BuildGetEnrollmentCoursesRequest(ctx, v)
 		if err != nil {
 			return nil, err
 		}
-		err = encodeRequest(req, v)
+		resp, err := c.GetEnrollmentCoursesDoer.Do(req)
 		if err != nil {
-			return nil, err
-		}
-		resp, err := c.UpdateEnrollmentDoer.Do(req)
-		if err != nil {
-			return nil, goahttp.ErrRequestError("enrollment", "update_enrollment", err)
-		}
-		return decodeResponse(resp)
-	}
-}
-
-// DeleteEnrollment returns an endpoint that makes HTTP requests to the
-// enrollment service delete_enrollment server.
-func (c *Client) DeleteEnrollment() goa.Endpoint {
-	var (
-		decodeResponse = DecodeDeleteEnrollmentResponse(c.decoder, c.RestoreResponseBody)
-	)
-	return func(ctx context.Context, v any) (any, error) {
-		req, err := c.BuildDeleteEnrollmentRequest(ctx, v)
-		if err != nil {
-			return nil, err
-		}
-		resp, err := c.DeleteEnrollmentDoer.Do(req)
-		if err != nil {
-			return nil, goahttp.ErrRequestError("enrollment", "delete_enrollment", err)
-		}
-		return decodeResponse(resp)
-	}
-}
-
-// ListEnrolledUsers returns an endpoint that makes HTTP requests to the
-// enrollment service list_enrolled_users server.
-func (c *Client) ListEnrolledUsers() goa.Endpoint {
-	var (
-		decodeResponse = DecodeListEnrolledUsersResponse(c.decoder, c.RestoreResponseBody)
-	)
-	return func(ctx context.Context, v any) (any, error) {
-		req, err := c.BuildListEnrolledUsersRequest(ctx, v)
-		if err != nil {
-			return nil, err
-		}
-		resp, err := c.ListEnrolledUsersDoer.Do(req)
-		if err != nil {
-			return nil, goahttp.ErrRequestError("enrollment", "list_enrolled_users", err)
+			return nil, goahttp.ErrRequestError("enrollment", "get_enrollment_courses", err)
 		}
 		return decodeResponse(resp)
 	}

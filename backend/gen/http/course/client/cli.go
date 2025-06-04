@@ -60,7 +60,7 @@ func BuildGetAllCoursesPayload(courseGetAllCoursesBody string) (*course.GetAllCo
 	{
 		err = json.Unmarshal([]byte(courseGetAllCoursesBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"limit\": 3466669028225860434,\n      \"page\": 1330338610430196549\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"limit\": 8763346776882884684,\n      \"page\": 651642441213013619\n   }'")
 		}
 		if body.Page < 1 {
 			err = goa.MergeErrors(err, goa.InvalidRangeError("body.page", body.Page, 1, true))

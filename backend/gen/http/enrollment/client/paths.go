@@ -7,26 +7,12 @@
 
 package client
 
-import (
-	"fmt"
-)
-
 // EnrollEnrollmentPath returns the URL path to the enrollment service enroll HTTP endpoint.
 func EnrollEnrollmentPath() string {
-	return "/enrollment"
+	return "/enrollment/enroll"
 }
 
-// UpdateEnrollmentEnrollmentPath returns the URL path to the enrollment service update_enrollment HTTP endpoint.
-func UpdateEnrollmentEnrollmentPath() string {
-	return "/enrollment"
-}
-
-// DeleteEnrollmentEnrollmentPath returns the URL path to the enrollment service delete_enrollment HTTP endpoint.
-func DeleteEnrollmentEnrollmentPath(attendeeID int32, courseID int32) string {
-	return fmt.Sprintf("/enrollment/%v/%v", attendeeID, courseID)
-}
-
-// ListEnrolledUsersEnrollmentPath returns the URL path to the enrollment service list_enrolled_users HTTP endpoint.
-func ListEnrolledUsersEnrollmentPath(courseID int32) string {
-	return fmt.Sprintf("/enrollment/course/%v/users", courseID)
+// GetEnrollmentCoursesEnrollmentPath returns the URL path to the enrollment service get_enrollment_courses HTTP endpoint.
+func GetEnrollmentCoursesEnrollmentPath() string {
+	return "/enrollment/enrollement_courses"
 }
