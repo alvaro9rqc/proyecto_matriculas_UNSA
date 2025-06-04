@@ -1,6 +1,0 @@
-psql -U alvaro9rqc -d ips_1 <<EOF
-BEGIN;
-\i src/schema.sql
-ROLLBACK;
-EOF
-

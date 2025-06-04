@@ -1,6 +1,6 @@
 -- name: CreateStudentGroup :exec
 INSERT INTO student_group (
-  name, priority
+  name, priority, start_day, end_day
 ) VALUES (
-  $1, $2
+  $1, $2, $3, $4
 );

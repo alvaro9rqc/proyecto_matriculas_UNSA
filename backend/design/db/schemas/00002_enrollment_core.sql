@@ -1,37 +1,11 @@
+-- +goose Up
+-- +goose StatementBegin
 CREATE TABLE student_group (
     id SMALLSERIAL PRIMARY KEY,
     name VARCHAR(30) NOT NULL,
     priority SMALLINT NOT NULL,
     start_day DATE NOT NULL,
     end_day DATE NOT NULL
-);
-
-CREATE TABLE oauth_provider (
-    id SMALLSERIAL PRIMARY KEY,
-    name VARCHAR(30) UNIQUE NOT NULL
-);
-
-CREATE TABLE account (
-    id SERIAL PRIMARY KEY,
-    email VARCHAR(50) NOT NULL UNIQUE,
-    name VARCHAR(50) NOT NULL,
-    surname VARCHAR(50),
-    avatar_url TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    oauth_provider_id SMALLINT NULL,
-    access_token TEXT,
-    refresh_token TEXT,
-    FOREIGN KEY (oauth_provider_id) REFERENCES oauth_provider(id) ON DELETE SET NULL
-);
-
-CREATE TABLE account_session(
-    id SERIAL PRIMARY KEY,
-    token TEXT,
-    expiration_date TIMESTAMPTZ,
-    user_agent TEXT,
-    ip_address TEXT,
-    account_id INTEGER,
-    FOREIGN KEY (account_id) REFERENCES account(id) ON DELETE CASCADE
 );
 
 CREATE TABLE installation (
@@ -55,7 +29,6 @@ CREATE TABLE speaker (
     FOREIGN KEY (account_id) REFERENCES account (id) ON DELETE CASCADE
 );
 
--- cicle_number is not requited, just
 CREATE TABLE course (
     id SERIAL PRIMARY KEY,
     name VARCHAR(128) NOT NULL,
@@ -82,11 +55,6 @@ CREATE TABLE enrollment_process (
     UNIQUE (program_id, year, cicle_type)
 );
 
-CREATE TABLE modality (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(40) UNIQUE NOT NULL
-);
-
 CREATE TABLE tuition (
     id SERIAL PRIMARY KEY,
     total_places INTEGER,
@@ -97,11 +65,8 @@ CREATE TABLE tuition (
 
 CREATE TABLE event (
     id SERIAL PRIMARY KEY,
-    start_day DATE NOT NULL,
-    end_day DATE NOT NULL,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    weekday SMALLINT NOT NULL,
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NOT NULL,
     tuition_id INTEGER,
     installation_id INTEGER,
     FOREIGN KEY (tuition_id) REFERENCES tuition (id) ON DELETE CASCADE,
@@ -143,6 +108,11 @@ CREATE TABLE course_prerequisite (
     CHECK (course_id <> prerequisite_id)
 );
 
+CREATE TABLE modality (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(40) UNIQUE NOT NULL
+);
+
 CREATE TABLE course_modality (
     course_id INTEGER,
     modality_id INTEGER,
@@ -170,3 +140,41 @@ CREATE TABLE tuition_modality_course (
     FOREIGN KEY (course_id) REFERENCES course (id) ON DELETE CASCADE
 );
 
+-- +goose StatementEnd
+-- +goose Down
+-- +goose StatementBegin
+DROP TABLE IF EXISTS tuition_modality_course;
+
+DROP TABLE IF EXISTS tuition_speaker;
+
+DROP TABLE IF EXISTS course_modality;
+
+DROP TABLE IF EXISTS course_prerequisite;
+
+DROP TABLE IF EXISTS course_program;
+
+DROP TABLE IF EXISTS student_course;
+
+DROP TABLE IF EXISTS student_program;
+
+DROP TABLE IF EXISTS event;
+
+DROP TABLE IF EXISTS tuition;
+
+DROP TABLE IF EXISTS enrollment_process;
+
+DROP TABLE IF EXISTS modality;
+
+DROP TABLE IF EXISTS program;
+
+DROP TABLE IF EXISTS course;
+
+DROP TABLE IF EXISTS speaker;
+
+DROP TABLE IF EXISTS student;
+
+DROP TABLE IF EXISTS installation;
+
+DROP TABLE IF EXISTS student_group;
+
+-- +goose StatementEnd
