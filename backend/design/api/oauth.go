@@ -4,7 +4,7 @@ import (
 	. "goa.design/goa/v3/dsl"
 )
 
-var OAuthProviderType = Type("OAuthProvider", func() {
+var OAuthProviderType = Type("OAuthProvider",String, func() {
     Description("OAuth provider options")
     Enum("google", "microsoft") // Or use variables if preferred
     Example("google")
