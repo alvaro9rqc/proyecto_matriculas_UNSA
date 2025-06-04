@@ -54,8 +54,4 @@ type AccountUser struct {
 	LastNames string
 	// User remaining names
 	RemainingNames string
-	// User attendee group name
-	AttendeeGroupName string
-	// User attendee group priority
-	AttendeeGroupPriority string
 }

@@ -65,11 +65,8 @@ CREATE TABLE tuition (
 
 CREATE TABLE event (
     id SERIAL PRIMARY KEY,
-    start_day DATE NOT NULL,
-    end_day DATE NOT NULL,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    weekday SMALLINT NOT NULL,
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NOT NULL,
     tuition_id INTEGER,
     installation_id INTEGER,
     FOREIGN KEY (tuition_id) REFERENCES tuition (id) ON DELETE CASCADE,

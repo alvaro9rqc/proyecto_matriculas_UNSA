@@ -26,7 +26,7 @@ import (
 //	command (subcommand1|subcommand2|...)
 func UsageCommands() string {
 	return `course (upload-all-courses|get-all-courses|get-user-available-courses)
-enrollment (enroll|update-enrollment|delete-enrollment|list-enrolled-users)
+enrollment (enroll|get-enrollment-courses)
 oauth login
 auth (me|google-login|google-logout|google-callback)
 `
@@ -59,13 +59,22 @@ func UsageExamples() string {
       ]
    }'` + "\n" +
 		os.Args[0] + ` enrollment enroll --body '{
-      "attendee_id": 480923202,
-      "course_id": 1669339732,
-      "passed": true
+      "enrollCourses": [
+         {
+            "course_id": 2072469154,
+            "id": 1959792023,
+            "program_id": 1795971965
+         },
+         {
+            "course_id": 2072469154,
+            "id": 1959792023,
+            "program_id": 1795971965
+         }
+      ]
    }'` + "\n" +
 		os.Args[0] + ` oauth login --body '{
-      "code": "90v",
-      "oauth_provider_id": 3028730909651000065
+      "code": "ryc",
+      "oauth_provider_id": 5959512667628956629
    }'` + "\n" +
 		os.Args[0] + ` auth me` + "\n" +
 		""
@@ -96,15 +105,7 @@ func ParseEndpoint(
 		enrollmentEnrollFlags    = flag.NewFlagSet("enroll", flag.ExitOnError)
 		enrollmentEnrollBodyFlag = enrollmentEnrollFlags.String("body", "REQUIRED", "")
 
-		enrollmentUpdateEnrollmentFlags    = flag.NewFlagSet("update-enrollment", flag.ExitOnError)
-		enrollmentUpdateEnrollmentBodyFlag = enrollmentUpdateEnrollmentFlags.String("body", "REQUIRED", "")
-
-		enrollmentDeleteEnrollmentFlags          = flag.NewFlagSet("delete-enrollment", flag.ExitOnError)
-		enrollmentDeleteEnrollmentAttendeeIDFlag = enrollmentDeleteEnrollmentFlags.String("attendee-id", "REQUIRED", "Attendee ID")
-		enrollmentDeleteEnrollmentCourseIDFlag   = enrollmentDeleteEnrollmentFlags.String("course-id", "REQUIRED", "Course ID")
-
-		enrollmentListEnrolledUsersFlags        = flag.NewFlagSet("list-enrolled-users", flag.ExitOnError)
-		enrollmentListEnrolledUsersCourseIDFlag = enrollmentListEnrolledUsersFlags.String("course-id", "REQUIRED", "Course ID")
+		enrollmentGetEnrollmentCoursesFlags = flag.NewFlagSet("get-enrollment-courses", flag.ExitOnError)
 
 		oauthFlags = flag.NewFlagSet("oauth", flag.ContinueOnError)
 
@@ -128,9 +129,7 @@ func ParseEndpoint(
 
 	enrollmentFlags.Usage = enrollmentUsage
 	enrollmentEnrollFlags.Usage = enrollmentEnrollUsage
-	enrollmentUpdateEnrollmentFlags.Usage = enrollmentUpdateEnrollmentUsage
-	enrollmentDeleteEnrollmentFlags.Usage = enrollmentDeleteEnrollmentUsage
-	enrollmentListEnrolledUsersFlags.Usage = enrollmentListEnrolledUsersUsage
+	enrollmentGetEnrollmentCoursesFlags.Usage = enrollmentGetEnrollmentCoursesUsage
 
 	oauthFlags.Usage = oauthUsage
 	oauthLoginFlags.Usage = oauthLoginUsage
@@ -197,14 +196,8 @@ func ParseEndpoint(
 			case "enroll":
 				epf = enrollmentEnrollFlags
 
-			case "update-enrollment":
-				epf = enrollmentUpdateEnrollmentFlags
-
-			case "delete-enrollment":
-				epf = enrollmentDeleteEnrollmentFlags
-
-			case "list-enrolled-users":
-				epf = enrollmentListEnrolledUsersFlags
+			case "get-enrollment-courses":
+				epf = enrollmentGetEnrollmentCoursesFlags
 
 			}
 
@@ -269,15 +262,8 @@ func ParseEndpoint(
 			case "enroll":
 				endpoint = c.Enroll()
 				data, err = enrollmentc.BuildEnrollPayload(*enrollmentEnrollBodyFlag)
-			case "update-enrollment":
-				endpoint = c.UpdateEnrollment()
-				data, err = enrollmentc.BuildUpdateEnrollmentPayload(*enrollmentUpdateEnrollmentBodyFlag)
-			case "delete-enrollment":
-				endpoint = c.DeleteEnrollment()
-				data, err = enrollmentc.BuildDeleteEnrollmentPayload(*enrollmentDeleteEnrollmentAttendeeIDFlag, *enrollmentDeleteEnrollmentCourseIDFlag)
-			case "list-enrolled-users":
-				endpoint = c.ListEnrolledUsers()
-				data, err = enrollmentc.BuildListEnrolledUsersPayload(*enrollmentListEnrolledUsersCourseIDFlag)
+			case "get-enrollment-courses":
+				endpoint = c.GetEnrollmentCourses()
 			}
 		case "oauth":
 			c := oauthc.NewClient(scheme, host, doer, enc, dec, restore)
@@ -364,8 +350,8 @@ Get all courses, only admin can use this method
 
 Example:
     %[1]s course get-all-courses --body '{
-      "limit": 3466669028225860434,
-      "page": 1330338610430196549
+      "limit": 8763346776882884684,
+      "page": 651642441213013619
    }'
 `, os.Args[0])
 }
@@ -388,10 +374,8 @@ Usage:
     %[1]s [globalflags] enrollment COMMAND [flags]
 
 COMMAND:
-    enroll: Enroll an attendee in a course
-    update-enrollment: Update the enrollment status of an attendee in a course
-    delete-enrollment: Delete an attendee's enrollment from a course
-    list-enrolled-users: List enrolled users for a specific course
+    enroll: Enroll an student in selected courses
+    get-enrollment-courses: Get all courses enrolled by an attendee
 
 Additional help:
     %[1]s enrollment COMMAND --help
@@ -400,53 +384,34 @@ Additional help:
 func enrollmentEnrollUsage() {
 	fmt.Fprintf(os.Stderr, `%[1]s [flags] enrollment enroll -body JSON
 
-Enroll an attendee in a course
+Enroll an student in selected courses
     -body JSON: 
 
 Example:
     %[1]s enrollment enroll --body '{
-      "attendee_id": 480923202,
-      "course_id": 1669339732,
-      "passed": true
+      "enrollCourses": [
+         {
+            "course_id": 2072469154,
+            "id": 1959792023,
+            "program_id": 1795971965
+         },
+         {
+            "course_id": 2072469154,
+            "id": 1959792023,
+            "program_id": 1795971965
+         }
+      ]
    }'
 `, os.Args[0])
 }
 
-func enrollmentUpdateEnrollmentUsage() {
-	fmt.Fprintf(os.Stderr, `%[1]s [flags] enrollment update-enrollment -body JSON
+func enrollmentGetEnrollmentCoursesUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] enrollment get-enrollment-courses
 
-Update the enrollment status of an attendee in a course
-    -body JSON: 
-
-Example:
-    %[1]s enrollment update-enrollment --body '{
-      "attendee_id": 222231779,
-      "course_id": 676456966,
-      "passed": true
-   }'
-`, os.Args[0])
-}
-
-func enrollmentDeleteEnrollmentUsage() {
-	fmt.Fprintf(os.Stderr, `%[1]s [flags] enrollment delete-enrollment -attendee-id INT32 -course-id INT32
-
-Delete an attendee's enrollment from a course
-    -attendee-id INT32: Attendee ID
-    -course-id INT32: Course ID
+Get all courses enrolled by an attendee
 
 Example:
-    %[1]s enrollment delete-enrollment --attendee-id 439431631 --course-id 400921235
-`, os.Args[0])
-}
-
-func enrollmentListEnrolledUsersUsage() {
-	fmt.Fprintf(os.Stderr, `%[1]s [flags] enrollment list-enrolled-users -course-id INT32
-
-List enrolled users for a specific course
-    -course-id INT32: Course ID
-
-Example:
-    %[1]s enrollment list-enrolled-users --course-id 213453439
+    %[1]s enrollment get-enrollment-courses
 `, os.Args[0])
 }
 
@@ -471,8 +436,8 @@ Login using OAuth with a specific provider
 
 Example:
     %[1]s oauth login --body '{
-      "code": "90v",
-      "oauth_provider_id": 3028730909651000065
+      "code": "ryc",
+      "oauth_provider_id": 5959512667628956629
    }'
 `, os.Args[0])
 }

@@ -24,23 +24,17 @@ type MeOKResponseBody struct {
 	LastNames string `form:"lastNames" json:"lastNames" xml:"lastNames"`
 	// User remaining names
 	RemainingNames string `form:"remainingNames" json:"remainingNames" xml:"remainingNames"`
-	// User attendee group name
-	AttendeeGroupName string `form:"attendeeGroupName" json:"attendeeGroupName" xml:"attendeeGroupName"`
-	// User attendee group priority
-	AttendeeGroupPriority string `form:"attendeeGroupPriority" json:"attendeeGroupPriority" xml:"attendeeGroupPriority"`
 }
 
 // NewMeOKResponseBody builds the HTTP response body from the result of the
 // "Me" endpoint of the "Auth" service.
 func NewMeOKResponseBody(res *auth.AccountUser) *MeOKResponseBody {
 	body := &MeOKResponseBody{
-		ID:                    res.ID,
-		Email:                 res.Email,
-		FirstName:             res.FirstName,
-		LastNames:             res.LastNames,
-		RemainingNames:        res.RemainingNames,
-		AttendeeGroupName:     res.AttendeeGroupName,
-		AttendeeGroupPriority: res.AttendeeGroupPriority,
+		ID:             res.ID,
+		Email:          res.Email,
+		FirstName:      res.FirstName,
+		LastNames:      res.LastNames,
+		RemainingNames: res.RemainingNames,
 	}
 	return body
 }

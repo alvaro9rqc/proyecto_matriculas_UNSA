@@ -15,28 +15,22 @@ import (
 
 // Endpoints wraps the "enrollment" service endpoints.
 type Endpoints struct {
-	Enroll            goa.Endpoint
-	UpdateEnrollment  goa.Endpoint
-	DeleteEnrollment  goa.Endpoint
-	ListEnrolledUsers goa.Endpoint
+	Enroll               goa.Endpoint
+	GetEnrollmentCourses goa.Endpoint
 }
 
 // NewEndpoints wraps the methods of the "enrollment" service with endpoints.
 func NewEndpoints(s Service) *Endpoints {
 	return &Endpoints{
-		Enroll:            NewEnrollEndpoint(s),
-		UpdateEnrollment:  NewUpdateEnrollmentEndpoint(s),
-		DeleteEnrollment:  NewDeleteEnrollmentEndpoint(s),
-		ListEnrolledUsers: NewListEnrolledUsersEndpoint(s),
+		Enroll:               NewEnrollEndpoint(s),
+		GetEnrollmentCourses: NewGetEnrollmentCoursesEndpoint(s),
 	}
 }
 
 // Use applies the given middleware to all the "enrollment" service endpoints.
 func (e *Endpoints) Use(m func(goa.Endpoint) goa.Endpoint) {
 	e.Enroll = m(e.Enroll)
-	e.UpdateEnrollment = m(e.UpdateEnrollment)
-	e.DeleteEnrollment = m(e.DeleteEnrollment)
-	e.ListEnrolledUsers = m(e.ListEnrolledUsers)
+	e.GetEnrollmentCourses = m(e.GetEnrollmentCourses)
 }
 
 // NewEnrollEndpoint returns an endpoint function that calls the method
@@ -48,29 +42,10 @@ func NewEnrollEndpoint(s Service) goa.Endpoint {
 	}
 }
 
-// NewUpdateEnrollmentEndpoint returns an endpoint function that calls the
-// method "update_enrollment" of service "enrollment".
-func NewUpdateEnrollmentEndpoint(s Service) goa.Endpoint {
+// NewGetEnrollmentCoursesEndpoint returns an endpoint function that calls the
+// method "get_enrollment_courses" of service "enrollment".
+func NewGetEnrollmentCoursesEndpoint(s Service) goa.Endpoint {
 	return func(ctx context.Context, req any) (any, error) {
-		p := req.(*UpdateEnrollmentPayload)
-		return nil, s.UpdateEnrollment(ctx, p)
-	}
-}
-
-// NewDeleteEnrollmentEndpoint returns an endpoint function that calls the
-// method "delete_enrollment" of service "enrollment".
-func NewDeleteEnrollmentEndpoint(s Service) goa.Endpoint {
-	return func(ctx context.Context, req any) (any, error) {
-		p := req.(*DeleteEnrollmentPayload)
-		return nil, s.DeleteEnrollment(ctx, p)
-	}
-}
-
-// NewListEnrolledUsersEndpoint returns an endpoint function that calls the
-// method "list_enrolled_users" of service "enrollment".
-func NewListEnrolledUsersEndpoint(s Service) goa.Endpoint {
-	return func(ctx context.Context, req any) (any, error) {
-		p := req.(*ListEnrolledUsersPayload)
-		return s.ListEnrolledUsers(ctx, p)
+		return s.GetEnrollmentCourses(ctx)
 	}
 }

@@ -24,7 +24,7 @@ func BuildLoginPayload(oauthLoginBody string) (*oauth.LoginPayload, error) {
 	{
 		err = json.Unmarshal([]byte(oauthLoginBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"code\": \"90v\",\n      \"oauth_provider_id\": 3028730909651000065\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"code\": \"ryc\",\n      \"oauth_provider_id\": 5959512667628956629\n   }'")
 		}
 		if body.OauthProviderID < 1 {
 			err = goa.MergeErrors(err, goa.InvalidRangeError("body.oauth_provider_id", body.OauthProviderID, 1, true))

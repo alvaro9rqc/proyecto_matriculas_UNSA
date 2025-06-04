@@ -18,11 +18,9 @@ import (
 
 // Server lists the enrollment service endpoint HTTP handlers.
 type Server struct {
-	Mounts            []*MountPoint
-	Enroll            http.Handler
-	UpdateEnrollment  http.Handler
-	DeleteEnrollment  http.Handler
-	ListEnrolledUsers http.Handler
+	Mounts               []*MountPoint
+	Enroll               http.Handler
+	GetEnrollmentCourses http.Handler
 }
 
 // MountPoint holds information about the mounted endpoints.
@@ -52,15 +50,11 @@ func New(
 ) *Server {
 	return &Server{
 		Mounts: []*MountPoint{
-			{"Enroll", "POST", "/enrollment"},
-			{"UpdateEnrollment", "PUT", "/enrollment"},
-			{"DeleteEnrollment", "DELETE", "/enrollment/{attendee_id}/{course_id}"},
-			{"ListEnrolledUsers", "GET", "/enrollment/course/{course_id}/users"},
+			{"Enroll", "POST", "/enrollment/enroll"},
+			{"GetEnrollmentCourses", "POST", "/enrollment/enrollement_courses"},
 		},
-		Enroll:            NewEnrollHandler(e.Enroll, mux, decoder, encoder, errhandler, formatter),
-		UpdateEnrollment:  NewUpdateEnrollmentHandler(e.UpdateEnrollment, mux, decoder, encoder, errhandler, formatter),
-		DeleteEnrollment:  NewDeleteEnrollmentHandler(e.DeleteEnrollment, mux, decoder, encoder, errhandler, formatter),
-		ListEnrolledUsers: NewListEnrolledUsersHandler(e.ListEnrolledUsers, mux, decoder, encoder, errhandler, formatter),
+		Enroll:               NewEnrollHandler(e.Enroll, mux, decoder, encoder, errhandler, formatter),
+		GetEnrollmentCourses: NewGetEnrollmentCoursesHandler(e.GetEnrollmentCourses, mux, decoder, encoder, errhandler, formatter),
 	}
 }
 
@@ -70,9 +64,7 @@ func (s *Server) Service() string { return "enrollment" }
 // Use wraps the server handlers with the given middleware.
 func (s *Server) Use(m func(http.Handler) http.Handler) {
 	s.Enroll = m(s.Enroll)
-	s.UpdateEnrollment = m(s.UpdateEnrollment)
-	s.DeleteEnrollment = m(s.DeleteEnrollment)
-	s.ListEnrolledUsers = m(s.ListEnrolledUsers)
+	s.GetEnrollmentCourses = m(s.GetEnrollmentCourses)
 }
 
 // MethodNames returns the methods served.
@@ -81,9 +73,7 @@ func (s *Server) MethodNames() []string { return enrollment.MethodNames[:] }
 // Mount configures the mux to serve the enrollment endpoints.
 func Mount(mux goahttp.Muxer, h *Server) {
 	MountEnrollHandler(mux, h.Enroll)
-	MountUpdateEnrollmentHandler(mux, h.UpdateEnrollment)
-	MountDeleteEnrollmentHandler(mux, h.DeleteEnrollment)
-	MountListEnrolledUsersHandler(mux, h.ListEnrolledUsers)
+	MountGetEnrollmentCoursesHandler(mux, h.GetEnrollmentCourses)
 }
 
 // Mount configures the mux to serve the enrollment endpoints.
@@ -100,7 +90,7 @@ func MountEnrollHandler(mux goahttp.Muxer, h http.Handler) {
 			h.ServeHTTP(w, r)
 		}
 	}
-	mux.Handle("POST", "/enrollment", f)
+	mux.Handle("POST", "/enrollment/enroll", f)
 }
 
 // NewEnrollHandler creates a HTTP handler which loads the HTTP request and
@@ -142,21 +132,21 @@ func NewEnrollHandler(
 	})
 }
 
-// MountUpdateEnrollmentHandler configures the mux to serve the "enrollment"
-// service "update_enrollment" endpoint.
-func MountUpdateEnrollmentHandler(mux goahttp.Muxer, h http.Handler) {
+// MountGetEnrollmentCoursesHandler configures the mux to serve the
+// "enrollment" service "get_enrollment_courses" endpoint.
+func MountGetEnrollmentCoursesHandler(mux goahttp.Muxer, h http.Handler) {
 	f, ok := h.(http.HandlerFunc)
 	if !ok {
 		f = func(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}
-	mux.Handle("PUT", "/enrollment", f)
+	mux.Handle("POST", "/enrollment/enrollement_courses", f)
 }
 
-// NewUpdateEnrollmentHandler creates a HTTP handler which loads the HTTP
-// request and calls the "enrollment" service "update_enrollment" endpoint.
-func NewUpdateEnrollmentHandler(
+// NewGetEnrollmentCoursesHandler creates a HTTP handler which loads the HTTP
+// request and calls the "enrollment" service "get_enrollment_courses" endpoint.
+func NewGetEnrollmentCoursesHandler(
 	endpoint goa.Endpoint,
 	mux goahttp.Muxer,
 	decoder func(*http.Request) goahttp.Decoder,
@@ -165,124 +155,15 @@ func NewUpdateEnrollmentHandler(
 	formatter func(ctx context.Context, err error) goahttp.Statuser,
 ) http.Handler {
 	var (
-		decodeRequest  = DecodeUpdateEnrollmentRequest(mux, decoder)
-		encodeResponse = EncodeUpdateEnrollmentResponse(encoder)
-		encodeError    = EncodeUpdateEnrollmentError(encoder, formatter)
+		encodeResponse = EncodeGetEnrollmentCoursesResponse(encoder)
+		encodeError    = EncodeGetEnrollmentCoursesError(encoder, formatter)
 	)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
-		ctx = context.WithValue(ctx, goa.MethodKey, "update_enrollment")
+		ctx = context.WithValue(ctx, goa.MethodKey, "get_enrollment_courses")
 		ctx = context.WithValue(ctx, goa.ServiceKey, "enrollment")
-		payload, err := decodeRequest(r)
-		if err != nil {
-			if err := encodeError(ctx, w, err); err != nil {
-				errhandler(ctx, w, err)
-			}
-			return
-		}
-		res, err := endpoint(ctx, payload)
-		if err != nil {
-			if err := encodeError(ctx, w, err); err != nil {
-				errhandler(ctx, w, err)
-			}
-			return
-		}
-		if err := encodeResponse(ctx, w, res); err != nil {
-			errhandler(ctx, w, err)
-		}
-	})
-}
-
-// MountDeleteEnrollmentHandler configures the mux to serve the "enrollment"
-// service "delete_enrollment" endpoint.
-func MountDeleteEnrollmentHandler(mux goahttp.Muxer, h http.Handler) {
-	f, ok := h.(http.HandlerFunc)
-	if !ok {
-		f = func(w http.ResponseWriter, r *http.Request) {
-			h.ServeHTTP(w, r)
-		}
-	}
-	mux.Handle("DELETE", "/enrollment/{attendee_id}/{course_id}", f)
-}
-
-// NewDeleteEnrollmentHandler creates a HTTP handler which loads the HTTP
-// request and calls the "enrollment" service "delete_enrollment" endpoint.
-func NewDeleteEnrollmentHandler(
-	endpoint goa.Endpoint,
-	mux goahttp.Muxer,
-	decoder func(*http.Request) goahttp.Decoder,
-	encoder func(context.Context, http.ResponseWriter) goahttp.Encoder,
-	errhandler func(context.Context, http.ResponseWriter, error),
-	formatter func(ctx context.Context, err error) goahttp.Statuser,
-) http.Handler {
-	var (
-		decodeRequest  = DecodeDeleteEnrollmentRequest(mux, decoder)
-		encodeResponse = EncodeDeleteEnrollmentResponse(encoder)
-		encodeError    = EncodeDeleteEnrollmentError(encoder, formatter)
-	)
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
-		ctx = context.WithValue(ctx, goa.MethodKey, "delete_enrollment")
-		ctx = context.WithValue(ctx, goa.ServiceKey, "enrollment")
-		payload, err := decodeRequest(r)
-		if err != nil {
-			if err := encodeError(ctx, w, err); err != nil {
-				errhandler(ctx, w, err)
-			}
-			return
-		}
-		res, err := endpoint(ctx, payload)
-		if err != nil {
-			if err := encodeError(ctx, w, err); err != nil {
-				errhandler(ctx, w, err)
-			}
-			return
-		}
-		if err := encodeResponse(ctx, w, res); err != nil {
-			errhandler(ctx, w, err)
-		}
-	})
-}
-
-// MountListEnrolledUsersHandler configures the mux to serve the "enrollment"
-// service "list_enrolled_users" endpoint.
-func MountListEnrolledUsersHandler(mux goahttp.Muxer, h http.Handler) {
-	f, ok := h.(http.HandlerFunc)
-	if !ok {
-		f = func(w http.ResponseWriter, r *http.Request) {
-			h.ServeHTTP(w, r)
-		}
-	}
-	mux.Handle("GET", "/enrollment/course/{course_id}/users", f)
-}
-
-// NewListEnrolledUsersHandler creates a HTTP handler which loads the HTTP
-// request and calls the "enrollment" service "list_enrolled_users" endpoint.
-func NewListEnrolledUsersHandler(
-	endpoint goa.Endpoint,
-	mux goahttp.Muxer,
-	decoder func(*http.Request) goahttp.Decoder,
-	encoder func(context.Context, http.ResponseWriter) goahttp.Encoder,
-	errhandler func(context.Context, http.ResponseWriter, error),
-	formatter func(ctx context.Context, err error) goahttp.Statuser,
-) http.Handler {
-	var (
-		decodeRequest  = DecodeListEnrolledUsersRequest(mux, decoder)
-		encodeResponse = EncodeListEnrolledUsersResponse(encoder)
-		encodeError    = EncodeListEnrolledUsersError(encoder, formatter)
-	)
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
-		ctx = context.WithValue(ctx, goa.MethodKey, "list_enrolled_users")
-		ctx = context.WithValue(ctx, goa.ServiceKey, "enrollment")
-		payload, err := decodeRequest(r)
-		if err != nil {
-			if err := encodeError(ctx, w, err); err != nil {
-				errhandler(ctx, w, err)
-			}
-			return
-		}
-		res, err := endpoint(ctx, payload)
+		var err error
+		res, err := endpoint(ctx, nil)
 		if err != nil {
 			if err := encodeError(ctx, w, err); err != nil {
 				errhandler(ctx, w, err)

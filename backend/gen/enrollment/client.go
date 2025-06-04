@@ -15,19 +15,15 @@ import (
 
 // Client is the "enrollment" service client.
 type Client struct {
-	EnrollEndpoint            goa.Endpoint
-	UpdateEnrollmentEndpoint  goa.Endpoint
-	DeleteEnrollmentEndpoint  goa.Endpoint
-	ListEnrolledUsersEndpoint goa.Endpoint
+	EnrollEndpoint               goa.Endpoint
+	GetEnrollmentCoursesEndpoint goa.Endpoint
 }
 
 // NewClient initializes a "enrollment" service client given the endpoints.
-func NewClient(enroll, updateEnrollment, deleteEnrollment, listEnrolledUsers goa.Endpoint) *Client {
+func NewClient(enroll, getEnrollmentCourses goa.Endpoint) *Client {
 	return &Client{
-		EnrollEndpoint:            enroll,
-		UpdateEnrollmentEndpoint:  updateEnrollment,
-		DeleteEnrollmentEndpoint:  deleteEnrollment,
-		ListEnrolledUsersEndpoint: listEnrolledUsers,
+		EnrollEndpoint:               enroll,
+		GetEnrollmentCoursesEndpoint: getEnrollmentCourses,
 	}
 }
 
@@ -35,45 +31,25 @@ func NewClient(enroll, updateEnrollment, deleteEnrollment, listEnrolledUsers goa
 // Enroll may return the following errors:
 //   - "not_found" (type *goa.ServiceError): The resource was not found
 //   - "bad_request" (type *goa.ServiceError): Invalid request
+//   - "un_authorized" (type *goa.ServiceError): Unauthorized access
 //   - error: internal error
 func (c *Client) Enroll(ctx context.Context, p *EnrollmentPayload) (err error) {
 	_, err = c.EnrollEndpoint(ctx, p)
 	return
 }
 
-// UpdateEnrollment calls the "update_enrollment" endpoint of the "enrollment"
-// service.
-// UpdateEnrollment may return the following errors:
-//   - "not_found" (type *goa.ServiceError): The resource was not found
-//   - "bad_request" (type *goa.ServiceError): Invalid request
-//   - error: internal error
-func (c *Client) UpdateEnrollment(ctx context.Context, p *UpdateEnrollmentPayload) (err error) {
-	_, err = c.UpdateEnrollmentEndpoint(ctx, p)
-	return
-}
-
-// DeleteEnrollment calls the "delete_enrollment" endpoint of the "enrollment"
-// service.
-// DeleteEnrollment may return the following errors:
-//   - "not_found" (type *goa.ServiceError): The resource was not found
-//   - "bad_request" (type *goa.ServiceError): Invalid request
-//   - error: internal error
-func (c *Client) DeleteEnrollment(ctx context.Context, p *DeleteEnrollmentPayload) (err error) {
-	_, err = c.DeleteEnrollmentEndpoint(ctx, p)
-	return
-}
-
-// ListEnrolledUsers calls the "list_enrolled_users" endpoint of the
+// GetEnrollmentCourses calls the "get_enrollment_courses" endpoint of the
 // "enrollment" service.
-// ListEnrolledUsers may return the following errors:
-//   - "not_found" (type *goa.ServiceError)
+// GetEnrollmentCourses may return the following errors:
+//   - "not_found" (type *goa.ServiceError): The resource was not found
 //   - "bad_request" (type *goa.ServiceError): Invalid request
+//   - "un_authorized" (type *goa.ServiceError): Unauthorized access
 //   - error: internal error
-func (c *Client) ListEnrolledUsers(ctx context.Context, p *ListEnrolledUsersPayload) (res []*EnrolledUser, err error) {
+func (c *Client) GetEnrollmentCourses(ctx context.Context) (res *EnrollmentPayload, err error) {
 	var ires any
-	ires, err = c.ListEnrolledUsersEndpoint(ctx, p)
+	ires, err = c.GetEnrollmentCoursesEndpoint(ctx, nil)
 	if err != nil {
 		return
 	}
-	return ires.([]*EnrolledUser), nil
+	return ires.(*EnrollmentPayload), nil
 }
