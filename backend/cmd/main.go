@@ -18,9 +18,14 @@ import (
 	controllers "github.com/enrollment/src/controllers"
 	"goa.design/clue/debug"
 	"goa.design/clue/log"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file")
+	}
 	// Define command line flags, add any other flag required to configure the
 	// service.
 	var (
