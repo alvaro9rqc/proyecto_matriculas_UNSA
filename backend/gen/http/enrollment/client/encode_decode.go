@@ -16,7 +16,6 @@ import (
 
 	enrollment "github.com/enrollment/gen/enrollment"
 	goahttp "goa.design/goa/v3/http"
-	goa "goa.design/goa/v3/pkg"
 )
 
 // BuildEnrollRequest instantiates a HTTP request object with method and path
@@ -54,6 +53,7 @@ func EncodeEnrollRequest(encoder func(*http.Request) goahttp.Encoder) func(*http
 // enrollment enroll endpoint. restoreBody controls whether the response body
 // should be restored after having been read.
 // DecodeEnrollResponse may return the following errors:
+//   - "un_authorized" (type *goa.ServiceError): http.StatusUnauthorized
 //   - "bad_request" (type *goa.ServiceError): http.StatusBadRequest
 //   - error: internal error
 func DecodeEnrollResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
@@ -73,6 +73,20 @@ func DecodeEnrollResponse(decoder func(*http.Response) goahttp.Decoder, restoreB
 		switch resp.StatusCode {
 		case http.StatusCreated:
 			return nil, nil
+		case http.StatusUnauthorized:
+			var (
+				body EnrollUnAuthorizedResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("enrollment", "enroll", err)
+			}
+			err = ValidateEnrollUnAuthorizedResponseBody(&body)
+			if err != nil {
+				return nil, goahttp.ErrValidationError("enrollment", "enroll", err)
+			}
+			return nil, NewEnrollUnAuthorized(&body)
 		case http.StatusBadRequest:
 			var (
 				body EnrollBadRequestResponseBody
@@ -94,13 +108,14 @@ func DecodeEnrollResponse(decoder func(*http.Response) goahttp.Decoder, restoreB
 	}
 }
 
-// BuildUpdateEnrollmentRequest instantiates a HTTP request object with method
-// and path set to call the "enrollment" service "update_enrollment" endpoint
-func (c *Client) BuildUpdateEnrollmentRequest(ctx context.Context, v any) (*http.Request, error) {
-	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: UpdateEnrollmentEnrollmentPath()}
-	req, err := http.NewRequest("PUT", u.String(), nil)
+// BuildGetEnrollmentCoursesRequest instantiates a HTTP request object with
+// method and path set to call the "enrollment" service
+// "get_enrollment_courses" endpoint
+func (c *Client) BuildGetEnrollmentCoursesRequest(ctx context.Context, v any) (*http.Request, error) {
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: GetEnrollmentCoursesEnrollmentPath()}
+	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
-		return nil, goahttp.ErrInvalidURL("enrollment", "update_enrollment", u.String(), err)
+		return nil, goahttp.ErrInvalidURL("enrollment", "get_enrollment_courses", u.String(), err)
 	}
 	if ctx != nil {
 		req = req.WithContext(ctx)
@@ -109,169 +124,14 @@ func (c *Client) BuildUpdateEnrollmentRequest(ctx context.Context, v any) (*http
 	return req, nil
 }
 
-// EncodeUpdateEnrollmentRequest returns an encoder for requests sent to the
-// enrollment update_enrollment server.
-func EncodeUpdateEnrollmentRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, any) error {
-	return func(req *http.Request, v any) error {
-		p, ok := v.(*enrollment.UpdateEnrollmentPayload)
-		if !ok {
-			return goahttp.ErrInvalidType("enrollment", "update_enrollment", "*enrollment.UpdateEnrollmentPayload", v)
-		}
-		body := NewUpdateEnrollmentRequestBody(p)
-		if err := encoder(req).Encode(&body); err != nil {
-			return goahttp.ErrEncodingError("enrollment", "update_enrollment", err)
-		}
-		return nil
-	}
-}
-
-// DecodeUpdateEnrollmentResponse returns a decoder for responses returned by
-// the enrollment update_enrollment endpoint. restoreBody controls whether the
-// response body should be restored after having been read.
-// DecodeUpdateEnrollmentResponse may return the following errors:
-//   - "not_found" (type *goa.ServiceError): http.StatusNotFound
+// DecodeGetEnrollmentCoursesResponse returns a decoder for responses returned
+// by the enrollment get_enrollment_courses endpoint. restoreBody controls
+// whether the response body should be restored after having been read.
+// DecodeGetEnrollmentCoursesResponse may return the following errors:
+//   - "un_authorized" (type *goa.ServiceError): http.StatusUnauthorized
+//   - "bad_request" (type *goa.ServiceError): http.StatusBadRequest
 //   - error: internal error
-func DecodeUpdateEnrollmentResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
-	return func(resp *http.Response) (any, error) {
-		if restoreBody {
-			b, err := io.ReadAll(resp.Body)
-			if err != nil {
-				return nil, err
-			}
-			resp.Body = io.NopCloser(bytes.NewBuffer(b))
-			defer func() {
-				resp.Body = io.NopCloser(bytes.NewBuffer(b))
-			}()
-		} else {
-			defer resp.Body.Close()
-		}
-		switch resp.StatusCode {
-		case http.StatusOK:
-			return nil, nil
-		case http.StatusNotFound:
-			var (
-				body UpdateEnrollmentNotFoundResponseBody
-				err  error
-			)
-			err = decoder(resp).Decode(&body)
-			if err != nil {
-				return nil, goahttp.ErrDecodingError("enrollment", "update_enrollment", err)
-			}
-			err = ValidateUpdateEnrollmentNotFoundResponseBody(&body)
-			if err != nil {
-				return nil, goahttp.ErrValidationError("enrollment", "update_enrollment", err)
-			}
-			return nil, NewUpdateEnrollmentNotFound(&body)
-		default:
-			body, _ := io.ReadAll(resp.Body)
-			return nil, goahttp.ErrInvalidResponse("enrollment", "update_enrollment", resp.StatusCode, string(body))
-		}
-	}
-}
-
-// BuildDeleteEnrollmentRequest instantiates a HTTP request object with method
-// and path set to call the "enrollment" service "delete_enrollment" endpoint
-func (c *Client) BuildDeleteEnrollmentRequest(ctx context.Context, v any) (*http.Request, error) {
-	var (
-		attendeeID int32
-		courseID   int32
-	)
-	{
-		p, ok := v.(*enrollment.DeleteEnrollmentPayload)
-		if !ok {
-			return nil, goahttp.ErrInvalidType("enrollment", "delete_enrollment", "*enrollment.DeleteEnrollmentPayload", v)
-		}
-		attendeeID = p.AttendeeID
-		courseID = p.CourseID
-	}
-	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: DeleteEnrollmentEnrollmentPath(attendeeID, courseID)}
-	req, err := http.NewRequest("DELETE", u.String(), nil)
-	if err != nil {
-		return nil, goahttp.ErrInvalidURL("enrollment", "delete_enrollment", u.String(), err)
-	}
-	if ctx != nil {
-		req = req.WithContext(ctx)
-	}
-
-	return req, nil
-}
-
-// DecodeDeleteEnrollmentResponse returns a decoder for responses returned by
-// the enrollment delete_enrollment endpoint. restoreBody controls whether the
-// response body should be restored after having been read.
-// DecodeDeleteEnrollmentResponse may return the following errors:
-//   - "not_found" (type *goa.ServiceError): http.StatusNotFound
-//   - error: internal error
-func DecodeDeleteEnrollmentResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
-	return func(resp *http.Response) (any, error) {
-		if restoreBody {
-			b, err := io.ReadAll(resp.Body)
-			if err != nil {
-				return nil, err
-			}
-			resp.Body = io.NopCloser(bytes.NewBuffer(b))
-			defer func() {
-				resp.Body = io.NopCloser(bytes.NewBuffer(b))
-			}()
-		} else {
-			defer resp.Body.Close()
-		}
-		switch resp.StatusCode {
-		case http.StatusNoContent:
-			return nil, nil
-		case http.StatusNotFound:
-			var (
-				body DeleteEnrollmentNotFoundResponseBody
-				err  error
-			)
-			err = decoder(resp).Decode(&body)
-			if err != nil {
-				return nil, goahttp.ErrDecodingError("enrollment", "delete_enrollment", err)
-			}
-			err = ValidateDeleteEnrollmentNotFoundResponseBody(&body)
-			if err != nil {
-				return nil, goahttp.ErrValidationError("enrollment", "delete_enrollment", err)
-			}
-			return nil, NewDeleteEnrollmentNotFound(&body)
-		default:
-			body, _ := io.ReadAll(resp.Body)
-			return nil, goahttp.ErrInvalidResponse("enrollment", "delete_enrollment", resp.StatusCode, string(body))
-		}
-	}
-}
-
-// BuildListEnrolledUsersRequest instantiates a HTTP request object with method
-// and path set to call the "enrollment" service "list_enrolled_users" endpoint
-func (c *Client) BuildListEnrolledUsersRequest(ctx context.Context, v any) (*http.Request, error) {
-	var (
-		courseID int32
-	)
-	{
-		p, ok := v.(*enrollment.ListEnrolledUsersPayload)
-		if !ok {
-			return nil, goahttp.ErrInvalidType("enrollment", "list_enrolled_users", "*enrollment.ListEnrolledUsersPayload", v)
-		}
-		courseID = p.CourseID
-	}
-	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: ListEnrolledUsersEnrollmentPath(courseID)}
-	req, err := http.NewRequest("GET", u.String(), nil)
-	if err != nil {
-		return nil, goahttp.ErrInvalidURL("enrollment", "list_enrolled_users", u.String(), err)
-	}
-	if ctx != nil {
-		req = req.WithContext(ctx)
-	}
-
-	return req, nil
-}
-
-// DecodeListEnrolledUsersResponse returns a decoder for responses returned by
-// the enrollment list_enrolled_users endpoint. restoreBody controls whether
-// the response body should be restored after having been read.
-// DecodeListEnrolledUsersResponse may return the following errors:
-//   - "not_found" (type *goa.ServiceError): http.StatusNotFound
-//   - error: internal error
-func DecodeListEnrolledUsersResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
+func DecodeGetEnrollmentCoursesResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
 	return func(resp *http.Response) (any, error) {
 		if restoreBody {
 			b, err := io.ReadAll(resp.Body)
@@ -288,54 +148,88 @@ func DecodeListEnrolledUsersResponse(decoder func(*http.Response) goahttp.Decode
 		switch resp.StatusCode {
 		case http.StatusOK:
 			var (
-				body ListEnrolledUsersResponseBody
+				body GetEnrollmentCoursesResponseBody
 				err  error
 			)
 			err = decoder(resp).Decode(&body)
 			if err != nil {
-				return nil, goahttp.ErrDecodingError("enrollment", "list_enrolled_users", err)
+				return nil, goahttp.ErrDecodingError("enrollment", "get_enrollment_courses", err)
 			}
-			for _, e := range body {
-				if e != nil {
-					if err2 := ValidateEnrolledUserResponse(e); err2 != nil {
-						err = goa.MergeErrors(err, err2)
-					}
-				}
-			}
+			err = ValidateGetEnrollmentCoursesResponseBody(&body)
 			if err != nil {
-				return nil, goahttp.ErrValidationError("enrollment", "list_enrolled_users", err)
+				return nil, goahttp.ErrValidationError("enrollment", "get_enrollment_courses", err)
 			}
-			res := NewListEnrolledUsersEnrolledUserOK(body)
+			res := NewGetEnrollmentCoursesEnrollmentPayloadOK(&body)
 			return res, nil
-		case http.StatusNotFound:
+		case http.StatusUnauthorized:
 			var (
-				body ListEnrolledUsersNotFoundResponseBody
+				body GetEnrollmentCoursesUnAuthorizedResponseBody
 				err  error
 			)
 			err = decoder(resp).Decode(&body)
 			if err != nil {
-				return nil, goahttp.ErrDecodingError("enrollment", "list_enrolled_users", err)
+				return nil, goahttp.ErrDecodingError("enrollment", "get_enrollment_courses", err)
 			}
-			err = ValidateListEnrolledUsersNotFoundResponseBody(&body)
+			err = ValidateGetEnrollmentCoursesUnAuthorizedResponseBody(&body)
 			if err != nil {
-				return nil, goahttp.ErrValidationError("enrollment", "list_enrolled_users", err)
+				return nil, goahttp.ErrValidationError("enrollment", "get_enrollment_courses", err)
 			}
-			return nil, NewListEnrolledUsersNotFound(&body)
+			return nil, NewGetEnrollmentCoursesUnAuthorized(&body)
+		case http.StatusBadRequest:
+			var (
+				body GetEnrollmentCoursesBadRequestResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("enrollment", "get_enrollment_courses", err)
+			}
+			err = ValidateGetEnrollmentCoursesBadRequestResponseBody(&body)
+			if err != nil {
+				return nil, goahttp.ErrValidationError("enrollment", "get_enrollment_courses", err)
+			}
+			return nil, NewGetEnrollmentCoursesBadRequest(&body)
 		default:
 			body, _ := io.ReadAll(resp.Body)
-			return nil, goahttp.ErrInvalidResponse("enrollment", "list_enrolled_users", resp.StatusCode, string(body))
+			return nil, goahttp.ErrInvalidResponse("enrollment", "get_enrollment_courses", resp.StatusCode, string(body))
 		}
 	}
 }
 
-// unmarshalEnrolledUserResponseToEnrollmentEnrolledUser builds a value of type
-// *enrollment.EnrolledUser from a value of type *EnrolledUserResponse.
-func unmarshalEnrolledUserResponseToEnrollmentEnrolledUser(v *EnrolledUserResponse) *enrollment.EnrolledUser {
-	res := &enrollment.EnrolledUser{
-		FirstName:      *v.FirstName,
-		RemainingNames: v.RemainingNames,
-		LastNames:      *v.LastNames,
-		Email:          *v.Email,
+// marshalEnrollmentEnrollCourseTypeToEnrollCourseTypeRequestBody builds a
+// value of type *EnrollCourseTypeRequestBody from a value of type
+// *enrollment.EnrollCourseType.
+func marshalEnrollmentEnrollCourseTypeToEnrollCourseTypeRequestBody(v *enrollment.EnrollCourseType) *EnrollCourseTypeRequestBody {
+	res := &EnrollCourseTypeRequestBody{
+		ID:        v.ID,
+		CourseID:  v.CourseID,
+		ProgramID: v.ProgramID,
+	}
+
+	return res
+}
+
+// marshalEnrollCourseTypeRequestBodyToEnrollmentEnrollCourseType builds a
+// value of type *enrollment.EnrollCourseType from a value of type
+// *EnrollCourseTypeRequestBody.
+func marshalEnrollCourseTypeRequestBodyToEnrollmentEnrollCourseType(v *EnrollCourseTypeRequestBody) *enrollment.EnrollCourseType {
+	res := &enrollment.EnrollCourseType{
+		ID:        v.ID,
+		CourseID:  v.CourseID,
+		ProgramID: v.ProgramID,
+	}
+
+	return res
+}
+
+// unmarshalEnrollCourseTypeResponseBodyToEnrollmentEnrollCourseType builds a
+// value of type *enrollment.EnrollCourseType from a value of type
+// *EnrollCourseTypeResponseBody.
+func unmarshalEnrollCourseTypeResponseBodyToEnrollmentEnrollCourseType(v *EnrollCourseTypeResponseBody) *enrollment.EnrollCourseType {
+	res := &enrollment.EnrollCourseType{
+		ID:        *v.ID,
+		CourseID:  *v.CourseID,
+		ProgramID: *v.ProgramID,
 	}
 
 	return res

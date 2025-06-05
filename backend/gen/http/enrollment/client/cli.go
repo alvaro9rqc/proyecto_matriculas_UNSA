@@ -10,9 +10,9 @@ package client
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
 
 	enrollment "github.com/enrollment/gen/enrollment"
+	goa "goa.design/goa/v3/pkg"
 )
 
 // BuildEnrollPayload builds the payload for the enrollment enroll endpoint
@@ -23,82 +23,24 @@ func BuildEnrollPayload(enrollmentEnrollBody string) (*enrollment.EnrollmentPayl
 	{
 		err = json.Unmarshal([]byte(enrollmentEnrollBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"attendee_id\": 973980986,\n      \"course_id\": 429573902,\n      \"passed\": true\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"enrollCourses\": [\n         {\n            \"course_id\": 2072469154,\n            \"id\": 1959792023,\n            \"program_id\": 1795971965\n         },\n         {\n            \"course_id\": 2072469154,\n            \"id\": 1959792023,\n            \"program_id\": 1795971965\n         }\n      ]\n   }'")
 		}
-	}
-	v := &enrollment.EnrollmentPayload{
-		AttendeeID: body.AttendeeID,
-		CourseID:   body.CourseID,
-		Passed:     body.Passed,
-	}
-
-	return v, nil
-}
-
-// BuildUpdateEnrollmentPayload builds the payload for the enrollment
-// update_enrollment endpoint from CLI flags.
-func BuildUpdateEnrollmentPayload(enrollmentUpdateEnrollmentBody string) (*enrollment.UpdateEnrollmentPayload, error) {
-	var err error
-	var body UpdateEnrollmentRequestBody
-	{
-		err = json.Unmarshal([]byte(enrollmentUpdateEnrollmentBody), &body)
+		if body.EnrollCourses == nil {
+			err = goa.MergeErrors(err, goa.MissingFieldError("enrollCourses", "body"))
+		}
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"attendee_id\": 108527587,\n      \"course_id\": 999067554,\n      \"passed\": false\n   }'")
+			return nil, err
 		}
 	}
-	v := &enrollment.UpdateEnrollmentPayload{
-		AttendeeID: body.AttendeeID,
-		CourseID:   body.CourseID,
-		Passed:     body.Passed,
-	}
-
-	return v, nil
-}
-
-// BuildDeleteEnrollmentPayload builds the payload for the enrollment
-// delete_enrollment endpoint from CLI flags.
-func BuildDeleteEnrollmentPayload(enrollmentDeleteEnrollmentAttendeeID string, enrollmentDeleteEnrollmentCourseID string) (*enrollment.DeleteEnrollmentPayload, error) {
-	var err error
-	var attendeeID int32
-	{
-		var v int64
-		v, err = strconv.ParseInt(enrollmentDeleteEnrollmentAttendeeID, 10, 32)
-		attendeeID = int32(v)
-		if err != nil {
-			return nil, fmt.Errorf("invalid value for attendeeID, must be INT32")
+	v := &enrollment.EnrollmentPayload{}
+	if body.EnrollCourses != nil {
+		v.EnrollCourses = make([]*enrollment.EnrollCourseType, len(body.EnrollCourses))
+		for i, val := range body.EnrollCourses {
+			v.EnrollCourses[i] = marshalEnrollCourseTypeRequestBodyToEnrollmentEnrollCourseType(val)
 		}
+	} else {
+		v.EnrollCourses = []*enrollment.EnrollCourseType{}
 	}
-	var courseID int32
-	{
-		var v int64
-		v, err = strconv.ParseInt(enrollmentDeleteEnrollmentCourseID, 10, 32)
-		courseID = int32(v)
-		if err != nil {
-			return nil, fmt.Errorf("invalid value for courseID, must be INT32")
-		}
-	}
-	v := &enrollment.DeleteEnrollmentPayload{}
-	v.AttendeeID = attendeeID
-	v.CourseID = courseID
-
-	return v, nil
-}
-
-// BuildListEnrolledUsersPayload builds the payload for the enrollment
-// list_enrolled_users endpoint from CLI flags.
-func BuildListEnrolledUsersPayload(enrollmentListEnrolledUsersCourseID string) (*enrollment.ListEnrolledUsersPayload, error) {
-	var err error
-	var courseID int32
-	{
-		var v int64
-		v, err = strconv.ParseInt(enrollmentListEnrolledUsersCourseID, 10, 32)
-		courseID = int32(v)
-		if err != nil {
-			return nil, fmt.Errorf("invalid value for courseID, must be INT32")
-		}
-	}
-	v := &enrollment.ListEnrolledUsersPayload{}
-	v.CourseID = courseID
 
 	return v, nil
 }

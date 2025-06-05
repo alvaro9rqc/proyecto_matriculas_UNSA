@@ -15,28 +15,34 @@ import (
 // EnrollRequestBody is the type of the "enrollment" service "enroll" endpoint
 // HTTP request body.
 type EnrollRequestBody struct {
-	// ID del asistente
-	AttendeeID int32 `form:"attendee_id" json:"attendee_id" xml:"attendee_id"`
-	// ID del curso
-	CourseID int32 `form:"course_id" json:"course_id" xml:"course_id"`
-	// Si el curso fue aprobado
-	Passed bool `form:"passed" json:"passed" xml:"passed"`
+	// Attendee ID
+	EnrollCourses []*EnrollCourseTypeRequestBody `form:"enrollCourses" json:"enrollCourses" xml:"enrollCourses"`
 }
 
-// UpdateEnrollmentRequestBody is the type of the "enrollment" service
-// "update_enrollment" endpoint HTTP request body.
-type UpdateEnrollmentRequestBody struct {
-	// ID del asistente
-	AttendeeID int32 `form:"attendee_id" json:"attendee_id" xml:"attendee_id"`
-	// ID del curso
-	CourseID int32 `form:"course_id" json:"course_id" xml:"course_id"`
-	// Nuevo estado aprobado
-	Passed bool `form:"passed" json:"passed" xml:"passed"`
+// GetEnrollmentCoursesResponseBody is the type of the "enrollment" service
+// "get_enrollment_courses" endpoint HTTP response body.
+type GetEnrollmentCoursesResponseBody struct {
+	// Attendee ID
+	EnrollCourses []*EnrollCourseTypeResponseBody `form:"enrollCourses,omitempty" json:"enrollCourses,omitempty" xml:"enrollCourses,omitempty"`
 }
 
-// ListEnrolledUsersResponseBody is the type of the "enrollment" service
-// "list_enrolled_users" endpoint HTTP response body.
-type ListEnrolledUsersResponseBody []*EnrolledUserResponse
+// EnrollUnAuthorizedResponseBody is the type of the "enrollment" service
+// "enroll" endpoint HTTP response body for the "un_authorized" error.
+type EnrollUnAuthorizedResponseBody struct {
+	// Name is the name of this class of errors.
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// ID is a unique identifier for this particular occurrence of the problem.
+	ID *string `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
+	// Message is a human-readable explanation specific to this occurrence of the
+	// problem.
+	Message *string `form:"message,omitempty" json:"message,omitempty" xml:"message,omitempty"`
+	// Is the error temporary?
+	Temporary *bool `form:"temporary,omitempty" json:"temporary,omitempty" xml:"temporary,omitempty"`
+	// Is the error a timeout?
+	Timeout *bool `form:"timeout,omitempty" json:"timeout,omitempty" xml:"timeout,omitempty"`
+	// Is the error a server-side fault?
+	Fault *bool `form:"fault,omitempty" json:"fault,omitempty" xml:"fault,omitempty"`
+}
 
 // EnrollBadRequestResponseBody is the type of the "enrollment" service
 // "enroll" endpoint HTTP response body for the "bad_request" error.
@@ -56,9 +62,10 @@ type EnrollBadRequestResponseBody struct {
 	Fault *bool `form:"fault,omitempty" json:"fault,omitempty" xml:"fault,omitempty"`
 }
 
-// UpdateEnrollmentNotFoundResponseBody is the type of the "enrollment" service
-// "update_enrollment" endpoint HTTP response body for the "not_found" error.
-type UpdateEnrollmentNotFoundResponseBody struct {
+// GetEnrollmentCoursesUnAuthorizedResponseBody is the type of the "enrollment"
+// service "get_enrollment_courses" endpoint HTTP response body for the
+// "un_authorized" error.
+type GetEnrollmentCoursesUnAuthorizedResponseBody struct {
 	// Name is the name of this class of errors.
 	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 	// ID is a unique identifier for this particular occurrence of the problem.
@@ -74,9 +81,10 @@ type UpdateEnrollmentNotFoundResponseBody struct {
 	Fault *bool `form:"fault,omitempty" json:"fault,omitempty" xml:"fault,omitempty"`
 }
 
-// DeleteEnrollmentNotFoundResponseBody is the type of the "enrollment" service
-// "delete_enrollment" endpoint HTTP response body for the "not_found" error.
-type DeleteEnrollmentNotFoundResponseBody struct {
+// GetEnrollmentCoursesBadRequestResponseBody is the type of the "enrollment"
+// service "get_enrollment_courses" endpoint HTTP response body for the
+// "bad_request" error.
+type GetEnrollmentCoursesBadRequestResponseBody struct {
 	// Name is the name of this class of errors.
 	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 	// ID is a unique identifier for this particular occurrence of the problem.
@@ -92,53 +100,54 @@ type DeleteEnrollmentNotFoundResponseBody struct {
 	Fault *bool `form:"fault,omitempty" json:"fault,omitempty" xml:"fault,omitempty"`
 }
 
-// ListEnrolledUsersNotFoundResponseBody is the type of the "enrollment"
-// service "list_enrolled_users" endpoint HTTP response body for the
-// "not_found" error.
-type ListEnrolledUsersNotFoundResponseBody struct {
-	// Name is the name of this class of errors.
-	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
-	// ID is a unique identifier for this particular occurrence of the problem.
-	ID *string `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
-	// Message is a human-readable explanation specific to this occurrence of the
-	// problem.
-	Message *string `form:"message,omitempty" json:"message,omitempty" xml:"message,omitempty"`
-	// Is the error temporary?
-	Temporary *bool `form:"temporary,omitempty" json:"temporary,omitempty" xml:"temporary,omitempty"`
-	// Is the error a timeout?
-	Timeout *bool `form:"timeout,omitempty" json:"timeout,omitempty" xml:"timeout,omitempty"`
-	// Is the error a server-side fault?
-	Fault *bool `form:"fault,omitempty" json:"fault,omitempty" xml:"fault,omitempty"`
+// EnrollCourseTypeRequestBody is used to define fields on request body types.
+type EnrollCourseTypeRequestBody struct {
+	// Enrollment ID
+	ID int32 `form:"id" json:"id" xml:"id"`
+	// Course ID
+	CourseID int32 `form:"course_id" json:"course_id" xml:"course_id"`
+	// Program ID
+	ProgramID int32 `form:"program_id" json:"program_id" xml:"program_id"`
 }
 
-// EnrolledUserResponse is used to define fields on response body types.
-type EnrolledUserResponse struct {
-	FirstName      *string `form:"first_name,omitempty" json:"first_name,omitempty" xml:"first_name,omitempty"`
-	RemainingNames *string `form:"remaining_names,omitempty" json:"remaining_names,omitempty" xml:"remaining_names,omitempty"`
-	LastNames      *string `form:"last_names,omitempty" json:"last_names,omitempty" xml:"last_names,omitempty"`
-	Email          *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
+// EnrollCourseTypeResponseBody is used to define fields on response body types.
+type EnrollCourseTypeResponseBody struct {
+	// Enrollment ID
+	ID *int32 `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
+	// Course ID
+	CourseID *int32 `form:"course_id,omitempty" json:"course_id,omitempty" xml:"course_id,omitempty"`
+	// Program ID
+	ProgramID *int32 `form:"program_id,omitempty" json:"program_id,omitempty" xml:"program_id,omitempty"`
 }
 
 // NewEnrollRequestBody builds the HTTP request body from the payload of the
 // "enroll" endpoint of the "enrollment" service.
 func NewEnrollRequestBody(p *enrollment.EnrollmentPayload) *EnrollRequestBody {
-	body := &EnrollRequestBody{
-		AttendeeID: p.AttendeeID,
-		CourseID:   p.CourseID,
-		Passed:     p.Passed,
+	body := &EnrollRequestBody{}
+	if p.EnrollCourses != nil {
+		body.EnrollCourses = make([]*EnrollCourseTypeRequestBody, len(p.EnrollCourses))
+		for i, val := range p.EnrollCourses {
+			body.EnrollCourses[i] = marshalEnrollmentEnrollCourseTypeToEnrollCourseTypeRequestBody(val)
+		}
+	} else {
+		body.EnrollCourses = []*EnrollCourseTypeRequestBody{}
 	}
 	return body
 }
 
-// NewUpdateEnrollmentRequestBody builds the HTTP request body from the payload
-// of the "update_enrollment" endpoint of the "enrollment" service.
-func NewUpdateEnrollmentRequestBody(p *enrollment.UpdateEnrollmentPayload) *UpdateEnrollmentRequestBody {
-	body := &UpdateEnrollmentRequestBody{
-		AttendeeID: p.AttendeeID,
-		CourseID:   p.CourseID,
-		Passed:     p.Passed,
+// NewEnrollUnAuthorized builds a enrollment service enroll endpoint
+// un_authorized error.
+func NewEnrollUnAuthorized(body *EnrollUnAuthorizedResponseBody) *goa.ServiceError {
+	v := &goa.ServiceError{
+		Name:      *body.Name,
+		ID:        *body.ID,
+		Message:   *body.Message,
+		Temporary: *body.Temporary,
+		Timeout:   *body.Timeout,
+		Fault:     *body.Fault,
 	}
-	return body
+
+	return v
 }
 
 // NewEnrollBadRequest builds a enrollment service enroll endpoint bad_request
@@ -156,9 +165,21 @@ func NewEnrollBadRequest(body *EnrollBadRequestResponseBody) *goa.ServiceError {
 	return v
 }
 
-// NewUpdateEnrollmentNotFound builds a enrollment service update_enrollment
-// endpoint not_found error.
-func NewUpdateEnrollmentNotFound(body *UpdateEnrollmentNotFoundResponseBody) *goa.ServiceError {
+// NewGetEnrollmentCoursesEnrollmentPayloadOK builds a "enrollment" service
+// "get_enrollment_courses" endpoint result from a HTTP "OK" response.
+func NewGetEnrollmentCoursesEnrollmentPayloadOK(body *GetEnrollmentCoursesResponseBody) *enrollment.EnrollmentPayload {
+	v := &enrollment.EnrollmentPayload{}
+	v.EnrollCourses = make([]*enrollment.EnrollCourseType, len(body.EnrollCourses))
+	for i, val := range body.EnrollCourses {
+		v.EnrollCourses[i] = unmarshalEnrollCourseTypeResponseBodyToEnrollmentEnrollCourseType(val)
+	}
+
+	return v
+}
+
+// NewGetEnrollmentCoursesUnAuthorized builds a enrollment service
+// get_enrollment_courses endpoint un_authorized error.
+func NewGetEnrollmentCoursesUnAuthorized(body *GetEnrollmentCoursesUnAuthorizedResponseBody) *goa.ServiceError {
 	v := &goa.ServiceError{
 		Name:      *body.Name,
 		ID:        *body.ID,
@@ -171,9 +192,9 @@ func NewUpdateEnrollmentNotFound(body *UpdateEnrollmentNotFoundResponseBody) *go
 	return v
 }
 
-// NewDeleteEnrollmentNotFound builds a enrollment service delete_enrollment
-// endpoint not_found error.
-func NewDeleteEnrollmentNotFound(body *DeleteEnrollmentNotFoundResponseBody) *goa.ServiceError {
+// NewGetEnrollmentCoursesBadRequest builds a enrollment service
+// get_enrollment_courses endpoint bad_request error.
+func NewGetEnrollmentCoursesBadRequest(body *GetEnrollmentCoursesBadRequestResponseBody) *goa.ServiceError {
 	v := &goa.ServiceError{
 		Name:      *body.Name,
 		ID:        *body.ID,
@@ -186,30 +207,44 @@ func NewDeleteEnrollmentNotFound(body *DeleteEnrollmentNotFoundResponseBody) *go
 	return v
 }
 
-// NewListEnrolledUsersEnrolledUserOK builds a "enrollment" service
-// "list_enrolled_users" endpoint result from a HTTP "OK" response.
-func NewListEnrolledUsersEnrolledUserOK(body []*EnrolledUserResponse) []*enrollment.EnrolledUser {
-	v := make([]*enrollment.EnrolledUser, len(body))
-	for i, val := range body {
-		v[i] = unmarshalEnrolledUserResponseToEnrollmentEnrolledUser(val)
+// ValidateGetEnrollmentCoursesResponseBody runs the validations defined on
+// get_enrollment_courses_response_body
+func ValidateGetEnrollmentCoursesResponseBody(body *GetEnrollmentCoursesResponseBody) (err error) {
+	if body.EnrollCourses == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("enrollCourses", "body"))
 	}
-
-	return v
+	for _, e := range body.EnrollCourses {
+		if e != nil {
+			if err2 := ValidateEnrollCourseTypeResponseBody(e); err2 != nil {
+				err = goa.MergeErrors(err, err2)
+			}
+		}
+	}
+	return
 }
 
-// NewListEnrolledUsersNotFound builds a enrollment service list_enrolled_users
-// endpoint not_found error.
-func NewListEnrolledUsersNotFound(body *ListEnrolledUsersNotFoundResponseBody) *goa.ServiceError {
-	v := &goa.ServiceError{
-		Name:      *body.Name,
-		ID:        *body.ID,
-		Message:   *body.Message,
-		Temporary: *body.Temporary,
-		Timeout:   *body.Timeout,
-		Fault:     *body.Fault,
+// ValidateEnrollUnAuthorizedResponseBody runs the validations defined on
+// enroll_un_authorized_response_body
+func ValidateEnrollUnAuthorizedResponseBody(body *EnrollUnAuthorizedResponseBody) (err error) {
+	if body.Name == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
 	}
-
-	return v
+	if body.ID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
+	}
+	if body.Message == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("message", "body"))
+	}
+	if body.Temporary == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("temporary", "body"))
+	}
+	if body.Timeout == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("timeout", "body"))
+	}
+	if body.Fault == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("fault", "body"))
+	}
+	return
 }
 
 // ValidateEnrollBadRequestResponseBody runs the validations defined on
@@ -236,9 +271,9 @@ func ValidateEnrollBadRequestResponseBody(body *EnrollBadRequestResponseBody) (e
 	return
 }
 
-// ValidateUpdateEnrollmentNotFoundResponseBody runs the validations defined on
-// update_enrollment_not_found_response_body
-func ValidateUpdateEnrollmentNotFoundResponseBody(body *UpdateEnrollmentNotFoundResponseBody) (err error) {
+// ValidateGetEnrollmentCoursesUnAuthorizedResponseBody runs the validations
+// defined on get_enrollment_courses_un_authorized_response_body
+func ValidateGetEnrollmentCoursesUnAuthorizedResponseBody(body *GetEnrollmentCoursesUnAuthorizedResponseBody) (err error) {
 	if body.Name == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
 	}
@@ -260,9 +295,9 @@ func ValidateUpdateEnrollmentNotFoundResponseBody(body *UpdateEnrollmentNotFound
 	return
 }
 
-// ValidateDeleteEnrollmentNotFoundResponseBody runs the validations defined on
-// delete_enrollment_not_found_response_body
-func ValidateDeleteEnrollmentNotFoundResponseBody(body *DeleteEnrollmentNotFoundResponseBody) (err error) {
+// ValidateGetEnrollmentCoursesBadRequestResponseBody runs the validations
+// defined on get_enrollment_courses_bad_request_response_body
+func ValidateGetEnrollmentCoursesBadRequestResponseBody(body *GetEnrollmentCoursesBadRequestResponseBody) (err error) {
 	if body.Name == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
 	}
@@ -284,44 +319,17 @@ func ValidateDeleteEnrollmentNotFoundResponseBody(body *DeleteEnrollmentNotFound
 	return
 }
 
-// ValidateListEnrolledUsersNotFoundResponseBody runs the validations defined
-// on list_enrolled_users_not_found_response_body
-func ValidateListEnrolledUsersNotFoundResponseBody(body *ListEnrolledUsersNotFoundResponseBody) (err error) {
-	if body.Name == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
-	}
+// ValidateEnrollCourseTypeResponseBody runs the validations defined on
+// EnrollCourseTypeResponseBody
+func ValidateEnrollCourseTypeResponseBody(body *EnrollCourseTypeResponseBody) (err error) {
 	if body.ID == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
 	}
-	if body.Message == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("message", "body"))
+	if body.CourseID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("course_id", "body"))
 	}
-	if body.Temporary == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("temporary", "body"))
-	}
-	if body.Timeout == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("timeout", "body"))
-	}
-	if body.Fault == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("fault", "body"))
-	}
-	return
-}
-
-// ValidateEnrolledUserResponse runs the validations defined on
-// EnrolledUserResponse
-func ValidateEnrolledUserResponse(body *EnrolledUserResponse) (err error) {
-	if body.FirstName == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("first_name", "body"))
-	}
-	if body.LastNames == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("last_names", "body"))
-	}
-	if body.Email == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("email", "body"))
-	}
-	if body.Email != nil {
-		err = goa.MergeErrors(err, goa.ValidateFormat("body.email", *body.Email, goa.FormatEmail))
+	if body.ProgramID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("program_id", "body"))
 	}
 	return
 }

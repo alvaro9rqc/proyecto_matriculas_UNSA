@@ -25,10 +25,6 @@ type MeOKResponseBody struct {
 	LastNames *string `form:"lastNames,omitempty" json:"lastNames,omitempty" xml:"lastNames,omitempty"`
 	// User remaining names
 	RemainingNames *string `form:"remainingNames,omitempty" json:"remainingNames,omitempty" xml:"remainingNames,omitempty"`
-	// User attendee group name
-	AttendeeGroupName *string `form:"attendeeGroupName,omitempty" json:"attendeeGroupName,omitempty" xml:"attendeeGroupName,omitempty"`
-	// User attendee group priority
-	AttendeeGroupPriority *string `form:"attendeeGroupPriority,omitempty" json:"attendeeGroupPriority,omitempty" xml:"attendeeGroupPriority,omitempty"`
 }
 
 // MeUnauthorizedResponseBody is used to define fields on response body types.
@@ -43,23 +39,17 @@ type MeUnauthorizedResponseBody struct {
 	LastNames *string `form:"lastNames,omitempty" json:"lastNames,omitempty" xml:"lastNames,omitempty"`
 	// User remaining names
 	RemainingNames *string `form:"remainingNames,omitempty" json:"remainingNames,omitempty" xml:"remainingNames,omitempty"`
-	// User attendee group name
-	AttendeeGroupName *string `form:"attendeeGroupName,omitempty" json:"attendeeGroupName,omitempty" xml:"attendeeGroupName,omitempty"`
-	// User attendee group priority
-	AttendeeGroupPriority *string `form:"attendeeGroupPriority,omitempty" json:"attendeeGroupPriority,omitempty" xml:"attendeeGroupPriority,omitempty"`
 }
 
 // NewMeAccountUserOK builds a "Auth" service "Me" endpoint result from a HTTP
 // "OK" response.
 func NewMeAccountUserOK(body *MeOKResponseBody) *auth.AccountUser {
 	v := &auth.AccountUser{
-		ID:                    *body.ID,
-		Email:                 *body.Email,
-		FirstName:             *body.FirstName,
-		LastNames:             *body.LastNames,
-		RemainingNames:        *body.RemainingNames,
-		AttendeeGroupName:     *body.AttendeeGroupName,
-		AttendeeGroupPriority: *body.AttendeeGroupPriority,
+		ID:             *body.ID,
+		Email:          *body.Email,
+		FirstName:      *body.FirstName,
+		LastNames:      *body.LastNames,
+		RemainingNames: *body.RemainingNames,
 	}
 
 	return v
@@ -82,12 +72,6 @@ func ValidateMeOKResponseBody(body *MeOKResponseBody) (err error) {
 	if body.RemainingNames == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("remainingNames", "body"))
 	}
-	if body.AttendeeGroupName == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("attendeeGroupName", "body"))
-	}
-	if body.AttendeeGroupPriority == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("attendeeGroupPriority", "body"))
-	}
 	return
 }
 
@@ -108,12 +92,6 @@ func ValidateMeUnauthorizedResponseBody(body *MeUnauthorizedResponseBody) (err e
 	}
 	if body.RemainingNames == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("remainingNames", "body"))
-	}
-	if body.AttendeeGroupName == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("attendeeGroupName", "body"))
-	}
-	if body.AttendeeGroupPriority == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("attendeeGroupPriority", "body"))
 	}
 	return
 }

@@ -13,8 +13,5 @@ var AccountUser = Type("AccountUser", func() {
 	Attribute("lastNames", String, "User last names")
 	Attribute("remainingNames", String, "User remaining names")
 
-	Attribute("attendeeGroupName", String, "User attendee group name")
-	Attribute("attendeeGroupPriority", String, "User attendee group priority")
-
-	Required("id", "email", "firstName", "lastNames", "remainingNames", "attendeeGroupName", "attendeeGroupPriority")
+	Required("id", "email", "firstName", "lastNames", "remainingNames")
 })

@@ -9,104 +9,50 @@ var _ = Service("enrollment", func() {
 
 	Error("not_found", ErrorResult, "The resource was not found")
 	Error("bad_request", ErrorResult, "Invalid request")
+	Error("un_authorized", ErrorResult, "Unauthorized access")
 
 	Method("enroll", func() {
-		Description("Enroll an attendee in a course")
+		Description("Enroll an student in selected courses")
 
-		Payload(EnrollmentPayload)
+		Payload(EnrollmentCourses)
 		Result(Empty)
 
 		HTTP(func() {
-			POST("/enrollment")
+			POST("/enrollment/enroll")
 			Response(StatusCreated)
+			Response("un_authorized", StatusUnauthorized)
 			Response("bad_request", StatusBadRequest)
 		})
 	})
 
-	Method("update_enrollment", func() {
-		Description("Update the enrollment status of an attendee in a course")
+	Method("get_enrollment_courses", func() {
+		Description("Get all courses enrolled by an attendee")
 
-		Payload(UpdateEnrollmentPayload)
-		Result(Empty)
+		Result(EnrollmentCourses)
 
 		HTTP(func() {
-			PUT("/enrollment")
+			POST("/enrollment/enrollement_courses")
 			Response(StatusOK)
-			Response("not_found", StatusNotFound)
-		})
-	})
-
-	Method("delete_enrollment", func() {
-		Description("Delete an attendee's enrollment from a course")
-
-		Payload(DeleteEnrollmentPayload)
-		Result(Empty)
-
-		HTTP(func() {
-			DELETE("/enrollment/{attendee_id}/{course_id}")
-			Response(StatusNoContent)
-			Response("not_found", StatusNotFound)
-		})
-	})
-
-	Method("list_enrolled_users", func() {
-		Description("List enrolled users for a specific course")
-
-		Payload(func() {
-			Attribute("course_id", Int32, "Course ID")
-			Required("course_id")
-		})
-
-		Result(ArrayOf(EnrolledUser))
-		Error("not_found", ErrorResult)
-
-		HTTP(func() {
-			GET("/enrollment/course/{course_id}/users")
-			Response(StatusOK)
-			Response("not_found", StatusNotFound)
+			Response("un_authorized", StatusUnauthorized)
+			Response("bad_request", StatusBadRequest)
 		})
 	})
 })
 
-var EnrollmentPayload = Type("EnrollmentPayload", func() {
-	Description("Input data to enroll an attendee in a course")
+var EnrollCourse = Type("EnrollCourseType", func() {
+	Description("Represents a course enrollment")
 
-	Attribute("attendee_id", Int32, "Attendee ID")
+	Attribute("id", Int32, "Enrollment ID")
 	Attribute("course_id", Int32, "Course ID")
-	Attribute("passed", Boolean, "Whether the attendee passed the course")
+	Attribute("program_id", Int32, "Program ID")
 
-	Required("attendee_id", "course_id", "passed")
+	Required("id", "course_id", "program_id")
 })
 
-var UpdateEnrollmentPayload = Type("UpdateEnrollmentPayload", func() {
-	Description("Input data to update the enrollment status")
+var EnrollmentCourses = Type("EnrollmentPayload", func() {
+	Description("Input data to enroll an attendee in a courses")
 
-	Attribute("attendee_id", Int32, "Attendee ID")
-	Attribute("course_id", Int32, "Course ID")
-	Attribute("passed", Boolean, "New passed status")
+	Attribute("enrollCourses", ArrayOf(EnrollCourse), "Attendee ID")
 
-	Required("attendee_id", "course_id", "passed")
-})
-
-var DeleteEnrollmentPayload = Type("DeleteEnrollmentPayload", func() {
-	Description("Input data to delete an enrollment")
-
-	Attribute("attendee_id", Int32, "Attendee ID")
-	Attribute("course_id", Int32, "Course ID")
-
-	Required("attendee_id", "course_id")
-})
-
-var EnrolledUser = Type("EnrolledUser", func() {
-	Description("Details of a user enrolled in a course")
-
-	Attribute("first_name", String, "First name of the user")
-	Attribute("remaining_names", String, "Remaining names (middle names) of the user")
-	Attribute("last_names", String, "Last names of the user")
-	Attribute("email", String, func() {
-		Description("Email address")
-		Format(FormatEmail)
-	})
-
-	Required("first_name", "last_names", "email")
+	Required("enrollCourses")
 })
