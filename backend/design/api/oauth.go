@@ -30,7 +30,7 @@ var LoginResult = Type("LoginResult", func() {
 	Required("access_token", "expires_at")
 })
 
-var _ = Service("auth", func() {
+var _ = Service("oauth", func() {
 	Description("OAuth-based authentication service for Google and Microsoft")
 
 	// Initiates the login by generating a provider-specific OAuth authorization URL

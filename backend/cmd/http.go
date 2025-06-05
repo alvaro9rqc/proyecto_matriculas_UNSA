@@ -7,14 +7,10 @@ import (
 	"sync"
 	"time"
 
-	auth "github.com/enrollment/gen/auth"
 	course "github.com/enrollment/gen/course"
 	enrollment "github.com/enrollment/gen/enrollment"
-	authsvr "github.com/enrollment/gen/http/auth/server"
 	coursesvr "github.com/enrollment/gen/http/course/server"
 	enrollmentsvr "github.com/enrollment/gen/http/enrollment/server"
-	oauthsvr "github.com/enrollment/gen/http/oauth/server"
-	oauth "github.com/enrollment/gen/oauth"
 	"goa.design/clue/debug"
 	"goa.design/clue/log"
 	goahttp "goa.design/goa/v3/http"
@@ -22,7 +18,7 @@ import (
 
 // handleHTTPServer starts configures and starts a HTTP server on the given
 // URL. It shuts down the server if any error is received in the error channel.
-func handleHTTPServer(ctx context.Context, u *url.URL, courseEndpoints *course.Endpoints, enrollmentEndpoints *enrollment.Endpoints, oauthEndpoints *oauth.Endpoints, authEndpoints *auth.Endpoints, wg *sync.WaitGroup, errc chan error, dbg bool) {
+func handleHTTPServer(ctx context.Context, u *url.URL, courseEndpoints *course.Endpoints, enrollmentEndpoints *enrollment.Endpoints,  wg *sync.WaitGroup, errc chan error, dbg bool) {
 
 	// Provide the transport specific request decoder and response encoder.
 	// The goa http package has built-in support for JSON, XML and gob.
@@ -53,22 +49,16 @@ func handleHTTPServer(ctx context.Context, u *url.URL, courseEndpoints *course.E
 	var (
 		courseServer     *coursesvr.Server
 		enrollmentServer *enrollmentsvr.Server
-		oauthServer      *oauthsvr.Server
-		authServer       *authsvr.Server
 	)
 	{
 		eh := errorHandler(ctx)
 		courseServer = coursesvr.New(courseEndpoints, mux, dec, enc, eh, nil)
 		enrollmentServer = enrollmentsvr.New(enrollmentEndpoints, mux, dec, enc, eh, nil)
-		oauthServer = oauthsvr.New(oauthEndpoints, mux, dec, enc, eh, nil)
-		authServer = authsvr.New(authEndpoints, mux, dec, enc, eh, nil)
 	}
 
 	// Configure the mux.
 	coursesvr.Mount(mux, courseServer)
 	enrollmentsvr.Mount(mux, enrollmentServer)
-	oauthsvr.Mount(mux, oauthServer)
-	authsvr.Mount(mux, authServer)
 
 	var handler http.Handler = mux
 	if dbg {
@@ -84,12 +74,6 @@ func handleHTTPServer(ctx context.Context, u *url.URL, courseEndpoints *course.E
 		log.Printf(ctx, "HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
 	}
 	for _, m := range enrollmentServer.Mounts {
-		log.Printf(ctx, "HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
-	}
-	for _, m := range oauthServer.Mounts {
-		log.Printf(ctx, "HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
-	}
-	for _, m := range authServer.Mounts {
 		log.Printf(ctx, "HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
 	}
 
