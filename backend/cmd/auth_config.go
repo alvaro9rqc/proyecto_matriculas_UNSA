@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-var googleOAuth = &oauth2.Config{
+var GoogleOAuth = &oauth2.Config{
 	ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
 	ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
 	RedirectURL:  os.Getenv("GOOGLE_REDIRECT_URL"),
