@@ -2,22 +2,29 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"net"
 	"net/url"
 	"os"
 	"os/signal"
+	"strconv"
 	"sync"
 	"syscall"
 
 	course "github.com/enrollment/gen/course"
 	enrollment "github.com/enrollment/gen/enrollment"
 	controllers "github.com/enrollment/src/controllers"
+	"github.com/joho/godotenv"
 	"goa.design/clue/debug"
 	"goa.design/clue/log"
-	"github.com/joho/godotenv"
 )
+
+func getEnv(key string, fallback string) *string {
+	if value, exists := os.LookupEnv(key); exists {
+		return &value
+	}
+	return &fallback
+}
 
 func main() {
 	err := godotenv.Load()
@@ -27,13 +34,13 @@ func main() {
 	// Define command line flags, add any other flag required to configure the
 	// service.
 	var (
-		hostF     = flag.String("host", "localhost", "Server host (valid values: localhost)")
-		domainF   = flag.String("domain", "", "Host domain name (overrides host domain specified in service design)")
-		httpPortF = flag.String("http-port", "", "HTTP port (overrides host HTTP port specified in service design)")
-		secureF   = flag.Bool("secure", false, "Use secure scheme (https or grpcs)")
-		dbgF      = flag.Bool("debug", false, "Log request and response bodies")
+		hostF     = getEnv("HOST", "localhost")
+		domainF   = getEnv("DOMAIN", "")
+		httpPortF = getEnv("HTTP_PORT", "8080")
 	)
-	flag.Parse()
+
+	secureF, _ := strconv.ParseBool(*getEnv("SECURE", "false"))
+	dbgF, _ := strconv.ParseBool(*getEnv("DEBUG", "false"))
 
 	// Setup logger. Replace logger with your own log package of choice.
 	format := log.FormatJSON
@@ -41,7 +48,7 @@ func main() {
 		format = log.FormatTerminal
 	}
 	ctx := log.Context(context.Background(), log.WithFormat(format))
-	if *dbgF {
+	if dbgF {
 		ctx = log.Context(ctx, log.WithDebug())
 		log.Debugf(ctx, "debug logs enabled")
 	}
@@ -96,7 +103,7 @@ func main() {
 			if err != nil {
 				log.Fatalf(ctx, err, "invalid URL %#v\n", addr)
 			}
-			if *secureF {
+			if secureF {
 				u.Scheme = "https"
 			}
 			if *domainF != "" {
@@ -111,7 +118,7 @@ func main() {
 			} else if u.Port() == "" {
 				u.Host = net.JoinHostPort(u.Host, "80")
 			}
-			handleHTTPServer(ctx, u, courseEndpoints, enrollmentEndpoints,  &wg, errc, *dbgF)
+			handleHTTPServer(ctx, u, courseEndpoints, enrollmentEndpoints, &wg, errc, dbgF)
 		}
 
 	default:
