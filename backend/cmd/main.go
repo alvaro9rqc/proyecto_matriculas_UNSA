@@ -11,16 +11,19 @@ import (
 	"sync"
 	"syscall"
 
-	auth "github.com/enrollment/gen/auth"
 	course "github.com/enrollment/gen/course"
 	enrollment "github.com/enrollment/gen/enrollment"
-	oauth "github.com/enrollment/gen/oauth"
 	controllers "github.com/enrollment/src/controllers"
 	"goa.design/clue/debug"
 	"goa.design/clue/log"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file")
+	}
 	// Define command line flags, add any other flag required to configure the
 	// service.
 	var (
@@ -48,14 +51,10 @@ func main() {
 	var (
 		courseSvc     course.Service
 		enrollmentSvc enrollment.Service
-		oauthSvc      oauth.Service
-		authSvc       auth.Service
 	)
 	{
 		courseSvc = controllers.NewCourse()
 		enrollmentSvc = controllers.NewEnrollment()
-		oauthSvc = controllers.NewOauth()
-		authSvc = controllers.NewAuth()
 	}
 
 	// Wrap the services in endpoints that can be invoked from other services
@@ -63,8 +62,6 @@ func main() {
 	var (
 		courseEndpoints     *course.Endpoints
 		enrollmentEndpoints *enrollment.Endpoints
-		oauthEndpoints      *oauth.Endpoints
-		authEndpoints       *auth.Endpoints
 	)
 	{
 		courseEndpoints = course.NewEndpoints(courseSvc)
@@ -73,12 +70,6 @@ func main() {
 		enrollmentEndpoints = enrollment.NewEndpoints(enrollmentSvc)
 		enrollmentEndpoints.Use(debug.LogPayloads())
 		enrollmentEndpoints.Use(log.Endpoint)
-		oauthEndpoints = oauth.NewEndpoints(oauthSvc)
-		oauthEndpoints.Use(debug.LogPayloads())
-		oauthEndpoints.Use(log.Endpoint)
-		authEndpoints = auth.NewEndpoints(authSvc)
-		authEndpoints.Use(debug.LogPayloads())
-		authEndpoints.Use(log.Endpoint)
 	}
 
 	// Create channel used by both the signal handler and server goroutines
@@ -120,7 +111,7 @@ func main() {
 			} else if u.Port() == "" {
 				u.Host = net.JoinHostPort(u.Host, "80")
 			}
-			handleHTTPServer(ctx, u, courseEndpoints, enrollmentEndpoints, oauthEndpoints, authEndpoints, &wg, errc, *dbgF)
+			handleHTTPServer(ctx, u, courseEndpoints, enrollmentEndpoints,  &wg, errc, *dbgF)
 		}
 
 	default:

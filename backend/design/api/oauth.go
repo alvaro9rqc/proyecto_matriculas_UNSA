@@ -4,67 +4,107 @@ import (
 	. "goa.design/goa/v3/dsl"
 )
 
-// Oauth provider recognized by the system. eg: Google, GitHub, etc.
-var OAuthProvider = Type("OAuthProvider", func() {
-	Description("registered provider in th system")
-	Attribute("id", Int, "unique identifier", func() {
-		Minimum(1)
-		Example(1)
-	})
-	Attribute("name", String, "Intern provider name", func() {
-		MinLength(2)
-		Example("google")
-	})
-	Attribute("auth_url", String, "Provider authentication URL", func() {
-		Format(FormatURI)
-		Example("https://accounts.google.com/o/oauth2/auth")
-	})
-	Required("id", "name", "auth_url")
+var OAuthProviderType = Type("OAuthProvider",String, func() {
+    Description("OAuth provider options")
+    Enum("google", "microsoft") // Or use variables if preferred
+    Example("google")
 })
 
-var UserOauthInfo = Type("UserOauthInfo", func() {
-	Description("User information via Oauth")
-	Attribute("oauth_provider_id", Int, "ID of the provider used", func() {
-		Minimum(1)
-		Example(1)
-	})
-	Attribute("provider_user_id", String, "Access token given by the provider", func() {
-		MinLength(10)
-		Example("ya29.a0AfH6SM...")
-	})
-	Attribute("profile_picture", String, "Profile picture URL", func() {
+// Result type containing the URL to redirect the user to start OAuth login
+var OAuthRedirectResult = Type("OAuthRedirectResult", func() {
+	Description("Redirect URL for initiating OAuth login")
+	Attribute("redirect_url", String, "OAuth authorization URL", func() {
 		Format(FormatURI)
-		Example("https://avatars.githubusercontent.com/u/123456?v=4")
+		Example("https://accounts.google.com/o/oauth2/auth?...code")
 	})
+	Required("redirect_url")
+})
+
+// Result type after successful OAuth login
+var LoginResult = Type("LoginResult", func() {
+	Description("Successful login result containing access token")
+	Attribute("access_token", String, "Session access token")
+	Attribute("expires_at", String, "Access token expiration timestamp", func() {
+		Format(FormatDateTime)
+	})
+	Required("access_token", "expires_at")
 })
 
 var _ = Service("oauth", func() {
-	Description("Oauth Authentication service")
-	// list oauth providers
-	Method("list_providers", func() {
-		Description("List all available oauth providers")
-		Result(ArrayOf(OAuthProvider))
-	})
-	// login
-	Method("login", func() {
-		Description("Login using OAuth with a specific provider")
+	Description("OAuth-based authentication service for Google and Microsoft")
+
+	// Initiates the login by generating a provider-specific OAuth authorization URL
+	Method("redirect", func() {
+		Description("Generate a redirection URL for the chosen OAuth provider")
+
 		Payload(func() {
-			Attribute("oauth_provider_id", Int, "ID of the OAuth provider", func() {
-				Minimum(1)
+			Attribute("provider", OAuthProviderType,"OAuth provider name"  )
+			Required("provider")
+		})
+
+		Result(OAuthRedirectResult)
+
+		Error("invalid_provider", ErrorResult, "Unsupported OAuth provider")
+
+		HTTP(func() {
+			GET("/auth/redirect/{provider}")
+			Response(StatusOK)
+			Response("invalid_provider", StatusBadRequest)
+		})
+	})
+
+	// OAuth callback handler, exchanges authorization code for access token, logs user in
+	Method("callback", func() {
+		Description("Handle OAuth callback and authenticate user")
+
+		Payload(func() {
+			Attribute("provider", OAuthProviderType,"OAuth provider name"  )
+			Attribute("code", String, "Authorization code", func() {
+				MinLength(1)
 			})
-			Attribute("code", String, "OAuth code given by the provider", func() {
+			Attribute("state", String, "Anti-CSRF state token", func() {
 				MinLength(10)
 			})
-			Required("oauth_provider_id", "code")
+			Attribute("ip_address", String, "Client IP address", func() {
+				Format(FormatIP)
+			})
+			Attribute("user_agent", String, "User-Agent header value")
+			Required("provider", "code", "state", "ip_address", "user_agent")
 		})
-		Result(UserOauthInfo)
-		Error("unauthorized", ErrorResult, "Invalid or expired code")
-		Error("not_found", ErrorResult, "Not registered provider")
+
+		Result(LoginResult)
+
+		Error("invalid_token", ErrorResult, "Invalid or expired OAuth token")
+		Error("server_error", ErrorResult, "Internal server error")
+
 		HTTP(func() {
-			POST("/oauth/login")
+			GET("/auth/callback/{provider}")
+			Param("code")
+			Param("state")
+			Param("ip_address")
+			Param("user_agent")
 			Response(StatusOK)
+			Response("invalid_token", StatusBadRequest)
+			Response("server_error", StatusInternalServerError)
+		})
+	})
+
+	// Logout endpoint to invalidate a session
+	Method("logout", func() {
+		Description("Terminate the current session and invalidate the token")
+
+		Payload(func() {
+			Attribute("token", String, "Session token to invalidate")
+			Required("token")
+		})
+
+		Error("unauthorized", ErrorResult, "Missing or invalid token")
+
+		HTTP(func() {
+			POST("/auth/logout")
+			Header("token:Authorization")
+			Response(StatusNoContent)
 			Response("unauthorized", StatusUnauthorized)
-			Response("not_found", StatusNotFound)
 		})
 	})
 })

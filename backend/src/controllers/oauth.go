@@ -16,15 +16,22 @@ func NewOauth() oauth.Service {
 	return &oauthsrvc{}
 }
 
-// List all available oauth providers
-func (s *oauthsrvc) ListProviders(ctx context.Context) (res []*oauth.OAuthProvider, err error) {
-	log.Printf(ctx, "oauth.list_providers")
+// Generate a redirection URL for the chosen OAuth provider
+func (s *oauthsrvc) Redirect(ctx context.Context, p *oauth.RedirectPayload) (res *oauth.OAuthRedirectResult, err error) {
+	res = &oauth.OAuthRedirectResult{}
+	log.Printf(ctx, "oauth.redirect")
 	return
 }
 
-// Login using OAuth with a specific provider
-func (s *oauthsrvc) Login(ctx context.Context, p *oauth.LoginPayload) (res *oauth.UserOauthInfo, err error) {
-	res = &oauth.UserOauthInfo{}
-	log.Printf(ctx, "oauth.login")
+// Handle OAuth callback and authenticate user
+func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res *oauth.LoginResult, err error) {
+	res = &oauth.LoginResult{}
+	log.Printf(ctx, "oauth.callback")
+	return
+}
+
+// Terminate the current session and invalidate the token
+func (s *oauthsrvc) Logout(ctx context.Context, p *oauth.LogoutPayload) (err error) {
+	log.Printf(ctx, "oauth.logout")
 	return
 }
