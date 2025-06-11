@@ -18,14 +18,16 @@ type Client struct {
 	RedirectEndpoint goa.Endpoint
 	CallbackEndpoint goa.Endpoint
 	LogoutEndpoint   goa.Endpoint
+	MeEndpoint       goa.Endpoint
 }
 
 // NewClient initializes a "oauth" service client given the endpoints.
-func NewClient(redirect, callback, logout goa.Endpoint) *Client {
+func NewClient(redirect, callback, logout, me goa.Endpoint) *Client {
 	return &Client{
 		RedirectEndpoint: redirect,
 		CallbackEndpoint: callback,
 		LogoutEndpoint:   logout,
+		MeEndpoint:       me,
 	}
 }
 
@@ -63,4 +65,17 @@ func (c *Client) Callback(ctx context.Context, p *CallbackPayload) (res *LoginRe
 func (c *Client) Logout(ctx context.Context, p *LogoutPayload) (err error) {
 	_, err = c.LogoutEndpoint(ctx, p)
 	return
+}
+
+// Me calls the "me" endpoint of the "oauth" service.
+// Me may return the following errors:
+//   - "unauthorized" (type *goa.ServiceError): Unauthorized access
+//   - error: internal error
+func (c *Client) Me(ctx context.Context) (res *AccountUser, err error) {
+	var ires any
+	ires, err = c.MeEndpoint(ctx, nil)
+	if err != nil {
+		return
+	}
+	return ires.(*AccountUser), nil
 }

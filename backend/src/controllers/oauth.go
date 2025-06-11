@@ -35,3 +35,9 @@ func (s *oauthsrvc) Logout(ctx context.Context, p *oauth.LogoutPayload) (err err
 	log.Printf(ctx, "oauth.logout")
 	return
 }
+
+func (s *oauthsrvc) Me(ctx context.Context) (res *oauth.AccountUser, err error) {
+	res = &oauth.AccountUser{}
+
+	return res, nil
+}

@@ -22,9 +22,9 @@ paths:
                   schema:
                     type: string
                     description: Authorization code
-                    example: rfa
+                    example: ix
                     minLength: 1
-                  example: bi
+                  example: pi3
                 - name: state
                   in: query
                   description: Anti-CSRF state token
@@ -33,9 +33,9 @@ paths:
                   schema:
                     type: string
                     description: Anti-CSRF state token
-                    example: tzx
+                    example: lye
                     minLength: 10
-                  example: h7n
+                  example: 46n
                 - name: ip_address
                   in: query
                   description: Client IP address
@@ -44,9 +44,9 @@ paths:
                   schema:
                     type: string
                     description: Client IP address
-                    example: 210.12.114.78
+                    example: 91.195.193.25
                     format: ip
-                  example: 118.211.169.124
+                  example: 238.150.222.79
                 - name: user_agent
                   in: query
                   description: User-Agent header value
@@ -55,8 +55,8 @@ paths:
                   schema:
                     type: string
                     description: User-Agent header value
-                    example: Fuga et vitae odit.
-                  example: Est consequuntur eaque nisi beatae et nobis.
+                    example: Consectetur illo non porro sunt.
+                  example: Quibusdam voluptatem veritatis qui error.
                 - name: provider
                   in: path
                   description: OAuth provider name
@@ -77,8 +77,8 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/LoginResult'
                             example:
-                                access_token: Eos odio.
-                                expires_at: "2006-06-06T20:50:07Z"
+                                access_token: Nemo sed et eveniet.
+                                expires_at: "2007-04-17T04:44:18Z"
                 "400":
                     description: 'invalid_token: Invalid or expired OAuth token'
                     content:
@@ -103,6 +103,32 @@ paths:
                     description: No Content response.
                 "401":
                     description: 'unauthorized: Missing or invalid token'
+                    content:
+                        application/vnd.goa.error:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+    /auth/me:
+        get:
+            tags:
+                - oauth
+            summary: me oauth
+            description: Returns the authenticated user's information
+            operationId: oauth#me
+            responses:
+                "200":
+                    description: OK response.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AccountUser'
+                            example:
+                                email: Excepturi exercitationem maiores maxime omnis aut.
+                                firstName: Accusamus odio.
+                                id: Sunt aut vitae nihil autem sunt.
+                                lastNames: Quisquam itaque.
+                                remainingNames: Magnam in quod beatae id.
+                "401":
+                    description: 'unauthorized: Unauthorized access'
                     content:
                         application/vnd.goa.error:
                             schema:
@@ -156,8 +182,8 @@ paths:
                         schema:
                             $ref: '#/components/schemas/GetAllCoursesRequestBody'
                         example:
-                            limit: 2480526247841537657
-                            page: 3417534505291559534
+                            limit: 8911149612749746103
+                            page: 916775543018707264
             responses:
                 "200":
                     description: OK response.
@@ -180,19 +206,7 @@ paths:
                                       credits: 3
                                       id: "144"
                                       name: Introduction to Programming
-                                    - cicle_number: 1
-                                      credits: 3
-                                      id: "144"
-                                      name: Introduction to Programming
                             example:
-                                - cicle_number: 1
-                                  credits: 3
-                                  id: "144"
-                                  name: Introduction to Programming
-                                - cicle_number: 1
-                                  credits: 3
-                                  id: "144"
-                                  name: Introduction to Programming
                                 - cicle_number: 1
                                   credits: 3
                                   id: "144"
@@ -230,10 +244,6 @@ paths:
                                 items:
                                     $ref: '#/components/schemas/Course'
                                 example:
-                                    - cicle_number: 1
-                                      credits: 3
-                                      id: "144"
-                                      name: Introduction to Programming
                                     - cicle_number: 1
                                       credits: 3
                                       id: "144"
@@ -288,12 +298,6 @@ paths:
                                 - cicle_number: 1
                                   credits: 3
                                   name: Introduction to Programming
-                                - cicle_number: 1
-                                  credits: 3
-                                  name: Introduction to Programming
-                                - cicle_number: 1
-                                  credits: 3
-                                  name: Introduction to Programming
             responses:
                 "201":
                     description: Created response.
@@ -324,18 +328,18 @@ paths:
                             $ref: '#/components/schemas/EnrollmentPayload'
                         example:
                             enrollCourses:
-                                - course_id: 1304883946
-                                  id: 148943620
-                                  program_id: 1307531092
-                                - course_id: 1304883946
-                                  id: 148943620
-                                  program_id: 1307531092
-                                - course_id: 1304883946
-                                  id: 148943620
-                                  program_id: 1307531092
-                                - course_id: 1304883946
-                                  id: 148943620
-                                  program_id: 1307531092
+                                - course_id: 1368988241
+                                  id: 1845633047
+                                  program_id: 694091412
+                                - course_id: 1368988241
+                                  id: 1845633047
+                                  program_id: 694091412
+                                - course_id: 1368988241
+                                  id: 1845633047
+                                  program_id: 694091412
+                                - course_id: 1368988241
+                                  id: 1845633047
+                                  program_id: 694091412
             responses:
                 "201":
                     description: Created response.
@@ -367,18 +371,70 @@ paths:
                                 $ref: '#/components/schemas/EnrollmentPayload'
                             example:
                                 enrollCourses:
-                                    - course_id: 1720300669
-                                      id: 2134868773
-                                      program_id: 997386789
-                                    - course_id: 1720300669
-                                      id: 2134868773
-                                      program_id: 997386789
-                                    - course_id: 1720300669
-                                      id: 2134868773
-                                      program_id: 997386789
-                                    - course_id: 1720300669
-                                      id: 2134868773
-                                      program_id: 997386789
+                                    - course_id: 194235674
+                                      id: 24969578
+                                      program_id: 2129833131
+                                    - course_id: 194235674
+                                      id: 24969578
+                                      program_id: 2129833131
+                                    - course_id: 194235674
+                                      id: 24969578
+                                      program_id: 2129833131
+                                    - course_id: 194235674
+                                      id: 24969578
+                                      program_id: 2129833131
+                "400":
+                    description: 'bad_request: Invalid request'
+                    content:
+                        application/vnd.goa.error:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                "401":
+                    description: 'un_authorized: Unauthorized access'
+                    content:
+                        application/vnd.goa.error:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+    /queue/enqueue:
+        post:
+            tags:
+                - queue
+            summary: enqueue queue
+            description: Enqueue a student to the queue
+            operationId: queue#enqueue
+            responses:
+                "201":
+                    description: Created response.
+                "400":
+                    description: 'bad_request: Invalid request'
+                    content:
+                        application/vnd.goa.error:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                "401":
+                    description: 'un_authorized: Unauthorized access'
+                    content:
+                        application/vnd.goa.error:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+    /queue/enqueue_suscribe:
+        get:
+            tags:
+                - queue
+            summary: enqueue_suscribe queue
+            description: Suscribe a student to queue in real time
+            operationId: queue#enqueue_suscribe
+            responses:
+                "101":
+                    description: Switching Protocols response.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/EnqueueSuscribeResponseBody'
+                            example:
+                                position: 1253547821
+                                status: Saepe asperiores autem nisi.
+                                total: 1009039078
                 "400":
                     description: 'bad_request: Invalid request'
                     content:
@@ -399,30 +455,30 @@ components:
                 email:
                     type: string
                     description: User email
-                    example: Quidem sit excepturi cupiditate architecto tempora iusto.
+                    example: Incidunt delectus sed voluptatem.
                 firstName:
                     type: string
                     description: User first name
-                    example: Nesciunt distinctio est voluptas harum autem.
+                    example: Ut blanditiis non sint vitae non in.
                 id:
                     type: string
                     description: Unique user ID
-                    example: Beatae nulla.
+                    example: Quaerat sapiente sed et sit nisi consequatur.
                 lastNames:
                     type: string
                     description: User last names
-                    example: Dignissimos ea adipisci natus recusandae.
+                    example: Itaque quibusdam aut.
                 remainingNames:
                     type: string
                     description: User remaining names
-                    example: Ut omnis magni sit.
+                    example: Beatae deleniti dicta ut amet.
             description: AccountUser type
             example:
-                email: Vero voluptas.
-                firstName: Aut tenetur id et aliquid eum.
-                id: Occaecati sit.
-                lastNames: Quia minus hic consequatur aliquam.
-                remainingNames: Qui dolore.
+                email: Ratione ab pariatur.
+                firstName: Recusandae minima voluptatem.
+                id: Repellat ut et quibusdam voluptas.
+                lastNames: Dolorum vero.
+                remainingNames: Molestiae molestiae ex reiciendis placeat laboriosam.
             required:
                 - id
                 - email
@@ -495,29 +551,50 @@ components:
                 - name
                 - credits
                 - cicle_number
+        EnqueueSuscribeResponseBody:
+            type: object
+            properties:
+                position:
+                    type: integer
+                    description: Position in the queue
+                    example: 50322932
+                    format: int32
+                status:
+                    type: string
+                    description: Status of the queue
+                    example: Quasi dignissimos cupiditate.
+                total:
+                    type: integer
+                    description: Total number of students in the queue
+                    example: 1702022391
+                    format: int32
+            example:
+                position: 1429607488
+                status: Quis voluptatum.
+                total: 1303485375
         EnrollCourseType:
             type: object
             properties:
                 course_id:
                     type: integer
                     description: Course ID
-                    example: 695791624
+                    example: 803936825
                     format: int32
                 id:
                     type: integer
                     description: Enrollment ID
-                    example: 1846758350
+                    example: 474045137
                     format: int32
                 program_id:
                     type: integer
                     description: Program ID
-                    example: 52070294
+                    example: 555219903
                     format: int32
             description: Represents a course enrollment
             example:
-                course_id: 561269712
-                id: 828983979
-                program_id: 1539606756
+                course_id: 43399824
+                id: 1981101831
+                program_id: 1235666190
             required:
                 - id
                 - course_id
@@ -537,15 +614,12 @@ components:
                         - course_id: 1370333918
                           id: 1876751260
                           program_id: 1801666353
-                        - course_id: 1370333918
-                          id: 1876751260
-                          program_id: 1801666353
-                        - course_id: 1370333918
-                          id: 1876751260
-                          program_id: 1801666353
             description: Input data to enroll an attendee in a courses
             example:
                 enrollCourses:
+                    - course_id: 1370333918
+                      id: 1876751260
+                      program_id: 1801666353
                     - course_id: 1370333918
                       id: 1876751260
                       program_id: 1801666353
@@ -576,18 +650,18 @@ components:
                 temporary:
                     type: boolean
                     description: Is the error temporary?
-                    example: false
+                    example: true
                 timeout:
                     type: boolean
                     description: Is the error a timeout?
-                    example: false
+                    example: true
             description: Invalid request
             example:
                 fault: false
                 id: 123abc
                 message: parameter 'p' must be an integer
                 name: bad_request
-                temporary: false
+                temporary: true
                 timeout: false
             required:
                 - name
@@ -661,19 +735,19 @@ components:
                     type: integer
                     description: Number of items per page
                     default: 10
-                    example: 6724042082027013521
+                    example: 5913483738202294474
                     format: int64
                     minimum: 1
                 page:
                     type: integer
                     description: Page number for pagination
                     default: 1
-                    example: 875841652676718408
+                    example: 5537963132424655045
                     format: int64
                     minimum: 1
             example:
-                limit: 5737042269608843907
-                page: 4449522239651038055
+                limit: 3428109710289768824
+                page: 3532711282014118866
             required:
                 - page
                 - limit
@@ -734,16 +808,16 @@ components:
                 access_token:
                     type: string
                     description: Session access token
-                    example: Doloribus atque ex repellendus.
+                    example: Doloribus ea cupiditate voluptate autem sed.
                 expires_at:
                     type: string
                     description: Access token expiration timestamp
-                    example: "1976-08-23T07:57:27Z"
+                    example: "1977-01-27T13:45:03Z"
                     format: date-time
             description: Successful login result containing access token
             example:
-                access_token: Atque dolores et aliquid.
-                expires_at: "2006-07-24T00:23:26Z"
+                access_token: Eos ut temporibus voluptas a quae est.
+                expires_at: "1981-01-27T17:10:26Z"
             required:
                 - access_token
                 - expires_at
@@ -766,29 +840,29 @@ components:
                 email:
                     type: string
                     description: User email
-                    example: Sed labore quia non quo.
+                    example: Molestiae eaque eum.
                 firstName:
                     type: string
                     description: User first name
-                    example: Repellendus praesentium modi fugit enim natus qui.
+                    example: Dolor qui cumque.
                 id:
                     type: string
                     description: Unique user ID
-                    example: Eveniet doloribus ea cupiditate voluptate.
+                    example: Veritatis repellendus laborum doloribus minus deserunt nesciunt.
                 lastNames:
                     type: string
                     description: User last names
-                    example: Dolore illo qui natus.
+                    example: Laboriosam optio fuga et vitae odit quidem.
                 remainingNames:
                     type: string
                     description: User remaining names
-                    example: Fugit et velit ex ullam qui recusandae.
+                    example: Consequuntur eaque nisi beatae et nobis.
             example:
-                email: Accusantium fugiat qui ut qui saepe.
-                firstName: Quia quis tempora facere quo enim dolores.
-                id: Fuga perspiciatis.
-                lastNames: Repellendus eaque dolorem aliquam est.
-                remainingNames: Omnis et aut quis dolorem.
+                email: Non a.
+                firstName: Veniam laboriosam rerum.
+                id: Optio aliquam.
+                lastNames: Animi dolorem mollitia earum dolor sunt distinctio.
+                remainingNames: Ipsam ipsam rerum quia magni.
             required:
                 - id
                 - email
@@ -803,6 +877,11 @@ components:
                     items:
                         $ref: '#/components/schemas/EventCoursePayload'
                     example:
+                        - end_date: 1748992994154
+                          instalation:
+                            description: This course is in Sistem Ingenier School
+                            name: Sistem Ingenier School
+                          start_date: 1748992994154
                         - end_date: 1748992994154
                           instalation:
                             description: This course is in Sistem Ingenier School
@@ -837,11 +916,6 @@ components:
             description: Tuition details of the course
             example:
                 events:
-                    - end_date: 1748992994154
-                      instalation:
-                        description: This course is in Sistem Ingenier School
-                        name: Sistem Ingenier School
-                      start_date: 1748992994154
                     - end_date: 1748992994154
                       instalation:
                         description: This course is in Sistem Ingenier School
@@ -912,11 +986,6 @@ components:
                         description: This course is in Sistem Ingenier School
                         name: Sistem Ingenier School
                       start_date: 1748992994154
-                    - end_date: 1748992994154
-                      instalation:
-                        description: This course is in Sistem Ingenier School
-                        name: Sistem Ingenier School
-                      start_date: 1748992994154
                 taken_places: 10
                 total_places: 30
             required:
@@ -948,6 +1017,12 @@ components:
                     - cicle_number: 1
                       credits: 3
                       name: Introduction to Programming
+                    - cicle_number: 1
+                      credits: 3
+                      name: Introduction to Programming
+                    - cicle_number: 1
+                      credits: 3
+                      name: Introduction to Programming
             required:
                 - courses
 tags:
@@ -955,5 +1030,7 @@ tags:
       description: Manage the courses to enrollements
     - name: enrollment
       description: Manages attendee enrollment in courses
+    - name: queue
+      description: Manage the queue of courses and enrollments
     - name: oauth
       description: OAuth-based authentication service for Google and Microsoft

@@ -88,6 +88,30 @@ paths:
                         $ref: '#/definitions/OauthLogoutUnauthorizedResponseBody'
             schemes:
                 - http
+    /auth/me:
+        get:
+            tags:
+                - oauth
+            summary: me oauth
+            description: Returns the authenticated user's information
+            operationId: oauth#me
+            responses:
+                "200":
+                    description: OK response.
+                    schema:
+                        $ref: '#/definitions/AccountUser'
+                        required:
+                            - id
+                            - email
+                            - firstName
+                            - lastNames
+                            - remainingNames
+                "401":
+                    description: Unauthorized response.
+                    schema:
+                        $ref: '#/definitions/OauthMeUnauthorizedResponseBody'
+            schemes:
+                - http
     /auth/redirect/{provider}:
         get:
             tags:
@@ -251,7 +275,85 @@ paths:
                         $ref: '#/definitions/EnrollmentGetEnrollmentCoursesUnAuthorizedResponseBody'
             schemes:
                 - http
+    /queue/enqueue:
+        post:
+            tags:
+                - queue
+            summary: enqueue queue
+            description: Enqueue a student to the queue
+            operationId: queue#enqueue
+            responses:
+                "201":
+                    description: Created response.
+                "400":
+                    description: Bad Request response.
+                    schema:
+                        $ref: '#/definitions/QueueEnqueueBadRequestResponseBody'
+                "401":
+                    description: Unauthorized response.
+                    schema:
+                        $ref: '#/definitions/QueueEnqueueUnAuthorizedResponseBody'
+            schemes:
+                - http
+    /queue/enqueue_suscribe:
+        get:
+            tags:
+                - queue
+            summary: enqueue_suscribe queue
+            description: Suscribe a student to queue in real time
+            operationId: queue#enqueue_suscribe
+            responses:
+                "101":
+                    description: Switching Protocols response.
+                    schema:
+                        $ref: '#/definitions/QueueEnqueueSuscribeResponseBody'
+                "400":
+                    description: Bad Request response.
+                    schema:
+                        $ref: '#/definitions/QueueEnqueueSuscribeBadRequestResponseBody'
+                "401":
+                    description: Unauthorized response.
+                    schema:
+                        $ref: '#/definitions/QueueEnqueueSuscribeUnAuthorizedResponseBody'
+            schemes:
+                - ws
 definitions:
+    AccountUser:
+        title: AccountUser
+        type: object
+        properties:
+            email:
+                type: string
+                description: User email
+                example: Provident excepturi eveniet necessitatibus quisquam.
+            firstName:
+                type: string
+                description: User first name
+                example: Dolor qui.
+            id:
+                type: string
+                description: Unique user ID
+                example: Cum ea facere numquam aspernatur possimus quia.
+            lastNames:
+                type: string
+                description: User last names
+                example: Rerum dolorem ut maxime.
+            remainingNames:
+                type: string
+                description: User remaining names
+                example: Et occaecati beatae nulla maxime.
+        example:
+            email: Iusto illo nesciunt distinctio est voluptas harum.
+            firstName: Praesentium dignissimos.
+            id: Sit excepturi cupiditate architecto.
+            lastNames: Adipisci natus recusandae et ut omnis.
+            remainingNames: Sit earum occaecati sit.
+        required:
+            - id
+            - email
+            - firstName
+            - lastNames
+            - remainingNames
     Course:
         title: Course
         type: object
@@ -296,7 +398,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: false
+                example: true
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -312,14 +414,14 @@ definitions:
             temporary:
                 type: boolean
                 description: Is the error temporary?
-                example: false
+                example: true
             timeout:
                 type: boolean
                 description: Is the error a timeout?
                 example: false
         description: Invalid request (default view)
         example:
-            fault: true
+            fault: false
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
@@ -340,19 +442,19 @@ definitions:
                 type: integer
                 description: Number of items per page
                 default: 10
-                example: 8338341853780104743
+                example: 3795628753957731759
                 format: int64
                 minimum: 1
             page:
                 type: integer
                 description: Page number for pagination
                 default: 1
-                example: 7771999524557708999
+                example: 6534524527242318367
                 format: int64
                 minimum: 1
         example:
-            limit: 6017851325904400788
-            page: 1555982206527852457
+            limit: 1859775384013227777
+            page: 6882274601275177659
         required:
             - page
             - limit
@@ -363,7 +465,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: false
+                example: true
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -383,7 +485,7 @@ definitions:
             timeout:
                 type: boolean
                 description: Is the error a timeout?
-                example: true
+                example: false
         description: Unauthorized access (default view)
         example:
             fault: false
@@ -391,7 +493,7 @@ definitions:
             message: parameter 'p' must be an integer
             name: bad_request
             temporary: false
-            timeout: false
+            timeout: true
         required:
             - name
             - id
@@ -429,11 +531,11 @@ definitions:
                 example: false
         description: Invalid request (default view)
         example:
-            fault: true
+            fault: false
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
-            temporary: false
+            temporary: true
             timeout: true
         required:
             - name
@@ -449,7 +551,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: false
+                example: true
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -465,7 +567,7 @@ definitions:
             temporary:
                 type: boolean
                 description: Is the error temporary?
-                example: true
+                example: false
             timeout:
                 type: boolean
                 description: Is the error a timeout?
@@ -477,7 +579,7 @@ definitions:
             message: parameter 'p' must be an integer
             name: bad_request
             temporary: true
-            timeout: true
+            timeout: false
         required:
             - name
             - id
@@ -543,14 +645,14 @@ definitions:
             timeout:
                 type: boolean
                 description: Is the error a timeout?
-                example: true
+                example: false
         description: Invalid request (default view)
         example:
-            fault: true
+            fault: false
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
-            temporary: false
+            temporary: true
             timeout: true
         required:
             - name
@@ -582,19 +684,19 @@ definitions:
             temporary:
                 type: boolean
                 description: Is the error temporary?
-                example: true
+                example: false
             timeout:
                 type: boolean
                 description: Is the error a timeout?
-                example: false
+                example: true
         description: Unauthorized access (default view)
         example:
-            fault: false
+            fault: true
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
             temporary: false
-            timeout: true
+            timeout: false
         required:
             - name
             - id
@@ -609,23 +711,23 @@ definitions:
             course_id:
                 type: integer
                 description: Course ID
-                example: 666587711
+                example: 766756926
                 format: int32
             id:
                 type: integer
                 description: Enrollment ID
-                example: 34650616
+                example: 882058016
                 format: int32
             program_id:
                 type: integer
                 description: Program ID
-                example: 241938286
+                example: 1633681899
                 format: int32
         description: Represents a course enrollment
         example:
-            course_id: 555465487
-            id: 1549691786
-            program_id: 199727884
+            course_id: 1703925244
+            id: 891833232
+            program_id: 845723486
         required:
             - id
             - course_id
@@ -637,7 +739,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: true
+                example: false
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -653,7 +755,7 @@ definitions:
             temporary:
                 type: boolean
                 description: Is the error temporary?
-                example: false
+                example: true
             timeout:
                 type: boolean
                 description: Is the error a timeout?
@@ -696,19 +798,19 @@ definitions:
             temporary:
                 type: boolean
                 description: Is the error temporary?
-                example: true
+                example: false
             timeout:
                 type: boolean
                 description: Is the error a timeout?
                 example: false
         description: Unauthorized access (default view)
         example:
-            fault: true
+            fault: false
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
-            temporary: false
-            timeout: true
+            temporary: true
+            timeout: false
         required:
             - name
             - id
@@ -723,7 +825,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: true
+                example: false
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -743,7 +845,7 @@ definitions:
             timeout:
                 type: boolean
                 description: Is the error a timeout?
-                example: true
+                example: false
         description: Invalid request (default view)
         example:
             fault: true
@@ -766,7 +868,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: false
+                example: true
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -782,14 +884,14 @@ definitions:
             temporary:
                 type: boolean
                 description: Is the error temporary?
-                example: true
+                example: false
             timeout:
                 type: boolean
                 description: Is the error a timeout?
                 example: false
         description: Unauthorized access (default view)
         example:
-            fault: false
+            fault: true
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
@@ -812,26 +914,23 @@ definitions:
                     $ref: '#/definitions/EnrollCourseType'
                 description: Attendee ID
                 example:
-                    - course_id: 1304883946
-                      id: 148943620
-                      program_id: 1307531092
-                    - course_id: 1304883946
-                      id: 148943620
-                      program_id: 1307531092
+                    - course_id: 1368988241
+                      id: 1845633047
+                      program_id: 694091412
+                    - course_id: 1368988241
+                      id: 1845633047
+                      program_id: 694091412
         example:
             enrollCourses:
-                - course_id: 1304883946
-                  id: 148943620
-                  program_id: 1307531092
-                - course_id: 1304883946
-                  id: 148943620
-                  program_id: 1307531092
-                - course_id: 1304883946
-                  id: 148943620
-                  program_id: 1307531092
-                - course_id: 1304883946
-                  id: 148943620
-                  program_id: 1307531092
+                - course_id: 1368988241
+                  id: 1845633047
+                  program_id: 694091412
+                - course_id: 1368988241
+                  id: 1845633047
+                  program_id: 694091412
+                - course_id: 1368988241
+                  id: 1845633047
+                  program_id: 694091412
         required:
             - enrollCourses
     LoginResult:
@@ -841,15 +940,15 @@ definitions:
             access_token:
                 type: string
                 description: Session access token
-                example: Commodi numquam.
+                example: Eum quia.
             expires_at:
                 type: string
                 description: Access token expiration timestamp
-                example: "2010-10-06T23:33:47Z"
+                example: "2013-01-22T01:38:27Z"
                 format: date-time
         example:
-            access_token: Eum nihil molestiae dolor voluptates debitis.
-            expires_at: "2003-06-30T03:38:29Z"
+            access_token: Fuga non in.
+            expires_at: "2007-04-27T08:32:36Z"
         required:
             - access_token
             - expires_at
@@ -889,7 +988,7 @@ definitions:
             temporary:
                 type: boolean
                 description: Is the error temporary?
-                example: true
+                example: false
             timeout:
                 type: boolean
                 description: Is the error a timeout?
@@ -943,7 +1042,7 @@ definitions:
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
-            temporary: false
+            temporary: true
             timeout: true
         required:
             - name
@@ -986,8 +1085,51 @@ definitions:
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
-            temporary: true
+            temporary: false
             timeout: false
+        required:
+            - name
+            - id
+            - message
+            - temporary
+            - timeout
+            - fault
+    OauthMeUnauthorizedResponseBody:
+        title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+        type: object
+        properties:
+            fault:
+                type: boolean
+                description: Is the error a server-side fault?
+                example: false
+            id:
+                type: string
+                description: ID is a unique identifier for this particular occurrence of the problem.
+                example: 123abc
+            message:
+                type: string
+                description: Message is a human-readable explanation specific to this occurrence of the problem.
+                example: parameter 'p' must be an integer
+            name:
+                type: string
+                description: Name is the name of this class of errors.
+                example: bad_request
+            temporary:
+                type: boolean
+                description: Is the error temporary?
+                example: true
+            timeout:
+                type: boolean
+                description: Is the error a timeout?
+                example: false
+        description: Unauthorized access (default view)
+        example:
+            fault: true
+            id: 123abc
+            message: parameter 'p' must be an integer
+            name: bad_request
+            temporary: false
+            timeout: true
         required:
             - name
             - id
@@ -1002,7 +1144,7 @@ definitions:
             fault:
                 type: boolean
                 description: Is the error a server-side fault?
-                example: true
+                example: false
             id:
                 type: string
                 description: ID is a unique identifier for this particular occurrence of the problem.
@@ -1025,12 +1167,206 @@ definitions:
                 example: true
         description: Unsupported OAuth provider (default view)
         example:
+            fault: false
+            id: 123abc
+            message: parameter 'p' must be an integer
+            name: bad_request
+            temporary: true
+            timeout: true
+        required:
+            - name
+            - id
+            - message
+            - temporary
+            - timeout
+            - fault
+    QueueEnqueueBadRequestResponseBody:
+        title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+        type: object
+        properties:
+            fault:
+                type: boolean
+                description: Is the error a server-side fault?
+                example: false
+            id:
+                type: string
+                description: ID is a unique identifier for this particular occurrence of the problem.
+                example: 123abc
+            message:
+                type: string
+                description: Message is a human-readable explanation specific to this occurrence of the problem.
+                example: parameter 'p' must be an integer
+            name:
+                type: string
+                description: Name is the name of this class of errors.
+                example: bad_request
+            temporary:
+                type: boolean
+                description: Is the error temporary?
+                example: false
+            timeout:
+                type: boolean
+                description: Is the error a timeout?
+                example: true
+        description: Invalid request (default view)
+        example:
+            fault: false
+            id: 123abc
+            message: parameter 'p' must be an integer
+            name: bad_request
+            temporary: false
+            timeout: false
+        required:
+            - name
+            - id
+            - message
+            - temporary
+            - timeout
+            - fault
+    QueueEnqueueSuscribeBadRequestResponseBody:
+        title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+        type: object
+        properties:
+            fault:
+                type: boolean
+                description: Is the error a server-side fault?
+                example: false
+            id:
+                type: string
+                description: ID is a unique identifier for this particular occurrence of the problem.
+                example: 123abc
+            message:
+                type: string
+                description: Message is a human-readable explanation specific to this occurrence of the problem.
+                example: parameter 'p' must be an integer
+            name:
+                type: string
+                description: Name is the name of this class of errors.
+                example: bad_request
+            temporary:
+                type: boolean
+                description: Is the error temporary?
+                example: true
+            timeout:
+                type: boolean
+                description: Is the error a timeout?
+                example: false
+        description: Invalid request (default view)
+        example:
             fault: true
             id: 123abc
             message: parameter 'p' must be an integer
             name: bad_request
             temporary: true
             timeout: true
+        required:
+            - name
+            - id
+            - message
+            - temporary
+            - timeout
+            - fault
+    QueueEnqueueSuscribeResponseBody:
+        title: QueueEnqueueSuscribeResponseBody
+        type: object
+        properties:
+            position:
+                type: integer
+                description: Position in the queue
+                example: 912148004
+                format: int32
+            status:
+                type: string
+                description: Status of the queue
+                example: Eum est eum dolores aut.
+            total:
+                type: integer
+                description: Total number of students in the queue
+                example: 1144632980
+                format: int32
+        example:
+            position: 1353220187
+            status: Sed quas consequatur rerum.
+            total: 585718247
+    QueueEnqueueSuscribeUnAuthorizedResponseBody:
+        title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+        type: object
+        properties:
+            fault:
+                type: boolean
+                description: Is the error a server-side fault?
+                example: true
+            id:
+                type: string
+                description: ID is a unique identifier for this particular occurrence of the problem.
+                example: 123abc
+            message:
+                type: string
+                description: Message is a human-readable explanation specific to this occurrence of the problem.
+                example: parameter 'p' must be an integer
+            name:
+                type: string
+                description: Name is the name of this class of errors.
+                example: bad_request
+            temporary:
+                type: boolean
+                description: Is the error temporary?
+                example: false
+            timeout:
+                type: boolean
+                description: Is the error a timeout?
+                example: true
+        description: Unauthorized access (default view)
+        example:
+            fault: false
+            id: 123abc
+            message: parameter 'p' must be an integer
+            name: bad_request
+            temporary: false
+            timeout: true
+        required:
+            - name
+            - id
+            - message
+            - temporary
+            - timeout
+            - fault
+    QueueEnqueueUnAuthorizedResponseBody:
+        title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+        type: object
+        properties:
+            fault:
+                type: boolean
+                description: Is the error a server-side fault?
+                example: false
+            id:
+                type: string
+                description: ID is a unique identifier for this particular occurrence of the problem.
+                example: 123abc
+            message:
+                type: string
+                description: Message is a human-readable explanation specific to this occurrence of the problem.
+                example: parameter 'p' must be an integer
+            name:
+                type: string
+                description: Name is the name of this class of errors.
+                example: bad_request
+            temporary:
+                type: boolean
+                description: Is the error temporary?
+                example: false
+            timeout:
+                type: boolean
+                description: Is the error a timeout?
+                example: true
+        description: Unauthorized access (default view)
+        example:
+            fault: false
+            id: 123abc
+            message: parameter 'p' must be an integer
+            name: bad_request
+            temporary: false
+            timeout: false
         required:
             - name
             - id
@@ -1047,6 +1383,9 @@ definitions:
                 items:
                     $ref: '#/definitions/CoursePayload'
                 example:
+                    - cicle_number: 1
+                      credits: 3
+                      name: Introduction to Programming
                     - cicle_number: 1
                       credits: 3
                       name: Introduction to Programming

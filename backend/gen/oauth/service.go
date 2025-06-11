@@ -21,6 +21,8 @@ type Service interface {
 	Callback(context.Context, *CallbackPayload) (res *LoginResult, err error)
 	// Terminate the current session and invalidate the token
 	Logout(context.Context, *LogoutPayload) (err error)
+	// Returns the authenticated user's information
+	Me(context.Context) (res *AccountUser, err error)
 }
 
 // APIName is the name of the API as defined in the design.
@@ -37,7 +39,21 @@ const ServiceName = "oauth"
 // MethodNames lists the service method names as defined in the design. These
 // are the same values that are set in the endpoint request contexts under the
 // MethodKey key.
-var MethodNames = [3]string{"redirect", "callback", "logout"}
+var MethodNames = [4]string{"redirect", "callback", "logout", "me"}
+
+// AccountUser is the result type of the oauth service me method.
+type AccountUser struct {
+	// Unique user ID
+	ID string
+	// User email
+	Email string
+	// User first name
+	FirstName string
+	// User last names
+	LastNames string
+	// User remaining names
+	RemainingNames string
+}
 
 // CallbackPayload is the payload type of the oauth service callback method.
 type CallbackPayload struct {

@@ -4,10 +4,10 @@ import (
 	. "goa.design/goa/v3/dsl"
 )
 
-var OAuthProviderType = Type("OAuthProvider",String, func() {
-    Description("OAuth provider options")
-    Enum("google", "microsoft") // Or use variables if preferred
-    Example("google")
+var OAuthProviderType = Type("OAuthProvider", String, func() {
+	Description("OAuth provider options")
+	Enum("google", "microsoft") // Or use variables if preferred
+	Example("google")
 })
 
 // Result type containing the URL to redirect the user to start OAuth login
@@ -38,7 +38,7 @@ var _ = Service("oauth", func() {
 		Description("Generate a redirection URL for the chosen OAuth provider")
 
 		Payload(func() {
-			Attribute("provider", OAuthProviderType,"OAuth provider name"  )
+			Attribute("provider", OAuthProviderType, "OAuth provider name")
 			Required("provider")
 		})
 
@@ -58,7 +58,7 @@ var _ = Service("oauth", func() {
 		Description("Handle OAuth callback and authenticate user")
 
 		Payload(func() {
-			Attribute("provider", OAuthProviderType,"OAuth provider name"  )
+			Attribute("provider", OAuthProviderType, "OAuth provider name")
 			Attribute("code", String, "Authorization code", func() {
 				MinLength(1)
 			})
@@ -104,6 +104,20 @@ var _ = Service("oauth", func() {
 			POST("/auth/logout")
 			Header("token:Authorization")
 			Response(StatusNoContent)
+			Response("unauthorized", StatusUnauthorized)
+		})
+	})
+
+	Method("me", func() {
+		Description("Returns the authenticated user's information")
+
+		Result(AccountUser)
+
+		Error("unauthorized", ErrorResult, "Unauthorized access")
+
+		HTTP(func() {
+			GET("/auth/me")
+			Response(StatusOK)
 			Response("unauthorized", StatusUnauthorized)
 		})
 	})

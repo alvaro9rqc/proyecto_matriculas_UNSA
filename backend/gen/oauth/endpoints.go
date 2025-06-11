@@ -18,6 +18,7 @@ type Endpoints struct {
 	Redirect goa.Endpoint
 	Callback goa.Endpoint
 	Logout   goa.Endpoint
+	Me       goa.Endpoint
 }
 
 // NewEndpoints wraps the methods of the "oauth" service with endpoints.
@@ -26,6 +27,7 @@ func NewEndpoints(s Service) *Endpoints {
 		Redirect: NewRedirectEndpoint(s),
 		Callback: NewCallbackEndpoint(s),
 		Logout:   NewLogoutEndpoint(s),
+		Me:       NewMeEndpoint(s),
 	}
 }
 
@@ -34,6 +36,7 @@ func (e *Endpoints) Use(m func(goa.Endpoint) goa.Endpoint) {
 	e.Redirect = m(e.Redirect)
 	e.Callback = m(e.Callback)
 	e.Logout = m(e.Logout)
+	e.Me = m(e.Me)
 }
 
 // NewRedirectEndpoint returns an endpoint function that calls the method
@@ -60,5 +63,13 @@ func NewLogoutEndpoint(s Service) goa.Endpoint {
 	return func(ctx context.Context, req any) (any, error) {
 		p := req.(*LogoutPayload)
 		return nil, s.Logout(ctx, p)
+	}
+}
+
+// NewMeEndpoint returns an endpoint function that calls the method "me" of
+// service "oauth".
+func NewMeEndpoint(s Service) goa.Endpoint {
+	return func(ctx context.Context, req any) (any, error) {
+		return s.Me(ctx)
 	}
 }

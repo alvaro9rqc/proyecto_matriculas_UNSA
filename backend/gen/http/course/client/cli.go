@@ -23,7 +23,7 @@ func BuildUploadAllCoursesPayload(courseUploadAllCoursesBody string) (*course.Up
 	{
 		err = json.Unmarshal([]byte(courseUploadAllCoursesBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"courses\": [\n         {\n            \"cicle_number\": 1,\n            \"credits\": 3,\n            \"name\": \"Introduction to Programming\"\n         },\n         {\n            \"cicle_number\": 1,\n            \"credits\": 3,\n            \"name\": \"Introduction to Programming\"\n         },\n         {\n            \"cicle_number\": 1,\n            \"credits\": 3,\n            \"name\": \"Introduction to Programming\"\n         },\n         {\n            \"cicle_number\": 1,\n            \"credits\": 3,\n            \"name\": \"Introduction to Programming\"\n         }\n      ]\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"courses\": [\n         {\n            \"cicle_number\": 1,\n            \"credits\": 3,\n            \"name\": \"Introduction to Programming\"\n         },\n         {\n            \"cicle_number\": 1,\n            \"credits\": 3,\n            \"name\": \"Introduction to Programming\"\n         }\n      ]\n   }'")
 		}
 		if body.Courses == nil {
 			err = goa.MergeErrors(err, goa.MissingFieldError("courses", "body"))
@@ -60,7 +60,7 @@ func BuildGetAllCoursesPayload(courseGetAllCoursesBody string) (*course.GetAllCo
 	{
 		err = json.Unmarshal([]byte(courseGetAllCoursesBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"limit\": 2480526247841537657,\n      \"page\": 3417534505291559534\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"limit\": 8911149612749746103,\n      \"page\": 916775543018707264\n   }'")
 		}
 		if body.Page < 1 {
 			err = goa.MergeErrors(err, goa.InvalidRangeError("body.page", body.Page, 1, true))

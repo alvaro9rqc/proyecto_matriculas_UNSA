@@ -28,6 +28,9 @@ type Client struct {
 	// Logout Doer is the HTTP client used to make requests to the logout endpoint.
 	LogoutDoer goahttp.Doer
 
+	// Me Doer is the HTTP client used to make requests to the me endpoint.
+	MeDoer goahttp.Doer
+
 	// RestoreResponseBody controls whether the response bodies are reset after
 	// decoding so they can be read again.
 	RestoreResponseBody bool
@@ -51,6 +54,7 @@ func NewClient(
 		RedirectDoer:        doer,
 		CallbackDoer:        doer,
 		LogoutDoer:          doer,
+		MeDoer:              doer,
 		RestoreResponseBody: restoreBody,
 		scheme:              scheme,
 		host:                host,
@@ -121,6 +125,25 @@ func (c *Client) Logout() goa.Endpoint {
 		resp, err := c.LogoutDoer.Do(req)
 		if err != nil {
 			return nil, goahttp.ErrRequestError("oauth", "logout", err)
+		}
+		return decodeResponse(resp)
+	}
+}
+
+// Me returns an endpoint that makes HTTP requests to the oauth service me
+// server.
+func (c *Client) Me() goa.Endpoint {
+	var (
+		decodeResponse = DecodeMeResponse(c.decoder, c.RestoreResponseBody)
+	)
+	return func(ctx context.Context, v any) (any, error) {
+		req, err := c.BuildMeRequest(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+		resp, err := c.MeDoer.Do(req)
+		if err != nil {
+			return nil, goahttp.ErrRequestError("oauth", "me", err)
 		}
 		return decodeResponse(resp)
 	}
