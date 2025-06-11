@@ -28,6 +28,21 @@ type CallbackResponseBody struct {
 	ExpiresAt string `form:"expires_at" json:"expires_at" xml:"expires_at"`
 }
 
+// MeResponseBody is the type of the "oauth" service "me" endpoint HTTP
+// response body.
+type MeResponseBody struct {
+	// Unique user ID
+	ID string `form:"id" json:"id" xml:"id"`
+	// User email
+	Email string `form:"email" json:"email" xml:"email"`
+	// User first name
+	FirstName string `form:"firstName" json:"firstName" xml:"firstName"`
+	// User last names
+	LastNames string `form:"lastNames" json:"lastNames" xml:"lastNames"`
+	// User remaining names
+	RemainingNames string `form:"remainingNames" json:"remainingNames" xml:"remainingNames"`
+}
+
 // RedirectInvalidProviderResponseBody is the type of the "oauth" service
 // "redirect" endpoint HTTP response body for the "invalid_provider" error.
 type RedirectInvalidProviderResponseBody struct {
@@ -100,6 +115,24 @@ type LogoutUnauthorizedResponseBody struct {
 	Fault bool `form:"fault" json:"fault" xml:"fault"`
 }
 
+// MeUnauthorizedResponseBody is the type of the "oauth" service "me" endpoint
+// HTTP response body for the "unauthorized" error.
+type MeUnauthorizedResponseBody struct {
+	// Name is the name of this class of errors.
+	Name string `form:"name" json:"name" xml:"name"`
+	// ID is a unique identifier for this particular occurrence of the problem.
+	ID string `form:"id" json:"id" xml:"id"`
+	// Message is a human-readable explanation specific to this occurrence of the
+	// problem.
+	Message string `form:"message" json:"message" xml:"message"`
+	// Is the error temporary?
+	Temporary bool `form:"temporary" json:"temporary" xml:"temporary"`
+	// Is the error a timeout?
+	Timeout bool `form:"timeout" json:"timeout" xml:"timeout"`
+	// Is the error a server-side fault?
+	Fault bool `form:"fault" json:"fault" xml:"fault"`
+}
+
 // NewRedirectResponseBody builds the HTTP response body from the result of the
 // "redirect" endpoint of the "oauth" service.
 func NewRedirectResponseBody(res *oauth.OAuthRedirectResult) *RedirectResponseBody {
@@ -115,6 +148,19 @@ func NewCallbackResponseBody(res *oauth.LoginResult) *CallbackResponseBody {
 	body := &CallbackResponseBody{
 		AccessToken: res.AccessToken,
 		ExpiresAt:   res.ExpiresAt,
+	}
+	return body
+}
+
+// NewMeResponseBody builds the HTTP response body from the result of the "me"
+// endpoint of the "oauth" service.
+func NewMeResponseBody(res *oauth.AccountUser) *MeResponseBody {
+	body := &MeResponseBody{
+		ID:             res.ID,
+		Email:          res.Email,
+		FirstName:      res.FirstName,
+		LastNames:      res.LastNames,
+		RemainingNames: res.RemainingNames,
 	}
 	return body
 }
@@ -165,6 +211,20 @@ func NewCallbackServerErrorResponseBody(res *goa.ServiceError) *CallbackServerEr
 // result of the "logout" endpoint of the "oauth" service.
 func NewLogoutUnauthorizedResponseBody(res *goa.ServiceError) *LogoutUnauthorizedResponseBody {
 	body := &LogoutUnauthorizedResponseBody{
+		Name:      res.Name,
+		ID:        res.ID,
+		Message:   res.Message,
+		Temporary: res.Temporary,
+		Timeout:   res.Timeout,
+		Fault:     res.Fault,
+	}
+	return body
+}
+
+// NewMeUnauthorizedResponseBody builds the HTTP response body from the result
+// of the "me" endpoint of the "oauth" service.
+func NewMeUnauthorizedResponseBody(res *goa.ServiceError) *MeUnauthorizedResponseBody {
+	body := &MeUnauthorizedResponseBody{
 		Name:      res.Name,
 		ID:        res.ID,
 		Message:   res.Message,

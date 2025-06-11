@@ -25,3 +25,8 @@ func CallbackOauthPath(provider string) string {
 func LogoutOauthPath() string {
 	return "/auth/logout"
 }
+
+// MeOauthPath returns the URL path to the oauth service me HTTP endpoint.
+func MeOauthPath() string {
+	return "/auth/me"
+}

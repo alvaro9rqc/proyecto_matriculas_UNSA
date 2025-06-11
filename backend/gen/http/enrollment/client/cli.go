@@ -23,7 +23,7 @@ func BuildEnrollPayload(enrollmentEnrollBody string) (*enrollment.EnrollmentPayl
 	{
 		err = json.Unmarshal([]byte(enrollmentEnrollBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"enrollCourses\": [\n         {\n            \"course_id\": 1304883946,\n            \"id\": 148943620,\n            \"program_id\": 1307531092\n         },\n         {\n            \"course_id\": 1304883946,\n            \"id\": 148943620,\n            \"program_id\": 1307531092\n         },\n         {\n            \"course_id\": 1304883946,\n            \"id\": 148943620,\n            \"program_id\": 1307531092\n         },\n         {\n            \"course_id\": 1304883946,\n            \"id\": 148943620,\n            \"program_id\": 1307531092\n         }\n      ]\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"enrollCourses\": [\n         {\n            \"course_id\": 1368988241,\n            \"id\": 1845633047,\n            \"program_id\": 694091412\n         },\n         {\n            \"course_id\": 1368988241,\n            \"id\": 1845633047,\n            \"program_id\": 694091412\n         },\n         {\n            \"course_id\": 1368988241,\n            \"id\": 1845633047,\n            \"program_id\": 694091412\n         },\n         {\n            \"course_id\": 1368988241,\n            \"id\": 1845633047,\n            \"program_id\": 694091412\n         }\n      ]\n   }'")
 		}
 		if body.EnrollCourses == nil {
 			err = goa.MergeErrors(err, goa.MissingFieldError("enrollCourses", "body"))

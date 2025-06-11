@@ -289,3 +289,75 @@ func DecodeLogoutResponse(decoder func(*http.Response) goahttp.Decoder, restoreB
 		}
 	}
 }
+
+// BuildMeRequest instantiates a HTTP request object with method and path set
+// to call the "oauth" service "me" endpoint
+func (c *Client) BuildMeRequest(ctx context.Context, v any) (*http.Request, error) {
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: MeOauthPath()}
+	req, err := http.NewRequest("GET", u.String(), nil)
+	if err != nil {
+		return nil, goahttp.ErrInvalidURL("oauth", "me", u.String(), err)
+	}
+	if ctx != nil {
+		req = req.WithContext(ctx)
+	}
+
+	return req, nil
+}
+
+// DecodeMeResponse returns a decoder for responses returned by the oauth me
+// endpoint. restoreBody controls whether the response body should be restored
+// after having been read.
+// DecodeMeResponse may return the following errors:
+//   - "unauthorized" (type *goa.ServiceError): http.StatusUnauthorized
+//   - error: internal error
+func DecodeMeResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
+	return func(resp *http.Response) (any, error) {
+		if restoreBody {
+			b, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return nil, err
+			}
+			resp.Body = io.NopCloser(bytes.NewBuffer(b))
+			defer func() {
+				resp.Body = io.NopCloser(bytes.NewBuffer(b))
+			}()
+		} else {
+			defer resp.Body.Close()
+		}
+		switch resp.StatusCode {
+		case http.StatusOK:
+			var (
+				body MeResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("oauth", "me", err)
+			}
+			err = ValidateMeResponseBody(&body)
+			if err != nil {
+				return nil, goahttp.ErrValidationError("oauth", "me", err)
+			}
+			res := NewMeAccountUserOK(&body)
+			return res, nil
+		case http.StatusUnauthorized:
+			var (
+				body MeUnauthorizedResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("oauth", "me", err)
+			}
+			err = ValidateMeUnauthorizedResponseBody(&body)
+			if err != nil {
+				return nil, goahttp.ErrValidationError("oauth", "me", err)
+			}
+			return nil, NewMeUnauthorized(&body)
+		default:
+			body, _ := io.ReadAll(resp.Body)
+			return nil, goahttp.ErrInvalidResponse("oauth", "me", resp.StatusCode, string(body))
+		}
+	}
+}

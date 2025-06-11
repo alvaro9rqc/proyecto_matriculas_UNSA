@@ -16,6 +16,7 @@ import (
 	coursec "github.com/enrollment/gen/http/course/client"
 	enrollmentc "github.com/enrollment/gen/http/enrollment/client"
 	oauthc "github.com/enrollment/gen/http/oauth/client"
+	queuec "github.com/enrollment/gen/http/queue/client"
 	goahttp "goa.design/goa/v3/http"
 	goa "goa.design/goa/v3/pkg"
 )
@@ -26,7 +27,8 @@ import (
 func UsageCommands() string {
 	return `course (upload-all-courses|get-all-courses|get-user-available-courses)
 enrollment (enroll|get-enrollment-courses)
-oauth (redirect|callback|logout)
+queue (enqueue|enqueue-suscribe)
+oauth (redirect|callback|logout|me)
 `
 }
 
@@ -43,43 +45,34 @@ func UsageExamples() string {
             "cicle_number": 1,
             "credits": 3,
             "name": "Introduction to Programming"
-         },
-         {
-            "cicle_number": 1,
-            "credits": 3,
-            "name": "Introduction to Programming"
-         },
-         {
-            "cicle_number": 1,
-            "credits": 3,
-            "name": "Introduction to Programming"
          }
       ]
    }'` + "\n" +
 		os.Args[0] + ` enrollment enroll --body '{
       "enrollCourses": [
          {
-            "course_id": 1304883946,
-            "id": 148943620,
-            "program_id": 1307531092
+            "course_id": 1368988241,
+            "id": 1845633047,
+            "program_id": 694091412
          },
          {
-            "course_id": 1304883946,
-            "id": 148943620,
-            "program_id": 1307531092
+            "course_id": 1368988241,
+            "id": 1845633047,
+            "program_id": 694091412
          },
          {
-            "course_id": 1304883946,
-            "id": 148943620,
-            "program_id": 1307531092
+            "course_id": 1368988241,
+            "id": 1845633047,
+            "program_id": 694091412
          },
          {
-            "course_id": 1304883946,
-            "id": 148943620,
-            "program_id": 1307531092
+            "course_id": 1368988241,
+            "id": 1845633047,
+            "program_id": 694091412
          }
       ]
    }'` + "\n" +
+		os.Args[0] + ` queue enqueue` + "\n" +
 		os.Args[0] + ` oauth redirect --provider "google"` + "\n" +
 		""
 }
@@ -92,6 +85,8 @@ func ParseEndpoint(
 	enc func(*http.Request) goahttp.Encoder,
 	dec func(*http.Response) goahttp.Decoder,
 	restore bool,
+	dialer goahttp.Dialer,
+	queueConfigurer *queuec.ConnConfigurer,
 ) (goa.Endpoint, any, error) {
 	var (
 		courseFlags = flag.NewFlagSet("course", flag.ContinueOnError)
@@ -111,6 +106,12 @@ func ParseEndpoint(
 
 		enrollmentGetEnrollmentCoursesFlags = flag.NewFlagSet("get-enrollment-courses", flag.ExitOnError)
 
+		queueFlags = flag.NewFlagSet("queue", flag.ContinueOnError)
+
+		queueEnqueueFlags = flag.NewFlagSet("enqueue", flag.ExitOnError)
+
+		queueEnqueueSuscribeFlags = flag.NewFlagSet("enqueue-suscribe", flag.ExitOnError)
+
 		oauthFlags = flag.NewFlagSet("oauth", flag.ContinueOnError)
 
 		oauthRedirectFlags        = flag.NewFlagSet("redirect", flag.ExitOnError)
@@ -125,6 +126,8 @@ func ParseEndpoint(
 
 		oauthLogoutFlags     = flag.NewFlagSet("logout", flag.ExitOnError)
 		oauthLogoutTokenFlag = oauthLogoutFlags.String("token", "REQUIRED", "")
+
+		oauthMeFlags = flag.NewFlagSet("me", flag.ExitOnError)
 	)
 	courseFlags.Usage = courseUsage
 	courseUploadAllCoursesFlags.Usage = courseUploadAllCoursesUsage
@@ -135,10 +138,15 @@ func ParseEndpoint(
 	enrollmentEnrollFlags.Usage = enrollmentEnrollUsage
 	enrollmentGetEnrollmentCoursesFlags.Usage = enrollmentGetEnrollmentCoursesUsage
 
+	queueFlags.Usage = queueUsage
+	queueEnqueueFlags.Usage = queueEnqueueUsage
+	queueEnqueueSuscribeFlags.Usage = queueEnqueueSuscribeUsage
+
 	oauthFlags.Usage = oauthUsage
 	oauthRedirectFlags.Usage = oauthRedirectUsage
 	oauthCallbackFlags.Usage = oauthCallbackUsage
 	oauthLogoutFlags.Usage = oauthLogoutUsage
+	oauthMeFlags.Usage = oauthMeUsage
 
 	if err := flag.CommandLine.Parse(os.Args[1:]); err != nil {
 		return nil, nil, err
@@ -159,6 +167,8 @@ func ParseEndpoint(
 			svcf = courseFlags
 		case "enrollment":
 			svcf = enrollmentFlags
+		case "queue":
+			svcf = queueFlags
 		case "oauth":
 			svcf = oauthFlags
 		default:
@@ -199,6 +209,16 @@ func ParseEndpoint(
 
 			}
 
+		case "queue":
+			switch epn {
+			case "enqueue":
+				epf = queueEnqueueFlags
+
+			case "enqueue-suscribe":
+				epf = queueEnqueueSuscribeFlags
+
+			}
+
 		case "oauth":
 			switch epn {
 			case "redirect":
@@ -209,6 +229,9 @@ func ParseEndpoint(
 
 			case "logout":
 				epf = oauthLogoutFlags
+
+			case "me":
+				epf = oauthMeFlags
 
 			}
 
@@ -253,6 +276,14 @@ func ParseEndpoint(
 			case "get-enrollment-courses":
 				endpoint = c.GetEnrollmentCourses()
 			}
+		case "queue":
+			c := queuec.NewClient(scheme, host, doer, enc, dec, restore, dialer, queueConfigurer)
+			switch epn {
+			case "enqueue":
+				endpoint = c.Enqueue()
+			case "enqueue-suscribe":
+				endpoint = c.EnqueueSuscribe()
+			}
 		case "oauth":
 			c := oauthc.NewClient(scheme, host, doer, enc, dec, restore)
 			switch epn {
@@ -265,6 +296,8 @@ func ParseEndpoint(
 			case "logout":
 				endpoint = c.Logout()
 				data, err = oauthc.BuildLogoutPayload(*oauthLogoutTokenFlag)
+			case "me":
+				endpoint = c.Me()
 			}
 		}
 	}
@@ -308,16 +341,6 @@ Example:
             "cicle_number": 1,
             "credits": 3,
             "name": "Introduction to Programming"
-         },
-         {
-            "cicle_number": 1,
-            "credits": 3,
-            "name": "Introduction to Programming"
-         },
-         {
-            "cicle_number": 1,
-            "credits": 3,
-            "name": "Introduction to Programming"
          }
       ]
    }'
@@ -332,8 +355,8 @@ Get all courses, only admin can use this method
 
 Example:
     %[1]s course get-all-courses --body '{
-      "limit": 2480526247841537657,
-      "page": 3417534505291559534
+      "limit": 8911149612749746103,
+      "page": 916775543018707264
    }'
 `, os.Args[0])
 }
@@ -373,24 +396,24 @@ Example:
     %[1]s enrollment enroll --body '{
       "enrollCourses": [
          {
-            "course_id": 1304883946,
-            "id": 148943620,
-            "program_id": 1307531092
+            "course_id": 1368988241,
+            "id": 1845633047,
+            "program_id": 694091412
          },
          {
-            "course_id": 1304883946,
-            "id": 148943620,
-            "program_id": 1307531092
+            "course_id": 1368988241,
+            "id": 1845633047,
+            "program_id": 694091412
          },
          {
-            "course_id": 1304883946,
-            "id": 148943620,
-            "program_id": 1307531092
+            "course_id": 1368988241,
+            "id": 1845633047,
+            "program_id": 694091412
          },
          {
-            "course_id": 1304883946,
-            "id": 148943620,
-            "program_id": 1307531092
+            "course_id": 1368988241,
+            "id": 1845633047,
+            "program_id": 694091412
          }
       ]
    }'
@@ -407,6 +430,40 @@ Example:
 `, os.Args[0])
 }
 
+// queueUsage displays the usage of the queue command and its subcommands.
+func queueUsage() {
+	fmt.Fprintf(os.Stderr, `Manage the queue of courses and enrollments
+Usage:
+    %[1]s [globalflags] queue COMMAND [flags]
+
+COMMAND:
+    enqueue: Enqueue a student to the queue
+    enqueue-suscribe: Suscribe a student to queue in real time
+
+Additional help:
+    %[1]s queue COMMAND --help
+`, os.Args[0])
+}
+func queueEnqueueUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] queue enqueue
+
+Enqueue a student to the queue
+
+Example:
+    %[1]s queue enqueue
+`, os.Args[0])
+}
+
+func queueEnqueueSuscribeUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] queue enqueue-suscribe
+
+Suscribe a student to queue in real time
+
+Example:
+    %[1]s queue enqueue-suscribe
+`, os.Args[0])
+}
+
 // oauthUsage displays the usage of the oauth command and its subcommands.
 func oauthUsage() {
 	fmt.Fprintf(os.Stderr, `OAuth-based authentication service for Google and Microsoft
@@ -417,6 +474,7 @@ COMMAND:
     redirect: Generate a redirection URL for the chosen OAuth provider
     callback: Handle OAuth callback and authenticate user
     logout: Terminate the current session and invalidate the token
+    me: Returns the authenticated user's information
 
 Additional help:
     %[1]s oauth COMMAND --help
@@ -444,7 +502,7 @@ Handle OAuth callback and authenticate user
     -user-agent STRING: 
 
 Example:
-    %[1]s oauth callback --provider "google" --code "1" --state "b6z" --ip-address "104.204.10.71" --user-agent "Adipisci expedita nisi consequatur debitis nobis."
+    %[1]s oauth callback --provider "google" --code "1jj" --state "cve" --ip-address "247.242.207.245" --user-agent "Praesentium omnis consectetur ipsum pariatur fuga placeat."
 `, os.Args[0])
 }
 
@@ -455,6 +513,16 @@ Terminate the current session and invalidate the token
     -token STRING: 
 
 Example:
-    %[1]s oauth logout --token "Aut earum minima provident."
+    %[1]s oauth logout --token "Iusto iusto minima magni similique accusantium odio."
+`, os.Args[0])
+}
+
+func oauthMeUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] oauth me
+
+Returns the authenticated user's information
+
+Example:
+    %[1]s oauth me
 `, os.Args[0])
 }

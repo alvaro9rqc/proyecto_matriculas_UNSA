@@ -28,6 +28,21 @@ type CallbackResponseBody struct {
 	ExpiresAt *string `form:"expires_at,omitempty" json:"expires_at,omitempty" xml:"expires_at,omitempty"`
 }
 
+// MeResponseBody is the type of the "oauth" service "me" endpoint HTTP
+// response body.
+type MeResponseBody struct {
+	// Unique user ID
+	ID *string `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
+	// User email
+	Email *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
+	// User first name
+	FirstName *string `form:"firstName,omitempty" json:"firstName,omitempty" xml:"firstName,omitempty"`
+	// User last names
+	LastNames *string `form:"lastNames,omitempty" json:"lastNames,omitempty" xml:"lastNames,omitempty"`
+	// User remaining names
+	RemainingNames *string `form:"remainingNames,omitempty" json:"remainingNames,omitempty" xml:"remainingNames,omitempty"`
+}
+
 // RedirectInvalidProviderResponseBody is the type of the "oauth" service
 // "redirect" endpoint HTTP response body for the "invalid_provider" error.
 type RedirectInvalidProviderResponseBody struct {
@@ -85,6 +100,24 @@ type CallbackServerErrorResponseBody struct {
 // LogoutUnauthorizedResponseBody is the type of the "oauth" service "logout"
 // endpoint HTTP response body for the "unauthorized" error.
 type LogoutUnauthorizedResponseBody struct {
+	// Name is the name of this class of errors.
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// ID is a unique identifier for this particular occurrence of the problem.
+	ID *string `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
+	// Message is a human-readable explanation specific to this occurrence of the
+	// problem.
+	Message *string `form:"message,omitempty" json:"message,omitempty" xml:"message,omitempty"`
+	// Is the error temporary?
+	Temporary *bool `form:"temporary,omitempty" json:"temporary,omitempty" xml:"temporary,omitempty"`
+	// Is the error a timeout?
+	Timeout *bool `form:"timeout,omitempty" json:"timeout,omitempty" xml:"timeout,omitempty"`
+	// Is the error a server-side fault?
+	Fault *bool `form:"fault,omitempty" json:"fault,omitempty" xml:"fault,omitempty"`
+}
+
+// MeUnauthorizedResponseBody is the type of the "oauth" service "me" endpoint
+// HTTP response body for the "unauthorized" error.
+type MeUnauthorizedResponseBody struct {
 	// Name is the name of this class of errors.
 	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 	// ID is a unique identifier for this particular occurrence of the problem.
@@ -181,6 +214,34 @@ func NewLogoutUnauthorized(body *LogoutUnauthorizedResponseBody) *goa.ServiceErr
 	return v
 }
 
+// NewMeAccountUserOK builds a "oauth" service "me" endpoint result from a HTTP
+// "OK" response.
+func NewMeAccountUserOK(body *MeResponseBody) *oauth.AccountUser {
+	v := &oauth.AccountUser{
+		ID:             *body.ID,
+		Email:          *body.Email,
+		FirstName:      *body.FirstName,
+		LastNames:      *body.LastNames,
+		RemainingNames: *body.RemainingNames,
+	}
+
+	return v
+}
+
+// NewMeUnauthorized builds a oauth service me endpoint unauthorized error.
+func NewMeUnauthorized(body *MeUnauthorizedResponseBody) *goa.ServiceError {
+	v := &goa.ServiceError{
+		Name:      *body.Name,
+		ID:        *body.ID,
+		Message:   *body.Message,
+		Temporary: *body.Temporary,
+		Timeout:   *body.Timeout,
+		Fault:     *body.Fault,
+	}
+
+	return v
+}
+
 // ValidateRedirectResponseBody runs the validations defined on
 // RedirectResponseBody
 func ValidateRedirectResponseBody(body *RedirectResponseBody) (err error) {
@@ -204,6 +265,26 @@ func ValidateCallbackResponseBody(body *CallbackResponseBody) (err error) {
 	}
 	if body.ExpiresAt != nil {
 		err = goa.MergeErrors(err, goa.ValidateFormat("body.expires_at", *body.ExpiresAt, goa.FormatDateTime))
+	}
+	return
+}
+
+// ValidateMeResponseBody runs the validations defined on MeResponseBody
+func ValidateMeResponseBody(body *MeResponseBody) (err error) {
+	if body.ID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
+	}
+	if body.Email == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("email", "body"))
+	}
+	if body.FirstName == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("firstName", "body"))
+	}
+	if body.LastNames == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("lastNames", "body"))
+	}
+	if body.RemainingNames == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("remainingNames", "body"))
 	}
 	return
 }
@@ -283,6 +364,30 @@ func ValidateCallbackServerErrorResponseBody(body *CallbackServerErrorResponseBo
 // ValidateLogoutUnauthorizedResponseBody runs the validations defined on
 // logout_unauthorized_response_body
 func ValidateLogoutUnauthorizedResponseBody(body *LogoutUnauthorizedResponseBody) (err error) {
+	if body.Name == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
+	}
+	if body.ID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
+	}
+	if body.Message == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("message", "body"))
+	}
+	if body.Temporary == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("temporary", "body"))
+	}
+	if body.Timeout == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("timeout", "body"))
+	}
+	if body.Fault == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("fault", "body"))
+	}
+	return
+}
+
+// ValidateMeUnauthorizedResponseBody runs the validations defined on
+// me_unauthorized_response_body
+func ValidateMeUnauthorizedResponseBody(body *MeUnauthorizedResponseBody) (err error) {
 	if body.Name == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
 	}

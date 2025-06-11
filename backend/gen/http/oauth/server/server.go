@@ -22,6 +22,7 @@ type Server struct {
 	Redirect http.Handler
 	Callback http.Handler
 	Logout   http.Handler
+	Me       http.Handler
 }
 
 // MountPoint holds information about the mounted endpoints.
@@ -54,10 +55,12 @@ func New(
 			{"Redirect", "GET", "/auth/redirect/{provider}"},
 			{"Callback", "GET", "/auth/callback/{provider}"},
 			{"Logout", "POST", "/auth/logout"},
+			{"Me", "GET", "/auth/me"},
 		},
 		Redirect: NewRedirectHandler(e.Redirect, mux, decoder, encoder, errhandler, formatter),
 		Callback: NewCallbackHandler(e.Callback, mux, decoder, encoder, errhandler, formatter),
 		Logout:   NewLogoutHandler(e.Logout, mux, decoder, encoder, errhandler, formatter),
+		Me:       NewMeHandler(e.Me, mux, decoder, encoder, errhandler, formatter),
 	}
 }
 
@@ -69,6 +72,7 @@ func (s *Server) Use(m func(http.Handler) http.Handler) {
 	s.Redirect = m(s.Redirect)
 	s.Callback = m(s.Callback)
 	s.Logout = m(s.Logout)
+	s.Me = m(s.Me)
 }
 
 // MethodNames returns the methods served.
@@ -79,6 +83,7 @@ func Mount(mux goahttp.Muxer, h *Server) {
 	MountRedirectHandler(mux, h.Redirect)
 	MountCallbackHandler(mux, h.Callback)
 	MountLogoutHandler(mux, h.Logout)
+	MountMeHandler(mux, h.Me)
 }
 
 // Mount configures the mux to serve the oauth endpoints.
@@ -227,6 +232,49 @@ func NewLogoutHandler(
 			return
 		}
 		res, err := endpoint(ctx, payload)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		if err := encodeResponse(ctx, w, res); err != nil {
+			errhandler(ctx, w, err)
+		}
+	})
+}
+
+// MountMeHandler configures the mux to serve the "oauth" service "me" endpoint.
+func MountMeHandler(mux goahttp.Muxer, h http.Handler) {
+	f, ok := h.(http.HandlerFunc)
+	if !ok {
+		f = func(w http.ResponseWriter, r *http.Request) {
+			h.ServeHTTP(w, r)
+		}
+	}
+	mux.Handle("GET", "/auth/me", f)
+}
+
+// NewMeHandler creates a HTTP handler which loads the HTTP request and calls
+// the "oauth" service "me" endpoint.
+func NewMeHandler(
+	endpoint goa.Endpoint,
+	mux goahttp.Muxer,
+	decoder func(*http.Request) goahttp.Decoder,
+	encoder func(context.Context, http.ResponseWriter) goahttp.Encoder,
+	errhandler func(context.Context, http.ResponseWriter, error),
+	formatter func(ctx context.Context, err error) goahttp.Statuser,
+) http.Handler {
+	var (
+		encodeResponse = EncodeMeResponse(encoder)
+		encodeError    = EncodeMeError(encoder, formatter)
+	)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
+		ctx = context.WithValue(ctx, goa.MethodKey, "me")
+		ctx = context.WithValue(ctx, goa.ServiceKey, "oauth")
+		var err error
+		res, err := endpoint(ctx, nil)
 		if err != nil {
 			if err := encodeError(ctx, w, err); err != nil {
 				errhandler(ctx, w, err)
