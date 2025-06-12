@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"os"
 
 	oauth "github.com/enrollment/gen/oauth"
 	"goa.design/clue/log"
@@ -23,9 +24,9 @@ func (s *oauthsrvc) Redirect(ctx context.Context, p *oauth.RedirectPayload) (res
 	var url string
 	switch p.Provider {
 	case "google":
-		url = "https://accounts.google.com/o/oauth2/auth?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&response_type=code&scope=email%20profile"
+		url = os.Getenv("GOOGLE_REDIRECT_URL")
 	case "microsoft":
-		url = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=YOUR_CLIENT_ID&response_type=code&redirect_uri=YOUR_REDIRECT_URI&scope=openid%20profile%20email"
+		url = os.Getenv("MICROSOFT_REDIRECT_URL")
 	default:
 		return nil, oauth.MakeInvalidProvider(fmt.Errorf("unsupported provider: %s", p.Provider))
 	}
