@@ -7,24 +7,38 @@ import (
 
 	oauth "github.com/enrollment/gen/oauth"
 	"goa.design/clue/log"
+	"golang.org/x/oauth2"
 )
 
 // oauth service example implementation.
 // The example methods log the requests and return zero values.
-type oauthsrvc struct{}
+type oauthsrvc struct {
+	GoogleOAuthConfig oauth2.Config
+}
 
 // NewOauth returns the oauth service implementation.
-func NewOauth() oauth.Service {
-	return &oauthsrvc{}
+func NewOauth(oathConfig oauth2.Config) oauth.Service {
+	return &oauthsrvc{
+		GoogleOAuthConfig: oathConfig,
+	}
 }
 
 // Generate a redirection URL for the chosen OAuth provider
 func (s *oauthsrvc) Redirect(ctx context.Context, p *oauth.RedirectPayload) (res *oauth.OAuthRedirectResult, err error) {
+	//===============================//
+	// Mira asi puedes importar la configuración de OAuth
+	// s.GoogleOAuthConfig
+	// ================================//
+
+	var (
+		GOOGLE_REDIRECT_URL = s.GoogleOAuthConfig.RedirectURL
+	)
+
 	log.Printf(ctx, "oauth.redirect")
 	var url string
 	switch p.Provider {
 	case "google":
-		url = os.Getenv("GOOGLE_REDIRECT_URL")
+		url = GOOGLE_REDIRECT_URL
 	case "microsoft":
 		url = os.Getenv("MICROSOFT_REDIRECT_URL")
 	default:
