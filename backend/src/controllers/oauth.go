@@ -38,8 +38,8 @@ func (s *oauthsrvc) Redirect(ctx context.Context, p *oauth.RedirectPayload) (res
 
 // Handle OAuth callback and authenticate user
 func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res *oauth.LoginResult, err error) {
+	log.Printf(ctx, "oauth.callback: provider=%s, code=%s", p.Provider, p.Code)
 	res = &oauth.LoginResult{}
-	log.Printf(ctx, "oauth.callback")
 	return
 }
 
