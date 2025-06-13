@@ -6,7 +6,7 @@ servers:
     - url: http://localhost:80
       description: Default server for course
 paths:
-    /auth/callback/{provider}:
+    /auth/{provider}/callback:
         get:
             tags:
                 - oauth
@@ -91,6 +91,41 @@ paths:
                         application/vnd.goa.error:
                             schema:
                                 $ref: '#/components/schemas/Error'
+    /auth/{provider}/login:
+        get:
+            tags:
+                - oauth
+            summary: login oauth
+            description: Generate a redirection URL for the chosen OAuth provider
+            operationId: oauth#login
+            parameters:
+                - name: provider
+                  in: path
+                  description: OAuth provider name
+                  required: true
+                  schema:
+                    type: string
+                    description: OAuth provider options
+                    example: google
+                    enum:
+                        - google
+                        - microsoft
+                  example: google
+            responses:
+                "200":
+                    description: OK response.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/OAuthRedirectResult'
+                            example:
+                                redirect_url: https://accounts.google.com/o/oauth2/auth?...code
+                "400":
+                    description: 'invalid_provider: Unsupported OAuth provider'
+                    content:
+                        application/vnd.goa.error:
+                            schema:
+                                $ref: '#/components/schemas/Error'
     /auth/logout:
         post:
             tags:
@@ -129,41 +164,6 @@ paths:
                                 remainingNames: Magnam in quod beatae id.
                 "401":
                     description: 'unauthorized: Unauthorized access'
-                    content:
-                        application/vnd.goa.error:
-                            schema:
-                                $ref: '#/components/schemas/Error'
-    /auth/redirect/{provider}:
-        get:
-            tags:
-                - oauth
-            summary: redirect oauth
-            description: Generate a redirection URL for the chosen OAuth provider
-            operationId: oauth#redirect
-            parameters:
-                - name: provider
-                  in: path
-                  description: OAuth provider name
-                  required: true
-                  schema:
-                    type: string
-                    description: OAuth provider options
-                    example: google
-                    enum:
-                        - google
-                        - microsoft
-                  example: google
-            responses:
-                "200":
-                    description: OK response.
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/OAuthRedirectResult'
-                            example:
-                                redirect_url: https://accounts.google.com/o/oauth2/auth?...code
-                "400":
-                    description: 'invalid_provider: Unsupported OAuth provider'
                     content:
                         application/vnd.goa.error:
                             schema:

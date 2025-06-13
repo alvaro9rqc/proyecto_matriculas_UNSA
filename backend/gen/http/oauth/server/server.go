@@ -19,7 +19,7 @@ import (
 // Server lists the oauth service endpoint HTTP handlers.
 type Server struct {
 	Mounts   []*MountPoint
-	Redirect http.Handler
+	Login    http.Handler
 	Callback http.Handler
 	Logout   http.Handler
 	Me       http.Handler
@@ -52,12 +52,12 @@ func New(
 ) *Server {
 	return &Server{
 		Mounts: []*MountPoint{
-			{"Redirect", "GET", "/auth/redirect/{provider}"},
-			{"Callback", "GET", "/auth/callback/{provider}"},
+			{"Login", "GET", "/auth/{provider}/login"},
+			{"Callback", "GET", "/auth/{provider}/callback"},
 			{"Logout", "POST", "/auth/logout"},
 			{"Me", "GET", "/auth/me"},
 		},
-		Redirect: NewRedirectHandler(e.Redirect, mux, decoder, encoder, errhandler, formatter),
+		Login:    NewLoginHandler(e.Login, mux, decoder, encoder, errhandler, formatter),
 		Callback: NewCallbackHandler(e.Callback, mux, decoder, encoder, errhandler, formatter),
 		Logout:   NewLogoutHandler(e.Logout, mux, decoder, encoder, errhandler, formatter),
 		Me:       NewMeHandler(e.Me, mux, decoder, encoder, errhandler, formatter),
@@ -69,7 +69,7 @@ func (s *Server) Service() string { return "oauth" }
 
 // Use wraps the server handlers with the given middleware.
 func (s *Server) Use(m func(http.Handler) http.Handler) {
-	s.Redirect = m(s.Redirect)
+	s.Login = m(s.Login)
 	s.Callback = m(s.Callback)
 	s.Logout = m(s.Logout)
 	s.Me = m(s.Me)
@@ -80,7 +80,7 @@ func (s *Server) MethodNames() []string { return oauth.MethodNames[:] }
 
 // Mount configures the mux to serve the oauth endpoints.
 func Mount(mux goahttp.Muxer, h *Server) {
-	MountRedirectHandler(mux, h.Redirect)
+	MountLoginHandler(mux, h.Login)
 	MountCallbackHandler(mux, h.Callback)
 	MountLogoutHandler(mux, h.Logout)
 	MountMeHandler(mux, h.Me)
@@ -91,21 +91,21 @@ func (s *Server) Mount(mux goahttp.Muxer) {
 	Mount(mux, s)
 }
 
-// MountRedirectHandler configures the mux to serve the "oauth" service
-// "redirect" endpoint.
-func MountRedirectHandler(mux goahttp.Muxer, h http.Handler) {
+// MountLoginHandler configures the mux to serve the "oauth" service "login"
+// endpoint.
+func MountLoginHandler(mux goahttp.Muxer, h http.Handler) {
 	f, ok := h.(http.HandlerFunc)
 	if !ok {
 		f = func(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}
-	mux.Handle("GET", "/auth/redirect/{provider}", f)
+	mux.Handle("GET", "/auth/{provider}/login", f)
 }
 
-// NewRedirectHandler creates a HTTP handler which loads the HTTP request and
-// calls the "oauth" service "redirect" endpoint.
-func NewRedirectHandler(
+// NewLoginHandler creates a HTTP handler which loads the HTTP request and
+// calls the "oauth" service "login" endpoint.
+func NewLoginHandler(
 	endpoint goa.Endpoint,
 	mux goahttp.Muxer,
 	decoder func(*http.Request) goahttp.Decoder,
@@ -114,13 +114,13 @@ func NewRedirectHandler(
 	formatter func(ctx context.Context, err error) goahttp.Statuser,
 ) http.Handler {
 	var (
-		decodeRequest  = DecodeRedirectRequest(mux, decoder)
-		encodeResponse = EncodeRedirectResponse(encoder)
-		encodeError    = EncodeRedirectError(encoder, formatter)
+		decodeRequest  = DecodeLoginRequest(mux, decoder)
+		encodeResponse = EncodeLoginResponse(encoder)
+		encodeError    = EncodeLoginError(encoder, formatter)
 	)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
-		ctx = context.WithValue(ctx, goa.MethodKey, "redirect")
+		ctx = context.WithValue(ctx, goa.MethodKey, "login")
 		ctx = context.WithValue(ctx, goa.ServiceKey, "oauth")
 		payload, err := decodeRequest(r)
 		if err != nil {
@@ -151,7 +151,7 @@ func MountCallbackHandler(mux goahttp.Muxer, h http.Handler) {
 			h.ServeHTTP(w, r)
 		}
 	}
-	mux.Handle("GET", "/auth/callback/{provider}", f)
+	mux.Handle("GET", "/auth/{provider}/callback", f)
 }
 
 // NewCallbackHandler creates a HTTP handler which loads the HTTP request and

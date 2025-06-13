@@ -16,7 +16,7 @@ import (
 // OAuth-based authentication service for Google and Microsoft
 type Service interface {
 	// Generate a redirection URL for the chosen OAuth provider
-	Redirect(context.Context, *RedirectPayload) (res *OAuthRedirectResult, err error)
+	Login(context.Context, *LoginPayload) (res *OAuthRedirectResult, err error)
 	// Handle OAuth callback and authenticate user
 	Callback(context.Context, *CallbackPayload) (res *LoginResult, err error)
 	// Terminate the current session and invalidate the token
@@ -39,7 +39,7 @@ const ServiceName = "oauth"
 // MethodNames lists the service method names as defined in the design. These
 // are the same values that are set in the endpoint request contexts under the
 // MethodKey key.
-var MethodNames = [4]string{"redirect", "callback", "logout", "me"}
+var MethodNames = [4]string{"login", "callback", "logout", "me"}
 
 // AccountUser is the result type of the oauth service me method.
 type AccountUser struct {
@@ -69,6 +69,12 @@ type CallbackPayload struct {
 	UserAgent string
 }
 
+// LoginPayload is the payload type of the oauth service login method.
+type LoginPayload struct {
+	// OAuth provider name
+	Provider OAuthProvider
+}
+
 // LoginResult is the result type of the oauth service callback method.
 type LoginResult struct {
 	// Session access token
@@ -86,16 +92,10 @@ type LogoutPayload struct {
 // OAuth provider options
 type OAuthProvider string
 
-// OAuthRedirectResult is the result type of the oauth service redirect method.
+// OAuthRedirectResult is the result type of the oauth service login method.
 type OAuthRedirectResult struct {
 	// OAuth authorization URL
 	RedirectURL string
-}
-
-// RedirectPayload is the payload type of the oauth service redirect method.
-type RedirectPayload struct {
-	// OAuth provider name
-	Provider OAuthProvider
 }
 
 // MakeInvalidProvider builds a goa.ServiceError from an error.

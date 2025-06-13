@@ -12,9 +12,9 @@ import (
 	goa "goa.design/goa/v3/pkg"
 )
 
-// RedirectResponseBody is the type of the "oauth" service "redirect" endpoint
-// HTTP response body.
-type RedirectResponseBody struct {
+// LoginResponseBody is the type of the "oauth" service "login" endpoint HTTP
+// response body.
+type LoginResponseBody struct {
 	// OAuth authorization URL
 	RedirectURL string `form:"redirect_url" json:"redirect_url" xml:"redirect_url"`
 }
@@ -43,9 +43,9 @@ type MeResponseBody struct {
 	RemainingNames string `form:"remainingNames" json:"remainingNames" xml:"remainingNames"`
 }
 
-// RedirectInvalidProviderResponseBody is the type of the "oauth" service
-// "redirect" endpoint HTTP response body for the "invalid_provider" error.
-type RedirectInvalidProviderResponseBody struct {
+// LoginInvalidProviderResponseBody is the type of the "oauth" service "login"
+// endpoint HTTP response body for the "invalid_provider" error.
+type LoginInvalidProviderResponseBody struct {
 	// Name is the name of this class of errors.
 	Name string `form:"name" json:"name" xml:"name"`
 	// ID is a unique identifier for this particular occurrence of the problem.
@@ -133,10 +133,10 @@ type MeUnauthorizedResponseBody struct {
 	Fault bool `form:"fault" json:"fault" xml:"fault"`
 }
 
-// NewRedirectResponseBody builds the HTTP response body from the result of the
-// "redirect" endpoint of the "oauth" service.
-func NewRedirectResponseBody(res *oauth.OAuthRedirectResult) *RedirectResponseBody {
-	body := &RedirectResponseBody{
+// NewLoginResponseBody builds the HTTP response body from the result of the
+// "login" endpoint of the "oauth" service.
+func NewLoginResponseBody(res *oauth.OAuthRedirectResult) *LoginResponseBody {
+	body := &LoginResponseBody{
 		RedirectURL: res.RedirectURL,
 	}
 	return body
@@ -165,10 +165,10 @@ func NewMeResponseBody(res *oauth.AccountUser) *MeResponseBody {
 	return body
 }
 
-// NewRedirectInvalidProviderResponseBody builds the HTTP response body from
-// the result of the "redirect" endpoint of the "oauth" service.
-func NewRedirectInvalidProviderResponseBody(res *goa.ServiceError) *RedirectInvalidProviderResponseBody {
-	body := &RedirectInvalidProviderResponseBody{
+// NewLoginInvalidProviderResponseBody builds the HTTP response body from the
+// result of the "login" endpoint of the "oauth" service.
+func NewLoginInvalidProviderResponseBody(res *goa.ServiceError) *LoginInvalidProviderResponseBody {
+	body := &LoginInvalidProviderResponseBody{
 		Name:      res.Name,
 		ID:        res.ID,
 		Message:   res.Message,
@@ -235,9 +235,9 @@ func NewMeUnauthorizedResponseBody(res *goa.ServiceError) *MeUnauthorizedRespons
 	return body
 }
 
-// NewRedirectPayload builds a oauth service redirect endpoint payload.
-func NewRedirectPayload(provider string) *oauth.RedirectPayload {
-	v := &oauth.RedirectPayload{}
+// NewLoginPayload builds a oauth service login endpoint payload.
+func NewLoginPayload(provider string) *oauth.LoginPayload {
+	v := &oauth.LoginPayload{}
 	v.Provider = oauth.OAuthProvider(provider)
 
 	return v

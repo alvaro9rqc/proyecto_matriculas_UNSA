@@ -17,9 +17,8 @@ import (
 
 // Client lists the oauth service endpoint HTTP clients.
 type Client struct {
-	// Redirect Doer is the HTTP client used to make requests to the redirect
-	// endpoint.
-	RedirectDoer goahttp.Doer
+	// Login Doer is the HTTP client used to make requests to the login endpoint.
+	LoginDoer goahttp.Doer
 
 	// Callback Doer is the HTTP client used to make requests to the callback
 	// endpoint.
@@ -51,7 +50,7 @@ func NewClient(
 	restoreBody bool,
 ) *Client {
 	return &Client{
-		RedirectDoer:        doer,
+		LoginDoer:           doer,
 		CallbackDoer:        doer,
 		LogoutDoer:          doer,
 		MeDoer:              doer,
@@ -63,20 +62,20 @@ func NewClient(
 	}
 }
 
-// Redirect returns an endpoint that makes HTTP requests to the oauth service
-// redirect server.
-func (c *Client) Redirect() goa.Endpoint {
+// Login returns an endpoint that makes HTTP requests to the oauth service
+// login server.
+func (c *Client) Login() goa.Endpoint {
 	var (
-		decodeResponse = DecodeRedirectResponse(c.decoder, c.RestoreResponseBody)
+		decodeResponse = DecodeLoginResponse(c.decoder, c.RestoreResponseBody)
 	)
 	return func(ctx context.Context, v any) (any, error) {
-		req, err := c.BuildRedirectRequest(ctx, v)
+		req, err := c.BuildLoginRequest(ctx, v)
 		if err != nil {
 			return nil, err
 		}
-		resp, err := c.RedirectDoer.Do(req)
+		resp, err := c.LoginDoer.Do(req)
 		if err != nil {
-			return nil, goahttp.ErrRequestError("oauth", "redirect", err)
+			return nil, goahttp.ErrRequestError("oauth", "login", err)
 		}
 		return decodeResponse(resp)
 	}

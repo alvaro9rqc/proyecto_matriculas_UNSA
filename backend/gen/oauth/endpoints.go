@@ -15,7 +15,7 @@ import (
 
 // Endpoints wraps the "oauth" service endpoints.
 type Endpoints struct {
-	Redirect goa.Endpoint
+	Login    goa.Endpoint
 	Callback goa.Endpoint
 	Logout   goa.Endpoint
 	Me       goa.Endpoint
@@ -24,7 +24,7 @@ type Endpoints struct {
 // NewEndpoints wraps the methods of the "oauth" service with endpoints.
 func NewEndpoints(s Service) *Endpoints {
 	return &Endpoints{
-		Redirect: NewRedirectEndpoint(s),
+		Login:    NewLoginEndpoint(s),
 		Callback: NewCallbackEndpoint(s),
 		Logout:   NewLogoutEndpoint(s),
 		Me:       NewMeEndpoint(s),
@@ -33,18 +33,18 @@ func NewEndpoints(s Service) *Endpoints {
 
 // Use applies the given middleware to all the "oauth" service endpoints.
 func (e *Endpoints) Use(m func(goa.Endpoint) goa.Endpoint) {
-	e.Redirect = m(e.Redirect)
+	e.Login = m(e.Login)
 	e.Callback = m(e.Callback)
 	e.Logout = m(e.Logout)
 	e.Me = m(e.Me)
 }
 
-// NewRedirectEndpoint returns an endpoint function that calls the method
-// "redirect" of service "oauth".
-func NewRedirectEndpoint(s Service) goa.Endpoint {
+// NewLoginEndpoint returns an endpoint function that calls the method "login"
+// of service "oauth".
+func NewLoginEndpoint(s Service) goa.Endpoint {
 	return func(ctx context.Context, req any) (any, error) {
-		p := req.(*RedirectPayload)
-		return s.Redirect(ctx, p)
+		p := req.(*LoginPayload)
+		return s.Login(ctx, p)
 	}
 }
 

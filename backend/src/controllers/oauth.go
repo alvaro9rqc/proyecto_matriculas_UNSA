@@ -2,12 +2,15 @@ package controllers
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
-	"os"
 
 	oauth "github.com/enrollment/gen/oauth"
+	goahttp "goa.design/goa/v3/http"
 	"goa.design/clue/log"
 	"golang.org/x/oauth2"
+	"net/http"
 )
 
 // oauth service example implementation.
@@ -17,43 +20,45 @@ type oauthsrvc struct {
 }
 
 // NewOauth returns the oauth service implementation.
-func NewOauth(oathConfig oauth2.Config) oauth.Service {
+func NewOauth(oauthConfig oauth2.Config) oauth.Service {
 	return &oauthsrvc{
-		GoogleOAuthConfig: oathConfig,
+		GoogleOAuthConfig: oauthConfig,
 	}
 }
 
 // Generate a redirection URL for the chosen OAuth provider
-func (s *oauthsrvc) Redirect(ctx context.Context, p *oauth.RedirectPayload) (res *oauth.OAuthRedirectResult, err error) {
-	//===============================//
-	// Mira asi puedes importar la configuración de OAuth
-	// s.GoogleOAuthConfig
-	// ================================//
+func (s *oauthsrvc) Login(ctx context.Context, p *oauth.LoginPayload) (res *oauth.OAuthRedirectResult, err error) {
 
 	var (
 		GOOGLE_REDIRECT_URL = s.GoogleOAuthConfig.RedirectURL
 	)
 
 	log.Printf(ctx, "oauth.redirect")
+	//choose the redirect URL based on the provider
 	var url string
 	switch p.Provider {
 	case "google":
 		url = GOOGLE_REDIRECT_URL
 	case "microsoft":
-		url = os.Getenv("MICROSOFT_REDIRECT_URL")
+		//url = os.Getenv("MICROSOFT_REDIRECT_URL")
 	default:
 		return nil, oauth.MakeInvalidProvider(fmt.Errorf("unsupported provider: %s", p.Provider))
 	}
 
-	return &oauth.OAuthRedirectResult{
-		RedirectURL: url,
-	}, nil
+	//generate random state to prevent CSRF attacks
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		return nil, fmt.Errorf("failed to generate random state: %w", err)
+	}
+	state := base64.URLEncoding.EncodeToString(b)
+	// add cokie http 
+	httpRes = goahttp.
 }
 
 // Handle OAuth callback and authenticate user
 func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res *oauth.LoginResult, err error) {
-	log.Printf(ctx, "oauth.callback: provider=%s, code=%s", p.Provider, p.Code)
 	res = &oauth.LoginResult{}
+	log.Printf(ctx, "oauth.callback")
 	return
 }
 
@@ -63,8 +68,9 @@ func (s *oauthsrvc) Logout(ctx context.Context, p *oauth.LogoutPayload) (err err
 	return
 }
 
+// Returns the authenticated user's information
 func (s *oauthsrvc) Me(ctx context.Context) (res *oauth.AccountUser, err error) {
 	res = &oauth.AccountUser{}
-
-	return res, nil
+	log.Printf(ctx, "oauth.me")
+	return
 }

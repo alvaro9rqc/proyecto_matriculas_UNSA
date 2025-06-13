@@ -34,7 +34,7 @@ var _ = Service("oauth", func() {
 	Description("OAuth-based authentication service for Google and Microsoft")
 
 	// Initiates the login by generating a provider-specific OAuth authorization URL
-	Method("redirect", func() {
+	Method("login", func() {
 		Description("Generate a redirection URL for the chosen OAuth provider")
 
 		Payload(func() {
@@ -47,7 +47,7 @@ var _ = Service("oauth", func() {
 		Error("invalid_provider", ErrorResult, "Unsupported OAuth provider")
 
 		HTTP(func() {
-			GET("/auth/redirect/{provider}")
+			GET("/auth/{provider}/login")
 			Response(StatusOK)
 			Response("invalid_provider", StatusBadRequest)
 		})
@@ -78,7 +78,7 @@ var _ = Service("oauth", func() {
 		Error("server_error", ErrorResult, "Internal server error")
 
 		HTTP(func() {
-			GET("/auth/callback/{provider}")
+			GET("/auth/{provider}/callback")
 			Param("code")
 			Param("state")
 			Param("ip_address")

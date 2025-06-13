@@ -28,7 +28,7 @@ func UsageCommands() string {
 	return `course (upload-all-courses|get-all-courses|get-user-available-courses)
 enrollment (enroll|get-enrollment-courses)
 queue (enqueue|enqueue-suscribe)
-oauth (redirect|callback|logout|me)
+oauth (login|callback|logout|me)
 `
 }
 
@@ -73,7 +73,7 @@ func UsageExamples() string {
       ]
    }'` + "\n" +
 		os.Args[0] + ` queue enqueue` + "\n" +
-		os.Args[0] + ` oauth redirect --provider "google"` + "\n" +
+		os.Args[0] + ` oauth login --provider "google"` + "\n" +
 		""
 }
 
@@ -114,8 +114,8 @@ func ParseEndpoint(
 
 		oauthFlags = flag.NewFlagSet("oauth", flag.ContinueOnError)
 
-		oauthRedirectFlags        = flag.NewFlagSet("redirect", flag.ExitOnError)
-		oauthRedirectProviderFlag = oauthRedirectFlags.String("provider", "REQUIRED", "OAuth provider name")
+		oauthLoginFlags        = flag.NewFlagSet("login", flag.ExitOnError)
+		oauthLoginProviderFlag = oauthLoginFlags.String("provider", "REQUIRED", "OAuth provider name")
 
 		oauthCallbackFlags         = flag.NewFlagSet("callback", flag.ExitOnError)
 		oauthCallbackProviderFlag  = oauthCallbackFlags.String("provider", "REQUIRED", "OAuth provider name")
@@ -143,7 +143,7 @@ func ParseEndpoint(
 	queueEnqueueSuscribeFlags.Usage = queueEnqueueSuscribeUsage
 
 	oauthFlags.Usage = oauthUsage
-	oauthRedirectFlags.Usage = oauthRedirectUsage
+	oauthLoginFlags.Usage = oauthLoginUsage
 	oauthCallbackFlags.Usage = oauthCallbackUsage
 	oauthLogoutFlags.Usage = oauthLogoutUsage
 	oauthMeFlags.Usage = oauthMeUsage
@@ -221,8 +221,8 @@ func ParseEndpoint(
 
 		case "oauth":
 			switch epn {
-			case "redirect":
-				epf = oauthRedirectFlags
+			case "login":
+				epf = oauthLoginFlags
 
 			case "callback":
 				epf = oauthCallbackFlags
@@ -287,9 +287,9 @@ func ParseEndpoint(
 		case "oauth":
 			c := oauthc.NewClient(scheme, host, doer, enc, dec, restore)
 			switch epn {
-			case "redirect":
-				endpoint = c.Redirect()
-				data, err = oauthc.BuildRedirectPayload(*oauthRedirectProviderFlag)
+			case "login":
+				endpoint = c.Login()
+				data, err = oauthc.BuildLoginPayload(*oauthLoginProviderFlag)
 			case "callback":
 				endpoint = c.Callback()
 				data, err = oauthc.BuildCallbackPayload(*oauthCallbackProviderFlag, *oauthCallbackCodeFlag, *oauthCallbackStateFlag, *oauthCallbackIPAddressFlag, *oauthCallbackUserAgentFlag)
@@ -471,7 +471,7 @@ Usage:
     %[1]s [globalflags] oauth COMMAND [flags]
 
 COMMAND:
-    redirect: Generate a redirection URL for the chosen OAuth provider
+    login: Generate a redirection URL for the chosen OAuth provider
     callback: Handle OAuth callback and authenticate user
     logout: Terminate the current session and invalidate the token
     me: Returns the authenticated user's information
@@ -480,14 +480,14 @@ Additional help:
     %[1]s oauth COMMAND --help
 `, os.Args[0])
 }
-func oauthRedirectUsage() {
-	fmt.Fprintf(os.Stderr, `%[1]s [flags] oauth redirect -provider STRING
+func oauthLoginUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] oauth login -provider STRING
 
 Generate a redirection URL for the chosen OAuth provider
     -provider STRING: OAuth provider name
 
 Example:
-    %[1]s oauth redirect --provider "google"
+    %[1]s oauth login --provider "google"
 `, os.Args[0])
 }
 

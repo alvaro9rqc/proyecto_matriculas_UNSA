@@ -11,14 +11,14 @@ import (
 	"fmt"
 )
 
-// RedirectOauthPath returns the URL path to the oauth service redirect HTTP endpoint.
-func RedirectOauthPath(provider string) string {
-	return fmt.Sprintf("/auth/redirect/%v", provider)
+// LoginOauthPath returns the URL path to the oauth service login HTTP endpoint.
+func LoginOauthPath(provider string) string {
+	return fmt.Sprintf("/auth/%v/login", provider)
 }
 
 // CallbackOauthPath returns the URL path to the oauth service callback HTTP endpoint.
 func CallbackOauthPath(provider string) string {
-	return fmt.Sprintf("/auth/callback/%v", provider)
+	return fmt.Sprintf("/auth/%v/callback", provider)
 }
 
 // LogoutOauthPath returns the URL path to the oauth service logout HTTP endpoint.

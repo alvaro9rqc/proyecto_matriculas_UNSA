@@ -18,23 +18,23 @@ import (
 	goahttp "goa.design/goa/v3/http"
 )
 
-// BuildRedirectRequest instantiates a HTTP request object with method and path
-// set to call the "oauth" service "redirect" endpoint
-func (c *Client) BuildRedirectRequest(ctx context.Context, v any) (*http.Request, error) {
+// BuildLoginRequest instantiates a HTTP request object with method and path
+// set to call the "oauth" service "login" endpoint
+func (c *Client) BuildLoginRequest(ctx context.Context, v any) (*http.Request, error) {
 	var (
 		provider string
 	)
 	{
-		p, ok := v.(*oauth.RedirectPayload)
+		p, ok := v.(*oauth.LoginPayload)
 		if !ok {
-			return nil, goahttp.ErrInvalidType("oauth", "redirect", "*oauth.RedirectPayload", v)
+			return nil, goahttp.ErrInvalidType("oauth", "login", "*oauth.LoginPayload", v)
 		}
 		provider = string(p.Provider)
 	}
-	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: RedirectOauthPath(provider)}
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: LoginOauthPath(provider)}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
-		return nil, goahttp.ErrInvalidURL("oauth", "redirect", u.String(), err)
+		return nil, goahttp.ErrInvalidURL("oauth", "login", u.String(), err)
 	}
 	if ctx != nil {
 		req = req.WithContext(ctx)
@@ -43,13 +43,13 @@ func (c *Client) BuildRedirectRequest(ctx context.Context, v any) (*http.Request
 	return req, nil
 }
 
-// DecodeRedirectResponse returns a decoder for responses returned by the oauth
-// redirect endpoint. restoreBody controls whether the response body should be
+// DecodeLoginResponse returns a decoder for responses returned by the oauth
+// login endpoint. restoreBody controls whether the response body should be
 // restored after having been read.
-// DecodeRedirectResponse may return the following errors:
+// DecodeLoginResponse may return the following errors:
 //   - "invalid_provider" (type *goa.ServiceError): http.StatusBadRequest
 //   - error: internal error
-func DecodeRedirectResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
+func DecodeLoginResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
 	return func(resp *http.Response) (any, error) {
 		if restoreBody {
 			b, err := io.ReadAll(resp.Body)
@@ -66,36 +66,36 @@ func DecodeRedirectResponse(decoder func(*http.Response) goahttp.Decoder, restor
 		switch resp.StatusCode {
 		case http.StatusOK:
 			var (
-				body RedirectResponseBody
+				body LoginResponseBody
 				err  error
 			)
 			err = decoder(resp).Decode(&body)
 			if err != nil {
-				return nil, goahttp.ErrDecodingError("oauth", "redirect", err)
+				return nil, goahttp.ErrDecodingError("oauth", "login", err)
 			}
-			err = ValidateRedirectResponseBody(&body)
+			err = ValidateLoginResponseBody(&body)
 			if err != nil {
-				return nil, goahttp.ErrValidationError("oauth", "redirect", err)
+				return nil, goahttp.ErrValidationError("oauth", "login", err)
 			}
-			res := NewRedirectOAuthRedirectResultOK(&body)
+			res := NewLoginOAuthRedirectResultOK(&body)
 			return res, nil
 		case http.StatusBadRequest:
 			var (
-				body RedirectInvalidProviderResponseBody
+				body LoginInvalidProviderResponseBody
 				err  error
 			)
 			err = decoder(resp).Decode(&body)
 			if err != nil {
-				return nil, goahttp.ErrDecodingError("oauth", "redirect", err)
+				return nil, goahttp.ErrDecodingError("oauth", "login", err)
 			}
-			err = ValidateRedirectInvalidProviderResponseBody(&body)
+			err = ValidateLoginInvalidProviderResponseBody(&body)
 			if err != nil {
-				return nil, goahttp.ErrValidationError("oauth", "redirect", err)
+				return nil, goahttp.ErrValidationError("oauth", "login", err)
 			}
-			return nil, NewRedirectInvalidProvider(&body)
+			return nil, NewLoginInvalidProvider(&body)
 		default:
 			body, _ := io.ReadAll(resp.Body)
-			return nil, goahttp.ErrInvalidResponse("oauth", "redirect", resp.StatusCode, string(body))
+			return nil, goahttp.ErrInvalidResponse("oauth", "login", resp.StatusCode, string(body))
 		}
 	}
 }

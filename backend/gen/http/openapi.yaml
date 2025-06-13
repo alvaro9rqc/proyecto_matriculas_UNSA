@@ -12,7 +12,7 @@ produces:
     - application/xml
     - application/gob
 paths:
-    /auth/callback/{provider}:
+    /auth/{provider}/callback:
         get:
             tags:
                 - oauth
@@ -66,6 +66,32 @@ paths:
                         $ref: '#/definitions/OauthCallbackServerErrorResponseBody'
             schemes:
                 - http
+    /auth/{provider}/login:
+        get:
+            tags:
+                - oauth
+            summary: login oauth
+            description: Generate a redirection URL for the chosen OAuth provider
+            operationId: oauth#login
+            parameters:
+                - name: provider
+                  in: path
+                  description: OAuth provider options
+                  required: true
+                  type: string
+            responses:
+                "200":
+                    description: OK response.
+                    schema:
+                        $ref: '#/definitions/OAuthRedirectResult'
+                        required:
+                            - redirect_url
+                "400":
+                    description: Bad Request response.
+                    schema:
+                        $ref: '#/definitions/OauthLoginInvalidProviderResponseBody'
+            schemes:
+                - http
     /auth/logout:
         post:
             tags:
@@ -110,32 +136,6 @@ paths:
                     description: Unauthorized response.
                     schema:
                         $ref: '#/definitions/OauthMeUnauthorizedResponseBody'
-            schemes:
-                - http
-    /auth/redirect/{provider}:
-        get:
-            tags:
-                - oauth
-            summary: redirect oauth
-            description: Generate a redirection URL for the chosen OAuth provider
-            operationId: oauth#redirect
-            parameters:
-                - name: provider
-                  in: path
-                  description: OAuth provider options
-                  required: true
-                  type: string
-            responses:
-                "200":
-                    description: OK response.
-                    schema:
-                        $ref: '#/definitions/OAuthRedirectResult'
-                        required:
-                            - redirect_url
-                "400":
-                    description: Bad Request response.
-                    schema:
-                        $ref: '#/definitions/OauthRedirectInvalidProviderResponseBody'
             schemes:
                 - http
     /courses:
@@ -1051,6 +1051,49 @@ definitions:
             - temporary
             - timeout
             - fault
+    OauthLoginInvalidProviderResponseBody:
+        title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+        type: object
+        properties:
+            fault:
+                type: boolean
+                description: Is the error a server-side fault?
+                example: false
+            id:
+                type: string
+                description: ID is a unique identifier for this particular occurrence of the problem.
+                example: 123abc
+            message:
+                type: string
+                description: Message is a human-readable explanation specific to this occurrence of the problem.
+                example: parameter 'p' must be an integer
+            name:
+                type: string
+                description: Name is the name of this class of errors.
+                example: bad_request
+            temporary:
+                type: boolean
+                description: Is the error temporary?
+                example: true
+            timeout:
+                type: boolean
+                description: Is the error a timeout?
+                example: true
+        description: Unsupported OAuth provider (default view)
+        example:
+            fault: false
+            id: 123abc
+            message: parameter 'p' must be an integer
+            name: bad_request
+            temporary: true
+            timeout: true
+        required:
+            - name
+            - id
+            - message
+            - temporary
+            - timeout
+            - fault
     OauthLogoutUnauthorizedResponseBody:
         title: 'Mediatype identifier: application/vnd.goa.error; view=default'
         type: object
@@ -1129,49 +1172,6 @@ definitions:
             message: parameter 'p' must be an integer
             name: bad_request
             temporary: false
-            timeout: true
-        required:
-            - name
-            - id
-            - message
-            - temporary
-            - timeout
-            - fault
-    OauthRedirectInvalidProviderResponseBody:
-        title: 'Mediatype identifier: application/vnd.goa.error; view=default'
-        type: object
-        properties:
-            fault:
-                type: boolean
-                description: Is the error a server-side fault?
-                example: false
-            id:
-                type: string
-                description: ID is a unique identifier for this particular occurrence of the problem.
-                example: 123abc
-            message:
-                type: string
-                description: Message is a human-readable explanation specific to this occurrence of the problem.
-                example: parameter 'p' must be an integer
-            name:
-                type: string
-                description: Name is the name of this class of errors.
-                example: bad_request
-            temporary:
-                type: boolean
-                description: Is the error temporary?
-                example: true
-            timeout:
-                type: boolean
-                description: Is the error a timeout?
-                example: true
-        description: Unsupported OAuth provider (default view)
-        example:
-            fault: false
-            id: 123abc
-            message: parameter 'p' must be an integer
-            name: bad_request
-            temporary: true
             timeout: true
         required:
             - name

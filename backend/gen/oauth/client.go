@@ -15,29 +15,29 @@ import (
 
 // Client is the "oauth" service client.
 type Client struct {
-	RedirectEndpoint goa.Endpoint
+	LoginEndpoint    goa.Endpoint
 	CallbackEndpoint goa.Endpoint
 	LogoutEndpoint   goa.Endpoint
 	MeEndpoint       goa.Endpoint
 }
 
 // NewClient initializes a "oauth" service client given the endpoints.
-func NewClient(redirect, callback, logout, me goa.Endpoint) *Client {
+func NewClient(login, callback, logout, me goa.Endpoint) *Client {
 	return &Client{
-		RedirectEndpoint: redirect,
+		LoginEndpoint:    login,
 		CallbackEndpoint: callback,
 		LogoutEndpoint:   logout,
 		MeEndpoint:       me,
 	}
 }
 
-// Redirect calls the "redirect" endpoint of the "oauth" service.
-// Redirect may return the following errors:
+// Login calls the "login" endpoint of the "oauth" service.
+// Login may return the following errors:
 //   - "invalid_provider" (type *goa.ServiceError): Unsupported OAuth provider
 //   - error: internal error
-func (c *Client) Redirect(ctx context.Context, p *RedirectPayload) (res *OAuthRedirectResult, err error) {
+func (c *Client) Login(ctx context.Context, p *LoginPayload) (res *OAuthRedirectResult, err error) {
 	var ires any
-	ires, err = c.RedirectEndpoint(ctx, p)
+	ires, err = c.LoginEndpoint(ctx, p)
 	if err != nil {
 		return
 	}

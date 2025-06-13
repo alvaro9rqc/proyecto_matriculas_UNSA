@@ -14,13 +14,13 @@ import (
 	goa "goa.design/goa/v3/pkg"
 )
 
-// BuildRedirectPayload builds the payload for the oauth redirect endpoint from
-// CLI flags.
-func BuildRedirectPayload(oauthRedirectProvider string) (*oauth.RedirectPayload, error) {
+// BuildLoginPayload builds the payload for the oauth login endpoint from CLI
+// flags.
+func BuildLoginPayload(oauthLoginProvider string) (*oauth.LoginPayload, error) {
 	var err error
 	var provider string
 	{
-		provider = oauthRedirectProvider
+		provider = oauthLoginProvider
 		if !(provider == "google" || provider == "microsoft") {
 			err = goa.MergeErrors(err, goa.InvalidEnumValueError("provider", provider, []any{"google", "microsoft"}))
 		}
@@ -28,7 +28,7 @@ func BuildRedirectPayload(oauthRedirectProvider string) (*oauth.RedirectPayload,
 			return nil, err
 		}
 	}
-	v := &oauth.RedirectPayload{}
+	v := &oauth.LoginPayload{}
 	v.Provider = oauth.OAuthProvider(provider)
 
 	return v, nil

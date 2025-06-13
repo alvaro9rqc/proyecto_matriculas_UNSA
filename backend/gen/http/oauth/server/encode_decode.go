@@ -18,21 +18,21 @@ import (
 	goa "goa.design/goa/v3/pkg"
 )
 
-// EncodeRedirectResponse returns an encoder for responses returned by the
-// oauth redirect endpoint.
-func EncodeRedirectResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, any) error {
+// EncodeLoginResponse returns an encoder for responses returned by the oauth
+// login endpoint.
+func EncodeLoginResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, any) error {
 	return func(ctx context.Context, w http.ResponseWriter, v any) error {
 		res, _ := v.(*oauth.OAuthRedirectResult)
 		enc := encoder(ctx, w)
-		body := NewRedirectResponseBody(res)
+		body := NewLoginResponseBody(res)
 		w.WriteHeader(http.StatusOK)
 		return enc.Encode(body)
 	}
 }
 
-// DecodeRedirectRequest returns a decoder for requests sent to the oauth
-// redirect endpoint.
-func DecodeRedirectRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (any, error) {
+// DecodeLoginRequest returns a decoder for requests sent to the oauth login
+// endpoint.
+func DecodeLoginRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (any, error) {
 	return func(r *http.Request) (any, error) {
 		var (
 			provider string
@@ -47,15 +47,15 @@ func DecodeRedirectRequest(mux goahttp.Muxer, decoder func(*http.Request) goahtt
 		if err != nil {
 			return nil, err
 		}
-		payload := NewRedirectPayload(provider)
+		payload := NewLoginPayload(provider)
 
 		return payload, nil
 	}
 }
 
-// EncodeRedirectError returns an encoder for errors returned by the redirect
-// oauth endpoint.
-func EncodeRedirectError(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder, formatter func(ctx context.Context, err error) goahttp.Statuser) func(context.Context, http.ResponseWriter, error) error {
+// EncodeLoginError returns an encoder for errors returned by the login oauth
+// endpoint.
+func EncodeLoginError(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder, formatter func(ctx context.Context, err error) goahttp.Statuser) func(context.Context, http.ResponseWriter, error) error {
 	encodeError := goahttp.ErrorEncoder(encoder, formatter)
 	return func(ctx context.Context, w http.ResponseWriter, v error) error {
 		var en goa.GoaErrorNamer
@@ -71,7 +71,7 @@ func EncodeRedirectError(encoder func(context.Context, http.ResponseWriter) goah
 			if formatter != nil {
 				body = formatter(ctx, res)
 			} else {
-				body = NewRedirectInvalidProviderResponseBody(res)
+				body = NewLoginInvalidProviderResponseBody(res)
 			}
 			w.Header().Set("goa-error", res.GoaErrorName())
 			w.WriteHeader(http.StatusBadRequest)
