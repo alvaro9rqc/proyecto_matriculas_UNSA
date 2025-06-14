@@ -95,6 +95,7 @@ func NewConfig() (*Config, error) {
 	googleOAuthConfig := oauth2.Config{
 		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
 		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
+		RedirectURL:  os.Getenv("GOOGLE_REDIRECT_URL"),
 		Endpoint:     google.Endpoint,
 		Scopes:       []string{googleOauth2.UserinfoEmailScope, googleOauth2.UserinfoProfileScope},
 	}
