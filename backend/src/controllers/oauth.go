@@ -7,10 +7,8 @@ import (
 	"fmt"
 
 	oauth "github.com/enrollment/gen/oauth"
-	goahttp "goa.design/goa/v3/http"
 	"goa.design/clue/log"
 	"golang.org/x/oauth2"
-	"net/http"
 )
 
 // oauth service example implementation.
@@ -28,22 +26,7 @@ func NewOauth(oauthConfig oauth2.Config) oauth.Service {
 
 // Generate a redirection URL for the chosen OAuth provider
 func (s *oauthsrvc) Login(ctx context.Context, p *oauth.LoginPayload) (res *oauth.OAuthRedirectResult, err error) {
-
-	var (
-		GOOGLE_REDIRECT_URL = s.GoogleOAuthConfig.RedirectURL
-	)
-
 	log.Printf(ctx, "oauth.redirect")
-	//choose the redirect URL based on the provider
-	var url string
-	switch p.Provider {
-	case "google":
-		url = GOOGLE_REDIRECT_URL
-	case "microsoft":
-		//url = os.Getenv("MICROSOFT_REDIRECT_URL")
-	default:
-		return nil, oauth.MakeInvalidProvider(fmt.Errorf("unsupported provider: %s", p.Provider))
-	}
 
 	//generate random state to prevent CSRF attacks
 	b := make([]byte, 32)
@@ -51,8 +34,22 @@ func (s *oauthsrvc) Login(ctx context.Context, p *oauth.LoginPayload) (res *oaut
 		return nil, fmt.Errorf("failed to generate random state: %w", err)
 	}
 	state := base64.URLEncoding.EncodeToString(b)
-	// add cokie http 
-	httpRes = goahttp.
+
+	//choose the redirect URL based on the provider
+	var url string
+	switch p.Provider {
+	case "google":
+		url = s.GoogleOAuthConfig.AuthCodeURL(state)
+	case "microsoft":
+		//url = os.Getenv("MICROSOFT_REDIRECT_URL")
+		return nil, oauth.MakeInvalidProvider(fmt.Errorf("unsupported provider: %s", p.Provider))
+	default:
+		return nil, oauth.MakeInvalidProvider(fmt.Errorf("unsupported provider: %s", p.Provider))
+	}
+	res = &oauth.OAuthRedirectResult{
+		RedirectURL: url,
+	}
+	return res, nil
 }
 
 // Handle OAuth callback and authenticate user
