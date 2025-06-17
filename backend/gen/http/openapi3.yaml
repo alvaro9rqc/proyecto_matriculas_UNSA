@@ -22,9 +22,9 @@ paths:
                   schema:
                     type: string
                     description: Authorization code
-                    example: ix
+                    example: l7x
                     minLength: 1
-                  example: pi3
+                  example: kh
                 - name: state
                   in: query
                   description: Anti-CSRF state token
@@ -33,9 +33,9 @@ paths:
                   schema:
                     type: string
                     description: Anti-CSRF state token
-                    example: lye
+                    example: bw7
                     minLength: 10
-                  example: 46n
+                  example: 3ci
                 - name: ip_address
                   in: query
                   description: Client IP address
@@ -44,9 +44,9 @@ paths:
                   schema:
                     type: string
                     description: Client IP address
-                    example: 91.195.193.25
+                    example: 36.183.4.153
                     format: ip
-                  example: 238.150.222.79
+                  example: 62.243.149.193
                 - name: user_agent
                   in: query
                   description: User-Agent header value
@@ -55,8 +55,8 @@ paths:
                   schema:
                     type: string
                     description: User-Agent header value
-                    example: Consectetur illo non porro sunt.
-                  example: Quibusdam voluptatem veritatis qui error.
+                    example: Sed natus quisquam facere voluptatem.
+                  example: Et consequuntur architecto nihil.
                 - name: provider
                   in: path
                   description: OAuth provider name
@@ -72,13 +72,21 @@ paths:
             responses:
                 "200":
                     description: OK response.
+                    headers:
+                        Set-Cookie:
+                            description: Session token set in cookie after successful login
+                            schema:
+                                type: string
+                                description: Session token set in cookie after successful login
+                                example: session_token=abc123xyz
+                            example: session_token=abc123xyz
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/LoginResult'
+                                $ref: '#/components/schemas/LoginResult2'
                             example:
-                                access_token: Nemo sed et eveniet.
-                                expires_at: "2007-04-17T04:44:18Z"
+                                access_token: Iure est.
+                                expires_at: "1978-10-03T09:57:46Z"
                 "400":
                     description: 'invalid_token: Invalid or expired OAuth token'
                     content:
@@ -112,20 +120,17 @@ paths:
                         - microsoft
                   example: google
             responses:
-                "200":
-                    description: OK response.
-                    content:
-                        application/json:
+                "307":
+                    description: Temporary Redirect response.
+                    headers:
+                        Location:
+                            description: OAuth authorization URL
                             schema:
-                                $ref: '#/components/schemas/OAuthRedirectResult'
-                            example:
-                                redirect_url: https://accounts.google.com/o/oauth2/auth?...code
-                "400":
-                    description: 'invalid_provider: Unsupported OAuth provider'
-                    content:
-                        application/vnd.goa.error:
-                            schema:
-                                $ref: '#/components/schemas/Error'
+                                type: string
+                                description: OAuth authorization URL
+                                example: https://accounts.google.com/o/oauth2/auth?...code
+                                format: uri
+                            example: https://accounts.google.com/o/oauth2/auth?...code
     /auth/logout:
         post:
             tags:
@@ -182,8 +187,8 @@ paths:
                         schema:
                             $ref: '#/components/schemas/GetAllCoursesRequestBody'
                         example:
-                            limit: 8911149612749746103
-                            page: 916775543018707264
+                            limit: 9169191563188553499
+                            page: 2060723767552159223
             responses:
                 "200":
                     description: OK response.
@@ -207,6 +212,10 @@ paths:
                                       id: "144"
                                       name: Introduction to Programming
                             example:
+                                - cicle_number: 1
+                                  credits: 3
+                                  id: "144"
+                                  name: Introduction to Programming
                                 - cicle_number: 1
                                   credits: 3
                                   id: "144"
@@ -257,6 +266,10 @@ paths:
                                       id: "144"
                                       name: Introduction to Programming
                             example:
+                                - cicle_number: 1
+                                  credits: 3
+                                  id: "144"
+                                  name: Introduction to Programming
                                 - cicle_number: 1
                                   credits: 3
                                   id: "144"
@@ -328,18 +341,12 @@ paths:
                             $ref: '#/components/schemas/EnrollmentPayload'
                         example:
                             enrollCourses:
-                                - course_id: 1368988241
-                                  id: 1845633047
-                                  program_id: 694091412
-                                - course_id: 1368988241
-                                  id: 1845633047
-                                  program_id: 694091412
-                                - course_id: 1368988241
-                                  id: 1845633047
-                                  program_id: 694091412
-                                - course_id: 1368988241
-                                  id: 1845633047
-                                  program_id: 694091412
+                                - course_id: 1728305637
+                                  id: 668033071
+                                  program_id: 1111042991
+                                - course_id: 1728305637
+                                  id: 668033071
+                                  program_id: 1111042991
             responses:
                 "201":
                     description: Created response.
@@ -371,18 +378,12 @@ paths:
                                 $ref: '#/components/schemas/EnrollmentPayload'
                             example:
                                 enrollCourses:
-                                    - course_id: 194235674
-                                      id: 24969578
-                                      program_id: 2129833131
-                                    - course_id: 194235674
-                                      id: 24969578
-                                      program_id: 2129833131
-                                    - course_id: 194235674
-                                      id: 24969578
-                                      program_id: 2129833131
-                                    - course_id: 194235674
-                                      id: 24969578
-                                      program_id: 2129833131
+                                    - course_id: 2131156146
+                                      id: 1150851623
+                                      program_id: 834554352
+                                    - course_id: 2131156146
+                                      id: 1150851623
+                                      program_id: 834554352
                 "400":
                     description: 'bad_request: Invalid request'
                     content:
@@ -432,9 +433,9 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/EnqueueSuscribeResponseBody'
                             example:
-                                position: 1253547821
-                                status: Saepe asperiores autem nisi.
-                                total: 1009039078
+                                position: 1680589343
+                                status: Omnis porro repellendus praesentium voluptatem aliquid.
+                                total: 1696568507
                 "400":
                     description: 'bad_request: Invalid request'
                     content:
@@ -463,7 +464,7 @@ components:
                 id:
                     type: string
                     description: Unique user ID
-                    example: Quaerat sapiente sed et sit nisi consequatur.
+                    example: Et sit nisi consequatur.
                 lastNames:
                     type: string
                     description: User last names
@@ -578,23 +579,23 @@ components:
                 course_id:
                     type: integer
                     description: Course ID
-                    example: 803936825
+                    example: 569122704
                     format: int32
                 id:
                     type: integer
                     description: Enrollment ID
-                    example: 474045137
+                    example: 139828141
                     format: int32
                 program_id:
                     type: integer
                     description: Program ID
-                    example: 555219903
+                    example: 1751370590
                     format: int32
             description: Represents a course enrollment
             example:
-                course_id: 43399824
-                id: 1981101831
-                program_id: 1235666190
+                course_id: 1812525831
+                id: 768382623
+                program_id: 474045137
             required:
                 - id
                 - course_id
@@ -808,32 +809,55 @@ components:
                 access_token:
                     type: string
                     description: Session access token
-                    example: Doloribus ea cupiditate voluptate autem sed.
+                    example: Atque qui dolore autem eveniet.
                 expires_at:
                     type: string
                     description: Access token expiration timestamp
-                    example: "1977-01-27T13:45:03Z"
+                    example: "2014-09-18T08:33:33Z"
                     format: date-time
+                session_token:
+                    type: string
+                    description: Cookie for session management
+                    example: Aut quis dolorem.
             description: Successful login result containing access token
             example:
-                access_token: Eos ut temporibus voluptas a quae est.
-                expires_at: "1981-01-27T17:10:26Z"
+                access_token: Perferendis voluptatum et consectetur eos ut temporibus.
+                expires_at: "1990-08-14T13:34:08Z"
+                session_token: Eaque voluptatum odio quis ut quaerat sapiente.
+            required:
+                - access_token
+                - expires_at
+        LoginResult2:
+            type: object
+            properties:
+                access_token:
+                    type: string
+                    description: Session access token
+                    example: Voluptates velit voluptatum laborum enim.
+                expires_at:
+                    type: string
+                    description: Access token expiration timestamp
+                    example: "1989-04-27T05:31:30Z"
+                    format: date-time
+            example:
+                access_token: Fugit magnam qui quibusdam eum voluptatum.
+                expires_at: "2002-06-30T00:50:54Z"
             required:
                 - access_token
                 - expires_at
         OAuthRedirectResult:
             type: object
             properties:
-                redirect_url:
+                Location:
                     type: string
                     description: OAuth authorization URL
                     example: https://accounts.google.com/o/oauth2/auth?...code
                     format: uri
             description: Redirect URL for initiating OAuth login
             example:
-                redirect_url: https://accounts.google.com/o/oauth2/auth?...code
+                Location: https://accounts.google.com/o/oauth2/auth?...code
             required:
-                - redirect_url
+                - Location
         SpeakerCoursePayload:
             type: object
             properties:
@@ -877,11 +901,6 @@ components:
                     items:
                         $ref: '#/components/schemas/EventCoursePayload'
                     example:
-                        - end_date: 1748992994154
-                          instalation:
-                            description: This course is in Sistem Ingenier School
-                            name: Sistem Ingenier School
-                          start_date: 1748992994154
                         - end_date: 1748992994154
                           instalation:
                             description: This course is in Sistem Ingenier School
@@ -956,11 +975,6 @@ components:
                             description: This course is in Sistem Ingenier School
                             name: Sistem Ingenier School
                           start_date: 1748992994154
-                        - end_date: 1748992994154
-                          instalation:
-                            description: This course is in Sistem Ingenier School
-                            name: Sistem Ingenier School
-                          start_date: 1748992994154
                 taken_places:
                     type: integer
                     description: Number of places already taken in the course
@@ -1005,15 +1019,9 @@ components:
                         - cicle_number: 1
                           credits: 3
                           name: Introduction to Programming
-                        - cicle_number: 1
-                          credits: 3
-                          name: Introduction to Programming
             description: Payload for uploading all courses
             example:
                 courses:
-                    - cicle_number: 1
-                      credits: 3
-                      name: Introduction to Programming
                     - cicle_number: 1
                       credits: 3
                       name: Introduction to Programming

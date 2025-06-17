@@ -49,7 +49,7 @@ func (s *oauthsrvc) Login(ctx context.Context, p *oauth.LoginPayload) (res *oaut
 		return nil, oauth.MakeInvalidProvider(fmt.Errorf("unsupported provider: %s", p.Provider))
 	}
 	res = &oauth.OAuthRedirectResult{
-		RedirectURL: url,
+		Location: url,
 	}
 	return res, nil
 }
