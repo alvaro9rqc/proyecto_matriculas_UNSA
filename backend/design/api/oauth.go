@@ -27,6 +27,7 @@ var LoginResult = Type("LoginResult", func() {
 	Attribute("expires_at", String, "Access token expiration timestamp", func() {
 		Format(FormatDateTime)
 	})
+	Attribute("session_token", String, "Cookie for session management")
 	Required("access_token", "expires_at")
 })
 
@@ -83,7 +84,13 @@ var _ = Service("oauth", func() {
 			Param("state")
 			Param("ip_address")
 			Param("user_agent")
-			Response(StatusOK)
+			Response(StatusOK, func() {
+				Cookie("session_token:session_token", String, func() {
+					Description("Session token set in cookie after successful login")
+					Example("session_token=abc123xyz")
+				})
+				CookieHTTPOnly()
+			})
 			Response("invalid_token", StatusBadRequest)
 			Response("server_error", StatusInternalServerError)
 		})
