@@ -5,10 +5,12 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
-
 	oauth "github.com/enrollment/gen/oauth"
+	//. "github.com/enrollment/src/db"
 	"goa.design/clue/log"
 	"golang.org/x/oauth2"
+	googleOauth2 "google.golang.org/api/oauth2/v2"
+	"google.golang.org/api/option"
 )
 
 // oauth service example implementation.
@@ -52,8 +54,44 @@ func (s *oauthsrvc) Login(ctx context.Context, p *oauth.LoginPayload) (res *oaut
 	return res, nil
 }
 
+func exchangesCode(ctx context.Context, p *oauth.CallbackPayload, s *oauthsrvc) (*googleOauth2.Userinfo, error) {
+	token, err := s.GoogleOAuthConfig.Exchange(ctx, p.Code)
+	if err != nil {
+		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
+	}
+	oauth2Service, err := googleOauth2.NewService(ctx, option.WithTokenSource(s.GoogleOAuthConfig.TokenSource(ctx, token)))
+	if err != nil {
+		return nil, fmt.Errorf("failed on creating oauth2 service", err)
+	}
+	userinfo, err := oauth2Service.Userinfo.Get().Do()
+	if err != nil {
+		return nil, fmt.Errorf("failed retrieving user info", err)
+	}
+	return userinfo, nil
+}
+
 // Handle OAuth callback and authenticate user
+// Here we search for the user in the database, create a session, and return the access token
+// or create a new user if not found
+// TODO: use cookies to prevent CSRF attacks
+// TODO: search a way to prevent unlimited login attempts ans unlimited sessions created
+// TODO: erase access token for original result type
 func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res *oauth.LoginResult, err error) {
+	userinfo, err := exchangesCode(ctx, p, s)
+	if err != nil {
+		return nil, fmt.Errorf("failed to exchange code: %w", err)
+	}
+	log.Printf(ctx, "oauth.callback userinfo: %v", userinfo)
+	//result_query, err := AccountRepository.GetAccountByEmail( userinfo.Email )
+	//if (err != nil) {
+	//	return nil, fmt.Errorf("Failed on retrieving data from data base", err)
+	//}
+
+	// search if user exists in the database
+	// using email
+	// if not exist, create a new user
+	// put all data in the user.
+	// create a new session
 	res = &oauth.LoginResult{}
 	log.Printf(ctx, "oauth.callback")
 	return
