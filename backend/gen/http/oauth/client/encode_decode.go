@@ -16,6 +16,7 @@ import (
 
 	oauth "github.com/enrollment/gen/oauth"
 	goahttp "goa.design/goa/v3/http"
+	goa "goa.design/goa/v3/pkg"
 )
 
 // BuildLoginRequest instantiates a HTTP request object with method and path
@@ -46,9 +47,6 @@ func (c *Client) BuildLoginRequest(ctx context.Context, v any) (*http.Request, e
 // DecodeLoginResponse returns a decoder for responses returned by the oauth
 // login endpoint. restoreBody controls whether the response body should be
 // restored after having been read.
-// DecodeLoginResponse may return the following errors:
-//   - "invalid_provider" (type *goa.ServiceError): http.StatusBadRequest
-//   - error: internal error
 func DecodeLoginResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
 	return func(resp *http.Response) (any, error) {
 		if restoreBody {
@@ -64,35 +62,22 @@ func DecodeLoginResponse(decoder func(*http.Response) goahttp.Decoder, restoreBo
 			defer resp.Body.Close()
 		}
 		switch resp.StatusCode {
-		case http.StatusOK:
+		case http.StatusTemporaryRedirect:
 			var (
-				body LoginResponseBody
-				err  error
+				location string
+				err      error
 			)
-			err = decoder(resp).Decode(&body)
-			if err != nil {
-				return nil, goahttp.ErrDecodingError("oauth", "login", err)
+			locationRaw := resp.Header.Get("Location")
+			if locationRaw == "" {
+				err = goa.MergeErrors(err, goa.MissingFieldError("Location", "header"))
 			}
-			err = ValidateLoginResponseBody(&body)
+			location = locationRaw
+			err = goa.MergeErrors(err, goa.ValidateFormat("Location", location, goa.FormatURI))
 			if err != nil {
 				return nil, goahttp.ErrValidationError("oauth", "login", err)
 			}
-			res := NewLoginOAuthRedirectResultOK(&body)
+			res := NewLoginOAuthRedirectResultTemporaryRedirect(location)
 			return res, nil
-		case http.StatusBadRequest:
-			var (
-				body LoginInvalidProviderResponseBody
-				err  error
-			)
-			err = decoder(resp).Decode(&body)
-			if err != nil {
-				return nil, goahttp.ErrDecodingError("oauth", "login", err)
-			}
-			err = ValidateLoginInvalidProviderResponseBody(&body)
-			if err != nil {
-				return nil, goahttp.ErrValidationError("oauth", "login", err)
-			}
-			return nil, NewLoginInvalidProvider(&body)
 		default:
 			body, _ := io.ReadAll(resp.Body)
 			return nil, goahttp.ErrInvalidResponse("oauth", "login", resp.StatusCode, string(body))
@@ -178,7 +163,22 @@ func DecodeCallbackResponse(decoder func(*http.Response) goahttp.Decoder, restor
 			if err != nil {
 				return nil, goahttp.ErrValidationError("oauth", "callback", err)
 			}
-			res := NewCallbackLoginResultOK(&body)
+			var (
+				sessionToken    *string
+				sessionTokenRaw string
+
+				cookies = resp.Cookies()
+			)
+			for _, c := range cookies {
+				switch c.Name {
+				case "session_token":
+					sessionTokenRaw = c.Value
+				}
+			}
+			if sessionTokenRaw != "" {
+				sessionToken = &sessionTokenRaw
+			}
+			res := NewCallbackLoginResultOK(&body, sessionToken)
 			return res, nil
 		case http.StatusBadRequest:
 			var (

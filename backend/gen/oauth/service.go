@@ -81,6 +81,8 @@ type LoginResult struct {
 	AccessToken string
 	// Access token expiration timestamp
 	ExpiresAt string
+	// Cookie for session management
+	SessionToken *string
 }
 
 // LogoutPayload is the payload type of the oauth service logout method.
@@ -95,7 +97,7 @@ type OAuthProvider string
 // OAuthRedirectResult is the result type of the oauth service login method.
 type OAuthRedirectResult struct {
 	// OAuth authorization URL
-	RedirectURL string
+	Location string
 }
 
 // MakeInvalidProvider builds a goa.ServiceError from an error.

@@ -12,13 +12,6 @@ import (
 	goa "goa.design/goa/v3/pkg"
 )
 
-// LoginResponseBody is the type of the "oauth" service "login" endpoint HTTP
-// response body.
-type LoginResponseBody struct {
-	// OAuth authorization URL
-	RedirectURL *string `form:"redirect_url,omitempty" json:"redirect_url,omitempty" xml:"redirect_url,omitempty"`
-}
-
 // CallbackResponseBody is the type of the "oauth" service "callback" endpoint
 // HTTP response body.
 type CallbackResponseBody struct {
@@ -41,24 +34,6 @@ type MeResponseBody struct {
 	LastNames *string `form:"lastNames,omitempty" json:"lastNames,omitempty" xml:"lastNames,omitempty"`
 	// User remaining names
 	RemainingNames *string `form:"remainingNames,omitempty" json:"remainingNames,omitempty" xml:"remainingNames,omitempty"`
-}
-
-// LoginInvalidProviderResponseBody is the type of the "oauth" service "login"
-// endpoint HTTP response body for the "invalid_provider" error.
-type LoginInvalidProviderResponseBody struct {
-	// Name is the name of this class of errors.
-	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
-	// ID is a unique identifier for this particular occurrence of the problem.
-	ID *string `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
-	// Message is a human-readable explanation specific to this occurrence of the
-	// problem.
-	Message *string `form:"message,omitempty" json:"message,omitempty" xml:"message,omitempty"`
-	// Is the error temporary?
-	Temporary *bool `form:"temporary,omitempty" json:"temporary,omitempty" xml:"temporary,omitempty"`
-	// Is the error a timeout?
-	Timeout *bool `form:"timeout,omitempty" json:"timeout,omitempty" xml:"timeout,omitempty"`
-	// Is the error a server-side fault?
-	Fault *bool `form:"fault,omitempty" json:"fault,omitempty" xml:"fault,omitempty"`
 }
 
 // CallbackInvalidTokenResponseBody is the type of the "oauth" service
@@ -133,38 +108,23 @@ type MeUnauthorizedResponseBody struct {
 	Fault *bool `form:"fault,omitempty" json:"fault,omitempty" xml:"fault,omitempty"`
 }
 
-// NewLoginOAuthRedirectResultOK builds a "oauth" service "login" endpoint
-// result from a HTTP "OK" response.
-func NewLoginOAuthRedirectResultOK(body *LoginResponseBody) *oauth.OAuthRedirectResult {
-	v := &oauth.OAuthRedirectResult{
-		RedirectURL: *body.RedirectURL,
-	}
-
-	return v
-}
-
-// NewLoginInvalidProvider builds a oauth service login endpoint
-// invalid_provider error.
-func NewLoginInvalidProvider(body *LoginInvalidProviderResponseBody) *goa.ServiceError {
-	v := &goa.ServiceError{
-		Name:      *body.Name,
-		ID:        *body.ID,
-		Message:   *body.Message,
-		Temporary: *body.Temporary,
-		Timeout:   *body.Timeout,
-		Fault:     *body.Fault,
-	}
+// NewLoginOAuthRedirectResultTemporaryRedirect builds a "oauth" service
+// "login" endpoint result from a HTTP "TemporaryRedirect" response.
+func NewLoginOAuthRedirectResultTemporaryRedirect(location string) *oauth.OAuthRedirectResult {
+	v := &oauth.OAuthRedirectResult{}
+	v.Location = location
 
 	return v
 }
 
 // NewCallbackLoginResultOK builds a "oauth" service "callback" endpoint result
 // from a HTTP "OK" response.
-func NewCallbackLoginResultOK(body *CallbackResponseBody) *oauth.LoginResult {
+func NewCallbackLoginResultOK(body *CallbackResponseBody, sessionToken *string) *oauth.LoginResult {
 	v := &oauth.LoginResult{
 		AccessToken: *body.AccessToken,
 		ExpiresAt:   *body.ExpiresAt,
 	}
+	v.SessionToken = sessionToken
 
 	return v
 }
@@ -242,17 +202,6 @@ func NewMeUnauthorized(body *MeUnauthorizedResponseBody) *goa.ServiceError {
 	return v
 }
 
-// ValidateLoginResponseBody runs the validations defined on LoginResponseBody
-func ValidateLoginResponseBody(body *LoginResponseBody) (err error) {
-	if body.RedirectURL == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("redirect_url", "body"))
-	}
-	if body.RedirectURL != nil {
-		err = goa.MergeErrors(err, goa.ValidateFormat("body.redirect_url", *body.RedirectURL, goa.FormatURI))
-	}
-	return
-}
-
 // ValidateCallbackResponseBody runs the validations defined on
 // CallbackResponseBody
 func ValidateCallbackResponseBody(body *CallbackResponseBody) (err error) {
@@ -284,30 +233,6 @@ func ValidateMeResponseBody(body *MeResponseBody) (err error) {
 	}
 	if body.RemainingNames == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("remainingNames", "body"))
-	}
-	return
-}
-
-// ValidateLoginInvalidProviderResponseBody runs the validations defined on
-// login_invalid_provider_response_body
-func ValidateLoginInvalidProviderResponseBody(body *LoginInvalidProviderResponseBody) (err error) {
-	if body.Name == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
-	}
-	if body.ID == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
-	}
-	if body.Message == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("message", "body"))
-	}
-	if body.Temporary == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("temporary", "body"))
-	}
-	if body.Timeout == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("timeout", "body"))
-	}
-	if body.Fault == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("fault", "body"))
 	}
 	return
 }

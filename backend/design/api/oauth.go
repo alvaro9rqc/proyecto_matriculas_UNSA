@@ -13,11 +13,11 @@ var OAuthProviderType = Type("OAuthProvider", String, func() {
 // Result type containing the URL to redirect the user to start OAuth login
 var OAuthRedirectResult = Type("OAuthRedirectResult", func() {
 	Description("Redirect URL for initiating OAuth login")
-	Attribute("redirect_url", String, "OAuth authorization URL", func() {
+	Attribute("Location", String, "OAuth authorization URL", func() {
 		Format(FormatURI)
 		Example("https://accounts.google.com/o/oauth2/auth?...code")
 	})
-	Required("redirect_url")
+	Required("Location")
 })
 
 // Result type after successful OAuth login
@@ -49,8 +49,9 @@ var _ = Service("oauth", func() {
 
 		HTTP(func() {
 			GET("/auth/{provider}/login")
-			Response(StatusOK)
-			Response("invalid_provider", StatusBadRequest)
+			Response(StatusTemporaryRedirect, func () {
+				Header("Location")
+			})
 		})
 	})
 

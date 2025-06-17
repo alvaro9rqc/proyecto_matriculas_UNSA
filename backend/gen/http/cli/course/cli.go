@@ -51,24 +51,14 @@ func UsageExamples() string {
 		os.Args[0] + ` enrollment enroll --body '{
       "enrollCourses": [
          {
-            "course_id": 1368988241,
-            "id": 1845633047,
-            "program_id": 694091412
+            "course_id": 1728305637,
+            "id": 668033071,
+            "program_id": 1111042991
          },
          {
-            "course_id": 1368988241,
-            "id": 1845633047,
-            "program_id": 694091412
-         },
-         {
-            "course_id": 1368988241,
-            "id": 1845633047,
-            "program_id": 694091412
-         },
-         {
-            "course_id": 1368988241,
-            "id": 1845633047,
-            "program_id": 694091412
+            "course_id": 1728305637,
+            "id": 668033071,
+            "program_id": 1111042991
          }
       ]
    }'` + "\n" +
@@ -355,8 +345,8 @@ Get all courses, only admin can use this method
 
 Example:
     %[1]s course get-all-courses --body '{
-      "limit": 8911149612749746103,
-      "page": 916775543018707264
+      "limit": 9169191563188553499,
+      "page": 2060723767552159223
    }'
 `, os.Args[0])
 }
@@ -396,24 +386,14 @@ Example:
     %[1]s enrollment enroll --body '{
       "enrollCourses": [
          {
-            "course_id": 1368988241,
-            "id": 1845633047,
-            "program_id": 694091412
+            "course_id": 1728305637,
+            "id": 668033071,
+            "program_id": 1111042991
          },
          {
-            "course_id": 1368988241,
-            "id": 1845633047,
-            "program_id": 694091412
-         },
-         {
-            "course_id": 1368988241,
-            "id": 1845633047,
-            "program_id": 694091412
-         },
-         {
-            "course_id": 1368988241,
-            "id": 1845633047,
-            "program_id": 694091412
+            "course_id": 1728305637,
+            "id": 668033071,
+            "program_id": 1111042991
          }
       ]
    }'
@@ -502,7 +482,7 @@ Handle OAuth callback and authenticate user
     -user-agent STRING: 
 
 Example:
-    %[1]s oauth callback --provider "google" --code "1jj" --state "cve" --ip-address "247.242.207.245" --user-agent "Praesentium omnis consectetur ipsum pariatur fuga placeat."
+    %[1]s oauth callback --provider "google" --code "nc" --state "ed6" --ip-address "245.149.178.184" --user-agent "Ipsum pariatur fuga placeat."
 `, os.Args[0])
 }
 
@@ -513,7 +493,7 @@ Terminate the current session and invalidate the token
     -token STRING: 
 
 Example:
-    %[1]s oauth logout --token "Iusto iusto minima magni similique accusantium odio."
+    %[1]s oauth logout --token "Minima magni similique accusantium odio."
 `, os.Args[0])
 }
 

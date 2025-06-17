@@ -12,13 +12,6 @@ import (
 	goa "goa.design/goa/v3/pkg"
 )
 
-// LoginResponseBody is the type of the "oauth" service "login" endpoint HTTP
-// response body.
-type LoginResponseBody struct {
-	// OAuth authorization URL
-	RedirectURL string `form:"redirect_url" json:"redirect_url" xml:"redirect_url"`
-}
-
 // CallbackResponseBody is the type of the "oauth" service "callback" endpoint
 // HTTP response body.
 type CallbackResponseBody struct {
@@ -41,24 +34,6 @@ type MeResponseBody struct {
 	LastNames string `form:"lastNames" json:"lastNames" xml:"lastNames"`
 	// User remaining names
 	RemainingNames string `form:"remainingNames" json:"remainingNames" xml:"remainingNames"`
-}
-
-// LoginInvalidProviderResponseBody is the type of the "oauth" service "login"
-// endpoint HTTP response body for the "invalid_provider" error.
-type LoginInvalidProviderResponseBody struct {
-	// Name is the name of this class of errors.
-	Name string `form:"name" json:"name" xml:"name"`
-	// ID is a unique identifier for this particular occurrence of the problem.
-	ID string `form:"id" json:"id" xml:"id"`
-	// Message is a human-readable explanation specific to this occurrence of the
-	// problem.
-	Message string `form:"message" json:"message" xml:"message"`
-	// Is the error temporary?
-	Temporary bool `form:"temporary" json:"temporary" xml:"temporary"`
-	// Is the error a timeout?
-	Timeout bool `form:"timeout" json:"timeout" xml:"timeout"`
-	// Is the error a server-side fault?
-	Fault bool `form:"fault" json:"fault" xml:"fault"`
 }
 
 // CallbackInvalidTokenResponseBody is the type of the "oauth" service
@@ -133,15 +108,6 @@ type MeUnauthorizedResponseBody struct {
 	Fault bool `form:"fault" json:"fault" xml:"fault"`
 }
 
-// NewLoginResponseBody builds the HTTP response body from the result of the
-// "login" endpoint of the "oauth" service.
-func NewLoginResponseBody(res *oauth.OAuthRedirectResult) *LoginResponseBody {
-	body := &LoginResponseBody{
-		RedirectURL: res.RedirectURL,
-	}
-	return body
-}
-
 // NewCallbackResponseBody builds the HTTP response body from the result of the
 // "callback" endpoint of the "oauth" service.
 func NewCallbackResponseBody(res *oauth.LoginResult) *CallbackResponseBody {
@@ -161,20 +127,6 @@ func NewMeResponseBody(res *oauth.AccountUser) *MeResponseBody {
 		FirstName:      res.FirstName,
 		LastNames:      res.LastNames,
 		RemainingNames: res.RemainingNames,
-	}
-	return body
-}
-
-// NewLoginInvalidProviderResponseBody builds the HTTP response body from the
-// result of the "login" endpoint of the "oauth" service.
-func NewLoginInvalidProviderResponseBody(res *goa.ServiceError) *LoginInvalidProviderResponseBody {
-	body := &LoginInvalidProviderResponseBody{
-		Name:      res.Name,
-		ID:        res.ID,
-		Message:   res.Message,
-		Temporary: res.Temporary,
-		Timeout:   res.Timeout,
-		Fault:     res.Fault,
 	}
 	return body
 }
