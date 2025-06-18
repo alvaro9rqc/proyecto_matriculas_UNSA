@@ -45,20 +45,30 @@ func UsageExamples() string {
             "cicle_number": 1,
             "credits": 3,
             "name": "Introduction to Programming"
+         },
+         {
+            "cicle_number": 1,
+            "credits": 3,
+            "name": "Introduction to Programming"
+         },
+         {
+            "cicle_number": 1,
+            "credits": 3,
+            "name": "Introduction to Programming"
          }
       ]
    }'` + "\n" +
 		os.Args[0] + ` enrollment enroll --body '{
       "enrollCourses": [
          {
-            "course_id": 1728305637,
-            "id": 668033071,
-            "program_id": 1111042991
+            "course_id": 1784904295,
+            "id": 1387557170,
+            "program_id": 423981213
          },
          {
-            "course_id": 1728305637,
-            "id": 668033071,
-            "program_id": 1111042991
+            "course_id": 1784904295,
+            "id": 1387557170,
+            "program_id": 423981213
          }
       ]
    }'` + "\n" +
@@ -107,12 +117,10 @@ func ParseEndpoint(
 		oauthLoginFlags        = flag.NewFlagSet("login", flag.ExitOnError)
 		oauthLoginProviderFlag = oauthLoginFlags.String("provider", "REQUIRED", "OAuth provider name")
 
-		oauthCallbackFlags         = flag.NewFlagSet("callback", flag.ExitOnError)
-		oauthCallbackProviderFlag  = oauthCallbackFlags.String("provider", "REQUIRED", "OAuth provider name")
-		oauthCallbackCodeFlag      = oauthCallbackFlags.String("code", "REQUIRED", "")
-		oauthCallbackStateFlag     = oauthCallbackFlags.String("state", "REQUIRED", "")
-		oauthCallbackIPAddressFlag = oauthCallbackFlags.String("ip-address", "REQUIRED", "")
-		oauthCallbackUserAgentFlag = oauthCallbackFlags.String("user-agent", "REQUIRED", "")
+		oauthCallbackFlags        = flag.NewFlagSet("callback", flag.ExitOnError)
+		oauthCallbackProviderFlag = oauthCallbackFlags.String("provider", "REQUIRED", "OAuth provider name")
+		oauthCallbackCodeFlag     = oauthCallbackFlags.String("code", "REQUIRED", "")
+		oauthCallbackStateFlag    = oauthCallbackFlags.String("state", "REQUIRED", "")
 
 		oauthLogoutFlags     = flag.NewFlagSet("logout", flag.ExitOnError)
 		oauthLogoutTokenFlag = oauthLogoutFlags.String("token", "REQUIRED", "")
@@ -282,7 +290,7 @@ func ParseEndpoint(
 				data, err = oauthc.BuildLoginPayload(*oauthLoginProviderFlag)
 			case "callback":
 				endpoint = c.Callback()
-				data, err = oauthc.BuildCallbackPayload(*oauthCallbackProviderFlag, *oauthCallbackCodeFlag, *oauthCallbackStateFlag, *oauthCallbackIPAddressFlag, *oauthCallbackUserAgentFlag)
+				data, err = oauthc.BuildCallbackPayload(*oauthCallbackProviderFlag, *oauthCallbackCodeFlag, *oauthCallbackStateFlag)
 			case "logout":
 				endpoint = c.Logout()
 				data, err = oauthc.BuildLogoutPayload(*oauthLogoutTokenFlag)
@@ -331,6 +339,16 @@ Example:
             "cicle_number": 1,
             "credits": 3,
             "name": "Introduction to Programming"
+         },
+         {
+            "cicle_number": 1,
+            "credits": 3,
+            "name": "Introduction to Programming"
+         },
+         {
+            "cicle_number": 1,
+            "credits": 3,
+            "name": "Introduction to Programming"
          }
       ]
    }'
@@ -345,8 +363,8 @@ Get all courses, only admin can use this method
 
 Example:
     %[1]s course get-all-courses --body '{
-      "limit": 9169191563188553499,
-      "page": 2060723767552159223
+      "limit": 2295644385912104287,
+      "page": 5165034372633672333
    }'
 `, os.Args[0])
 }
@@ -386,14 +404,14 @@ Example:
     %[1]s enrollment enroll --body '{
       "enrollCourses": [
          {
-            "course_id": 1728305637,
-            "id": 668033071,
-            "program_id": 1111042991
+            "course_id": 1784904295,
+            "id": 1387557170,
+            "program_id": 423981213
          },
          {
-            "course_id": 1728305637,
-            "id": 668033071,
-            "program_id": 1111042991
+            "course_id": 1784904295,
+            "id": 1387557170,
+            "program_id": 423981213
          }
       ]
    }'
@@ -472,17 +490,15 @@ Example:
 }
 
 func oauthCallbackUsage() {
-	fmt.Fprintf(os.Stderr, `%[1]s [flags] oauth callback -provider STRING -code STRING -state STRING -ip-address STRING -user-agent STRING
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] oauth callback -provider STRING -code STRING -state STRING
 
 Handle OAuth callback and authenticate user
     -provider STRING: OAuth provider name
     -code STRING: 
     -state STRING: 
-    -ip-address STRING: 
-    -user-agent STRING: 
 
 Example:
-    %[1]s oauth callback --provider "google" --code "nc" --state "ed6" --ip-address "245.149.178.184" --user-agent "Ipsum pariatur fuga placeat."
+    %[1]s oauth callback --provider "google" --code "mae" --state "nn8"
 `, os.Args[0])
 }
 
@@ -493,7 +509,7 @@ Terminate the current session and invalidate the token
     -token STRING: 
 
 Example:
-    %[1]s oauth logout --token "Minima magni similique accusantium odio."
+    %[1]s oauth logout --token "Sed delectus."
 `, os.Args[0])
 }
 
