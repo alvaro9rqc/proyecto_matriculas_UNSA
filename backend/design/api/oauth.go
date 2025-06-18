@@ -23,12 +23,8 @@ var OAuthRedirectResult = Type("OAuthRedirectResult", func() {
 // Result type after successful OAuth login
 var LoginResult = Type("LoginResult", func() {
 	Description("Successful login result containing access token")
-	Attribute("access_token", String, "Session access token")
-	Attribute("expires_at", String, "Access token expiration timestamp", func() {
-		Format(FormatDateTime)
-	})
 	Attribute("session_token", String, "Cookie for session management")
-	Required("access_token", "expires_at")
+	Required("session_token")
 })
 
 var _ = Service("oauth", func() {
@@ -49,7 +45,7 @@ var _ = Service("oauth", func() {
 
 		HTTP(func() {
 			GET("/auth/{provider}/login")
-			Response(StatusTemporaryRedirect, func () {
+			Response(StatusTemporaryRedirect, func() {
 				Header("Location")
 			})
 		})
@@ -67,11 +63,7 @@ var _ = Service("oauth", func() {
 			Attribute("state", String, "Anti-CSRF state token", func() {
 				MinLength(10)
 			})
-			Attribute("ip_address", String, "Client IP address", func() {
-				Format(FormatIP)
-			})
-			Attribute("user_agent", String, "User-Agent header value")
-			Required("provider", "code", "state", "ip_address", "user_agent")
+			Required("provider", "code", "state")
 		})
 
 		Result(LoginResult)
@@ -83,8 +75,6 @@ var _ = Service("oauth", func() {
 			GET("/auth/{provider}/callback")
 			Param("code")
 			Param("state")
-			Param("ip_address")
-			Param("user_agent")
 			Response(StatusOK, func() {
 				Cookie("session_token:session_token", String, func() {
 					Description("Session token set in cookie after successful login")

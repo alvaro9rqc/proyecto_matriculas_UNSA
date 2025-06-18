@@ -93,6 +93,9 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 	// put all data in the user.
 	// create a new session
 	res = &oauth.LoginResult{}
+	res.AccessToken = userinfo.Email
+	res.SessionToken = &userinfo.Email
+	res.ExpiresAt = "2025-06-12"
 	log.Printf(ctx, "oauth.callback")
 	return
 }
