@@ -4,4 +4,6 @@ import (
 	"github.com/enrollment/gen/db"
 )
 
-var AccountRepository *db.Queries = db.New(InstanceDB())
+type AccountRepository struct {
+	*db.Queries
+}
