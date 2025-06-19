@@ -12,7 +12,7 @@ services:
   #   networks:
   #     - backend_network
   db:
-    image: postgres:latest
+    image: docker.io/library/postgres:latest
     env_file:
       - .env.dblocal
     ports:
