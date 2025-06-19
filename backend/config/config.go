@@ -15,22 +15,15 @@ import (
 )
 
 const (
-	PORT         = "PORT"
+	HTTP_PORT    = "HTTP_PORT"
 	DATABASE_URL = "DATABASE_URL"
-	HOST_F       = "HOST"
-	DOMAIN_F     = "DOMAIN"
-	HTTP_PORT_F  = "HTTP_PORT"
-	SECURE_F     = "SECURE"
-	DBG_F        = "DEBUG"
+	DBG          = "DEBUG"
 )
 
 type Config struct {
 	DatabaseURL string
-	HostF       string
-	DomainF     string
-	HttpPortF   string
-	SecureF     bool
-	DbgF        bool
+	HttpPort    string
+	Dbg         bool
 	Ctx         context.Context
 }
 
@@ -40,7 +33,8 @@ func NewConfig() (*Config, error) {
 
 	envFile := ".env"
 	if *devMode {
-		envFile = ".env.development"
+		log.Printf("Development mode: %t\n", *devMode)
+		envFile = ".env.dev"
 	}
 
 	err := godotenv.Load(envFile)
@@ -53,34 +47,16 @@ func NewConfig() (*Config, error) {
 		return nil, fmt.Errorf("environment variable %s not found", DATABASE_URL)
 	}
 
-	hostF := os.Getenv(HOST_F)
-	if hostF == "" {
-		hostF = "localhost"
-		log.Printf("Environment variable %s not found, using default value: %s\n", HOST_F, hostF)
+	httpPort := os.Getenv(HTTP_PORT)
+	if httpPort == "" {
+		httpPort = "8080"
+		log.Printf("Environment variable %s not found, using default value: %s\n", HTTP_PORT, httpPort)
 	}
 
-	domainF := os.Getenv(DOMAIN_F)
-	if domainF == "" {
-		domainF = ""
-		log.Printf("Environment variable %s not found, using default value: %s\n", DOMAIN_F, domainF)
-	}
-
-	httpPortF := os.Getenv(HTTP_PORT_F)
-	if httpPortF == "" {
-		httpPortF = "8080"
-		log.Printf("Environment variable %s not found, using default value: %s\n", HTTP_PORT_F, httpPortF)
-	}
-
-	secureF, err := strconv.ParseBool(os.Getenv(SECURE_F))
+	dbg, err := strconv.ParseBool(os.Getenv(DBG))
 	if err != nil {
-		secureF = false
-		log.Printf("Environment variable %s not found or invalid, using default value: %t\n", SECURE_F, secureF)
-	}
-
-	dbgF, err := strconv.ParseBool(os.Getenv(DBG_F))
-	if err != nil {
-		dbgF = false
-		log.Printf("Environment variable %s not found or invalid, using default value: %t\n", DBG_F, dbgF)
+		dbg = false
+		log.Printf("Environment variable %s not found or invalid, using default value: %t\n", DBG, dbg)
 	}
 
 	format := goaLog.FormatJSON
@@ -90,19 +66,16 @@ func NewConfig() (*Config, error) {
 
 	ctx := goaLog.Context(context.Background(), goaLog.WithFormat(format))
 
-	if dbgF {
+	if dbg {
 		ctx = goaLog.Context(ctx, goaLog.WithDebug())
 		goaLog.Debugf(ctx, "debug logs enabled")
 	}
-	goaLog.Print(ctx, goaLog.KV{K: "http-port", V: httpPortF})
+	goaLog.Print(ctx, goaLog.KV{K: "http-port", V: httpPort})
 
 	return &Config{
 		DatabaseURL: databaseURL,
-		HostF:       hostF,
-		DomainF:     domainF,
-		HttpPortF:   httpPortF,
-		SecureF:     secureF,
-		DbgF:        dbgF,
+		HttpPort:    httpPort,
+		Dbg:         dbg,
 		Ctx:         ctx,
 	}, nil
 }
