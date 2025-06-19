@@ -63,6 +63,8 @@ var _ = Service("oauth", func() {
 			Attribute("state", String, "Anti-CSRF state token", func() {
 				MinLength(10)
 			})
+			Attribute("ip_address", String, "IP address of the user")
+			Attribute("user_agent", String, "User agent string of the client")
 			Required("provider", "code", "state")
 		})
 
@@ -70,11 +72,14 @@ var _ = Service("oauth", func() {
 
 		Error("invalid_token", ErrorResult, "Invalid or expired OAuth token")
 		Error("server_error", ErrorResult, "Internal server error")
+		Error("unauthorized", ErrorResult, "Unauthorized access")
 
 		HTTP(func() {
 			GET("/auth/{provider}/callback")
 			Param("code")
 			Param("state")
+			Header("user_agent:User-Agent", String, "User agent of the client")
+			Header("ip_address:X-Forwarded-For", String, "IP address of the client")
 			Response(StatusOK, func() {
 				Cookie("session_token:session_token", String, func() {
 					Description("Session token set in cookie after successful login")
@@ -84,6 +89,7 @@ var _ = Service("oauth", func() {
 			})
 			Response("invalid_token", StatusBadRequest)
 			Response("server_error", StatusInternalServerError)
+			Response("unauthorized", StatusUnauthorized)
 		})
 	})
 

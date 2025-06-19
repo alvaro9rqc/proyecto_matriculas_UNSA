@@ -5,8 +5,13 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"github.com/jackc/pgx/v5/pgtype"
+	"time"
+
+	"github.com/enrollment/gen/db"
 	oauth "github.com/enrollment/gen/oauth"
 	"github.com/enrollment/src/db/ports"
+
 	//. "github.com/enrollment/src/db"
 	"goa.design/clue/log"
 	"golang.org/x/oauth2"
@@ -19,6 +24,7 @@ import (
 type oauthsrvc struct {
 	GoogleOAuthConfig *oauth2.Config
 	AccountRep        ports.AccountRepository
+	AccountSessionRep ports.AccountSessionRepository
 }
 
 // NewOauth returns the oauth service implementation.
@@ -73,27 +79,74 @@ func exchangesCode(ctx context.Context, p *oauth.CallbackPayload, s *oauthsrvc) 
 	return userinfo, nil
 }
 
+func generateSessionToken() (string, error) {
+	// 32 bytes of cryptographically secure random data (~256 bits of entropy)
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		return "", fmt.Errorf("failed to read random bytes: %w", err)
+	}
+
+	// Directly encode the raw random bytes
+	return base64.URLEncoding.EncodeToString(b), nil
+}
+
 // Handle OAuth callback and authenticate user
 // Here we search for the user in the database, create a session, and return the access token
 // or create a new user if not found
 // TODO: use cookies to prevent CSRF attacks
 // TODO: search a way to prevent unlimited login attempts ans unlimited sessions created
 // TODO: erase access token for original result type
+
+func createAccountSession(s *oauthsrvc, ctx *context.Context, p *oauth.CallbackPayload, account *db.Account) (err error) {
+
+	token, err := generateSessionToken()
+	if err != nil {
+		return fmt.Errorf("failed to generate session token: %w", err)
+	}
+	//get user agent
+	var userAgent string
+	if p.UserAgent != nil {
+		userAgent = *p.UserAgent
+	} else {
+		userAgent = "unknown"
+	}
+	//get ip address
+	var ipAddress string
+	if p.IPAddress != nil {
+		ipAddress = *p.IPAddress
+	} else {
+		ipAddress = "unknown"
+	}
+	//get timestamp for expiration date
+	expirationDate := pgtype.Timestamptz{
+		Time:  time.Now().Add(24 * time.Hour),
+		Valid: true,
+	}
+	s.AccountSessionRep.CreateAccountSession(*ctx, db.CreateAccountSessionParams{
+		Token:          token,
+		UserAgent:      userAgent,
+		IpAddress:      ipAddress,
+		ExpirationDate: expirationDate,
+		AccountID:      account.ID,
+	})
+	return nil
+}
 func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res *oauth.LoginResult, err error) {
 	// returns the user info from the google's oauth service
 	userinfo, err := exchangesCode(ctx, p, s)
 	if err != nil {
-		return nil, fmt.Errorf("failed to exchange code: %w", err)
+		return nil, oauth.MakeServerError(fmt.Errorf("failed to exchange code: %w", err))
 	}
-	s.AccountRep.GetAccountByEmail(ctx, userinfo.Email)
-	//result_query, err := AccountRepository.GetAccountByEmail( userinfo.Email )
-	//if (err != nil) {
-	//	return nil, fmt.Errorf("Failed on retrieving data from data base", err)
-	//}
+	// search if account exists in the database
+	account, err := s.AccountRep.GetAccountByEmail(ctx, userinfo.Email)
 
-	// search if user exists in the database
-	// using email
-	// if not exist, create a new user
+	if err != nil {
+		return nil, oauth.MakeUnauthorized(fmt.Errorf("failed to get account by email: %w", err))
+	}
+	err = createAccountSession(s, &ctx, p, userinfo, &account)
+	if err != nil {
+		return nil, oauth.MakeServerError(fmt.Errorf("failed to create account session: %w", err))
+	}
 	// put all data in the user.
 	// create a new session
 	res = &oauth.LoginResult{}
