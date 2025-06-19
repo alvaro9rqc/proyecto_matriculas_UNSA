@@ -6,6 +6,8 @@ import (
 	"encoding/base64"
 	"fmt"
 	oauth "github.com/enrollment/gen/oauth"
+	db "github.com/enrollment/src/db"
+	"github.com/enrollment/src/db/ports"
 	//. "github.com/enrollment/src/db"
 	"goa.design/clue/log"
 	"golang.org/x/oauth2"
@@ -16,13 +18,15 @@ import (
 // oauth service example implementation.
 // The example methods log the requests and return zero values.
 type oauthsrvc struct {
-	GoogleOAuthConfig oauth2.Config
+	GoogleOAuthConfig *oauth2.Config
+	AccountRep        ports.AccountRepository
 }
 
 // NewOauth returns the oauth service implementation.
-func NewOauth(oauthConfig oauth2.Config) oauth.Service {
+func NewOauth(oauthConfig *oauth2.Config, account_repo ports.AccountRepository) oauth.Service {
 	return &oauthsrvc{
 		GoogleOAuthConfig: oauthConfig,
+		AccountRep:        account_repo,
 	}
 }
 
@@ -61,11 +65,11 @@ func exchangesCode(ctx context.Context, p *oauth.CallbackPayload, s *oauthsrvc) 
 	}
 	oauth2Service, err := googleOauth2.NewService(ctx, option.WithTokenSource(s.GoogleOAuthConfig.TokenSource(ctx, token)))
 	if err != nil {
-		return nil, fmt.Errorf("failed on creating oauth2 service", err)
+		return nil, fmt.Errorf("failed on creating oauth2 service: %w\n", err)
 	}
 	userinfo, err := oauth2Service.Userinfo.Get().Do()
 	if err != nil {
-		return nil, fmt.Errorf("failed retrieving user info", err)
+		return nil, fmt.Errorf("failed retrieving user info %err\n", err)
 	}
 	return userinfo, nil
 }
@@ -77,11 +81,12 @@ func exchangesCode(ctx context.Context, p *oauth.CallbackPayload, s *oauthsrvc) 
 // TODO: search a way to prevent unlimited login attempts ans unlimited sessions created
 // TODO: erase access token for original result type
 func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res *oauth.LoginResult, err error) {
+	// returns the user info from the google's oauth service
 	userinfo, err := exchangesCode(ctx, p, s)
 	if err != nil {
 		return nil, fmt.Errorf("failed to exchange code: %w", err)
 	}
-	log.Printf(ctx, "oauth.callback userinfo: %v", userinfo)
+	s.AccountRep.GetAccountByEmail(ctx, userinfo.Email)
 	//result_query, err := AccountRepository.GetAccountByEmail( userinfo.Email )
 	//if (err != nil) {
 	//	return nil, fmt.Errorf("Failed on retrieving data from data base", err)
@@ -93,9 +98,9 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 	// put all data in the user.
 	// create a new session
 	res = &oauth.LoginResult{}
-	res.AccessToken = userinfo.Email
-	res.SessionToken = &userinfo.Email
-	res.ExpiresAt = "2025-06-12"
+	//res.AccessToken = userinfo.Email
+	//res.SessionToken = &userinfo.Email
+	//res.ExpiresAt = "2025-06-12"
 	log.Printf(ctx, "oauth.callback")
 	return
 }
