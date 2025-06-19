@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -34,7 +35,15 @@ type Config struct {
 }
 
 func NewConfig() (*Config, error) {
-	err := godotenv.Load()
+	devMode := flag.Bool("development", false, "Usar configuración de desarrollo")
+	flag.Parse()
+
+	envFile := ".env"
+	if *devMode {
+		envFile = ".env.development"
+	}
+
+	err := godotenv.Load(envFile)
 	if err != nil {
 		fmt.Println("Error loading .env file")
 	}
