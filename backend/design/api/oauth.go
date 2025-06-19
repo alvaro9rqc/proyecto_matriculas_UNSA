@@ -13,28 +13,25 @@ var OAuthProviderType = Type("OAuthProvider", String, func() {
 // Result type containing the URL to redirect the user to start OAuth login
 var OAuthRedirectResult = Type("OAuthRedirectResult", func() {
 	Description("Redirect URL for initiating OAuth login")
-	Attribute("redirect_url", String, "OAuth authorization URL", func() {
+	Attribute("Location", String, "OAuth authorization URL", func() {
 		Format(FormatURI)
 		Example("https://accounts.google.com/o/oauth2/auth?...code")
 	})
-	Required("redirect_url")
+	Required("Location")
 })
 
 // Result type after successful OAuth login
 var LoginResult = Type("LoginResult", func() {
 	Description("Successful login result containing access token")
-	Attribute("access_token", String, "Session access token")
-	Attribute("expires_at", String, "Access token expiration timestamp", func() {
-		Format(FormatDateTime)
-	})
-	Required("access_token", "expires_at")
+	Attribute("session_token", String, "Cookie for session management")
+	Required("session_token")
 })
 
 var _ = Service("oauth", func() {
 	Description("OAuth-based authentication service for Google and Microsoft")
 
 	// Initiates the login by generating a provider-specific OAuth authorization URL
-	Method("redirect", func() {
+	Method("login", func() {
 		Description("Generate a redirection URL for the chosen OAuth provider")
 
 		Payload(func() {
@@ -47,9 +44,10 @@ var _ = Service("oauth", func() {
 		Error("invalid_provider", ErrorResult, "Unsupported OAuth provider")
 
 		HTTP(func() {
-			GET("/auth/redirect/{provider}")
-			Response(StatusOK)
-			Response("invalid_provider", StatusBadRequest)
+			GET("/auth/{provider}/login")
+			Response(StatusTemporaryRedirect, func() {
+				Header("Location")
+			})
 		})
 	})
 
@@ -65,11 +63,7 @@ var _ = Service("oauth", func() {
 			Attribute("state", String, "Anti-CSRF state token", func() {
 				MinLength(10)
 			})
-			Attribute("ip_address", String, "Client IP address", func() {
-				Format(FormatIP)
-			})
-			Attribute("user_agent", String, "User-Agent header value")
-			Required("provider", "code", "state", "ip_address", "user_agent")
+			Required("provider", "code", "state")
 		})
 
 		Result(LoginResult)
@@ -78,12 +72,16 @@ var _ = Service("oauth", func() {
 		Error("server_error", ErrorResult, "Internal server error")
 
 		HTTP(func() {
-			GET("/auth/callback/{provider}")
+			GET("/auth/{provider}/callback")
 			Param("code")
 			Param("state")
-			Param("ip_address")
-			Param("user_agent")
-			Response(StatusOK)
+			Response(StatusOK, func() {
+				Cookie("session_token:session_token", String, func() {
+					Description("Session token set in cookie after successful login")
+					Example("session_token=abc123xyz")
+				})
+				CookieHTTPOnly()
+			})
 			Response("invalid_token", StatusBadRequest)
 			Response("server_error", StatusInternalServerError)
 		})

@@ -33,7 +33,7 @@ func main() {
 	{
 		courseSvc = controllers.NewCourse()
 		enrollmentSvc = controllers.NewEnrollment()
-		oauthSvc = controllers.NewOauth()
+		oauthSvc = controllers.NewOauth(cfg.GoogleOAuthConfig)
 		queueSvc = controllers.NewQueue()
 	}
 

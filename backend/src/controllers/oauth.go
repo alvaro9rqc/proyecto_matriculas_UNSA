@@ -2,30 +2,100 @@ package controllers
 
 import (
 	"context"
-
+	"crypto/rand"
+	"encoding/base64"
+	"fmt"
 	oauth "github.com/enrollment/gen/oauth"
+	//. "github.com/enrollment/src/db"
 	"goa.design/clue/log"
+	"golang.org/x/oauth2"
+	googleOauth2 "google.golang.org/api/oauth2/v2"
+	"google.golang.org/api/option"
 )
 
 // oauth service example implementation.
 // The example methods log the requests and return zero values.
-type oauthsrvc struct{}
+type oauthsrvc struct {
+	GoogleOAuthConfig oauth2.Config
+}
 
 // NewOauth returns the oauth service implementation.
-func NewOauth() oauth.Service {
-	return &oauthsrvc{}
+func NewOauth(oauthConfig oauth2.Config) oauth.Service {
+	return &oauthsrvc{
+		GoogleOAuthConfig: oauthConfig,
+	}
 }
 
 // Generate a redirection URL for the chosen OAuth provider
-func (s *oauthsrvc) Redirect(ctx context.Context, p *oauth.RedirectPayload) (res *oauth.OAuthRedirectResult, err error) {
-	res = &oauth.OAuthRedirectResult{}
+func (s *oauthsrvc) Login(ctx context.Context, p *oauth.LoginPayload) (res *oauth.OAuthRedirectResult, err error) {
 	log.Printf(ctx, "oauth.redirect")
-	return
+
+	//generate random state to prevent CSRF attacks
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		return nil, fmt.Errorf("failed to generate random state: %w", err)
+	}
+	state := base64.URLEncoding.EncodeToString(b)
+
+	//choose the redirect URL based on the provider
+	var url string
+	switch p.Provider {
+	case "google":
+		url = s.GoogleOAuthConfig.AuthCodeURL(state)
+	case "microsoft":
+		//url = os.Getenv("MICROSOFT_REDIRECT_URL")
+		return nil, oauth.MakeInvalidProvider(fmt.Errorf("unsupported provider: %s", p.Provider))
+	default:
+		return nil, oauth.MakeInvalidProvider(fmt.Errorf("unsupported provider: %s", p.Provider))
+	}
+	res = &oauth.OAuthRedirectResult{
+		Location: url,
+	}
+	return res, nil
+}
+
+func exchangesCode(ctx context.Context, p *oauth.CallbackPayload, s *oauthsrvc) (*googleOauth2.Userinfo, error) {
+	token, err := s.GoogleOAuthConfig.Exchange(ctx, p.Code)
+	if err != nil {
+		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
+	}
+	oauth2Service, err := googleOauth2.NewService(ctx, option.WithTokenSource(s.GoogleOAuthConfig.TokenSource(ctx, token)))
+	if err != nil {
+		return nil, fmt.Errorf("failed on creating oauth2 service", err)
+	}
+	userinfo, err := oauth2Service.Userinfo.Get().Do()
+	if err != nil {
+		return nil, fmt.Errorf("failed retrieving user info", err)
+	}
+	return userinfo, nil
 }
 
 // Handle OAuth callback and authenticate user
+// Here we search for the user in the database, create a session, and return the access token
+// or create a new user if not found
+// TODO: use cookies to prevent CSRF attacks
+// TODO: search a way to prevent unlimited login attempts ans unlimited sessions created
+// TODO: erase access token for original result type
 func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res *oauth.LoginResult, err error) {
+	userinfo, err := exchangesCode(ctx, p, s)
+	if err != nil {
+		return nil, fmt.Errorf("failed to exchange code: %w", err)
+	}
+	log.Printf(ctx, "oauth.callback userinfo: %v", userinfo)
+	//result_query, err := AccountRepository.GetAccountByEmail( userinfo.Email )
+	//if (err != nil) {
+	//	return nil, fmt.Errorf("Failed on retrieving data from data base", err)
+	//}
+
+	// search if user exists in the database
+	// using email
+	// if not exist, create a new user
+	// put all data in the user.
+	// create a new session
 	res = &oauth.LoginResult{}
+	res.AccessToken = userinfo.Email
+	res.SessionToken = &userinfo.Email
+	res.ExpiresAt = "2025-06-12"
 	log.Printf(ctx, "oauth.callback")
 	return
 }
@@ -36,8 +106,9 @@ func (s *oauthsrvc) Logout(ctx context.Context, p *oauth.LogoutPayload) (err err
 	return
 }
 
+// Returns the authenticated user's information
 func (s *oauthsrvc) Me(ctx context.Context) (res *oauth.AccountUser, err error) {
 	res = &oauth.AccountUser{}
-
-	return res, nil
+	log.Printf(ctx, "oauth.me")
+	return
 }

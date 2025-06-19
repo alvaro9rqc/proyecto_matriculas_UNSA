@@ -8,6 +8,9 @@ import (
 	"strconv"
 
 	goaLog "goa.design/clue/log"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
+	googleOauth2 "google.golang.org/api/oauth2/v2"
 
 	"github.com/joho/godotenv"
 	_ "github.com/joho/godotenv/autoload"
@@ -24,13 +27,14 @@ const (
 )
 
 type Config struct {
-	DatabaseURL string
-	HostF       string
-	DomainF     string
-	HttpPortF   string
-	SecureF     bool
-	DbgF        bool
-	Ctx         context.Context
+	DatabaseURL       string
+	HostF             string
+	DomainF           string
+	HttpPortF         string
+	SecureF           bool
+	DbgF              bool
+	Ctx               context.Context
+	GoogleOAuthConfig oauth2.Config
 }
 
 func NewConfig() (*Config, error) {
@@ -87,13 +91,22 @@ func NewConfig() (*Config, error) {
 	}
 	goaLog.Print(ctx, goaLog.KV{K: "http-port", V: httpPortF})
 
+	// configure Google OAuth
+	googleOAuthConfig := oauth2.Config{
+		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
+		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
+		RedirectURL:  os.Getenv("GOOGLE_REDIRECT_URL"),
+		Endpoint:     google.Endpoint,
+		Scopes:       []string{googleOauth2.UserinfoEmailScope, googleOauth2.UserinfoProfileScope},
+	}
 	return &Config{
-		DatabaseURL: databaseURL,
-		HostF:       hostF,
-		DomainF:     domainF,
-		HttpPortF:   httpPortF,
-		SecureF:     secureF,
-		DbgF:        dbgF,
-		Ctx:         ctx,
+		DatabaseURL:       databaseURL,
+		HostF:             hostF,
+		DomainF:           domainF,
+		HttpPortF:         httpPortF,
+		SecureF:           secureF,
+		DbgF:              dbgF,
+		Ctx:               ctx,
+		GoogleOAuthConfig: googleOAuthConfig,
 	}, nil
 }
