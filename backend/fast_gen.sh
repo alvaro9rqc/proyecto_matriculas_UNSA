@@ -4,5 +4,9 @@ rm -rf gen
 goa gen github.com/enrollment/design/api
 sqlc generate
 
-echo "Code generation completed successfully."
+if [ "$?" -ne "0" ]
+then 
+    echo "Code generation completed successfully."
+fi
+
 

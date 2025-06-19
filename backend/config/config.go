@@ -9,6 +9,9 @@ import (
 	"strconv"
 
 	goaLog "goa.design/clue/log"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
+	googleOauth2 "google.golang.org/api/oauth2/v2"
 
 	"github.com/joho/godotenv"
 	_ "github.com/joho/godotenv/autoload"
@@ -21,10 +24,11 @@ const (
 )
 
 type Config struct {
-	DatabaseURL string
-	HttpPort    string
-	Dbg         bool
-	Ctx         context.Context
+	DatabaseURL       string
+	HttpPort          string
+	Dbg               bool
+	GoogleOAuthConfig oauth2.Config
+	Ctx               context.Context
 }
 
 func NewConfig() (*Config, error) {
@@ -72,10 +76,19 @@ func NewConfig() (*Config, error) {
 	}
 	goaLog.Print(ctx, goaLog.KV{K: "http-port", V: httpPort})
 
+	// configure Google OAuth
+	googleOAuthConfig := oauth2.Config{
+		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
+		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
+		RedirectURL:  os.Getenv("GOOGLE_REDIRECT_URL"),
+		Endpoint:     google.Endpoint,
+		Scopes:       []string{googleOauth2.UserinfoEmailScope, googleOauth2.UserinfoProfileScope},
+	}
 	return &Config{
-		DatabaseURL: databaseURL,
-		HttpPort:    httpPort,
-		Dbg:         dbg,
-		Ctx:         ctx,
+		DatabaseURL:       databaseURL,
+		HttpPort:          httpPort,
+		Dbg:               dbg,
+		GoogleOAuthConfig: googleOAuthConfig,
+		Ctx:               ctx,
 	}, nil
 }

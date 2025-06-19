@@ -2,22 +2,33 @@ package db
 
 import (
 	"context"
+	"os"
+	"sync"
 
 	"github.com/jackc/pgx/v5"
 )
 
-func ConnectDB(DATABASE_URL string) (*pgx.Conn, error) {
-	ctx := context.Background()
+var (
+	conn *pgx.Conn
+	once sync.Once
+)
 
-	conn, err := pgx.Connect(ctx, DATABASE_URL)
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close(ctx)
+func InstanceDB() *pgx.Conn {
+	DATABASE_URL := os.Getenv("DATABASE_URL")
 
-	if err := conn.Ping(ctx); err != nil {
-		return nil, err
-	}
+	once.Do(func() {
+		ctx := context.Background()
+		var err error
 
-	return conn, nil
+		conn, err = pgx.Connect(ctx, DATABASE_URL)
+		if err != nil {
+			panic(err)
+		}
+		defer conn.Close(ctx)
+
+		if err := conn.Ping(ctx); err != nil {
+			panic(err)
+		}
+	})
+	return conn
 }

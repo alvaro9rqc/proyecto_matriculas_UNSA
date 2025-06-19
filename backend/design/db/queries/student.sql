@@ -21,3 +21,5 @@ WHERE sc.course_id = $1;
 -- name: DeleteStudentCourse :exec
 DELETE FROM student_course
 WHERE student_id = $1 AND course_id = $2;
+
+
