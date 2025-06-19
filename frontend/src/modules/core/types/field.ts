@@ -1,4 +1,5 @@
 import { SupportedFields } from '@/modules/core/lib/field';
+import type { SelectOption } from '@/modules/core/types/select';
 
 export type SupportFieldType =
   (typeof SupportedFields)[keyof typeof SupportedFields];
@@ -8,7 +9,6 @@ type BaseField<T extends string> = {
   label: string;
   description?: string;
   placeholder?: string;
-  required?: boolean;
 };
 
 export type Field<T extends string> = BaseField<T> &
@@ -22,6 +22,6 @@ export type Field<T extends string> = BaseField<T> &
       }
     | {
         type: typeof SupportedFields.SELECT;
-        options: string[];
+        options: SelectOption[];
       }
   );
