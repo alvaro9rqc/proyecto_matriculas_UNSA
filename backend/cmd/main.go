@@ -14,6 +14,8 @@ import (
 	"github.com/enrollment/gen/oauth"
 	"github.com/enrollment/gen/queue"
 	controllers "github.com/enrollment/src/controllers"
+	dbController "github.com/enrollment/src/db"
+
 	"goa.design/clue/debug"
 	"goa.design/clue/log"
 )
@@ -33,7 +35,7 @@ func main() {
 	{
 		courseSvc = controllers.NewCourse()
 		enrollmentSvc = controllers.NewEnrollment()
-		oauthSvc = controllers.NewOauth(cfg.GoogleOAuthConfig)
+		oauthSvc = controllers.NewOauth(&cfg.GoogleOAuthConfig, dbController.NewAccountRepository())
 		queueSvc = controllers.NewQueue()
 	}
 
