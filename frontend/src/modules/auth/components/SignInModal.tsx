@@ -36,7 +36,7 @@ export default function SignInModal() {
           </Button>
           <Dialog.Close asChild>
             <Button
-              variant="muted"
+              variant="ghost"
               className="absolute top-2 right-2 md:top-4 md:right-4"
             >
               X
