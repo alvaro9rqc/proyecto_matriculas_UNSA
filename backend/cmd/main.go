@@ -74,14 +74,14 @@ func main() {
 
 	handleHTTPServer(
 		ctx,
-		cfg.HttpPortF,
+		cfg.HttpPort,
 		courseEndpoints,
 		enrollmentEndpoints,
 		oauthEndpoints,
 		queueEndpoints,
 		&wg,
 		errc,
-		cfg.DbgF,
+		cfg.Dbg,
 	)
 
 	log.Printf(ctx, "exiting (%v)", <-errc)
