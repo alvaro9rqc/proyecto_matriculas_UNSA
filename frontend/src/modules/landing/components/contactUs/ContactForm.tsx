@@ -2,8 +2,10 @@ import type { Field } from '@/modules/core/types/field';
 import { Form, FormField } from '@/modules/core/ui/form';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { InferItem } from '@/modules/core/ui/inferfield';
+import { InferItem } from '@/modules/core/ui/inferField';
+import { z } from 'astro/zod';
+import { SupportedFields } from '@/modules/core/lib/field';
+import { Button } from '@/modules/core/ui/button';
 
 const contactFormSchema = z.object({
   names: z.string().min(1, 'Name is required'),
@@ -17,37 +19,32 @@ const contactFormFields: Field<keyof z.infer<typeof contactFormSchema>>[] = [
   {
     name: 'names',
     label: 'First Name',
-    type: 'text',
+    type: SupportedFields.TEXT,
     placeholder: 'Enter your first name',
-    required: true,
   },
   {
     name: 'lastName',
     label: 'Last Name',
-    type: 'text',
+    type: SupportedFields.TEXT,
     placeholder: 'Enter your last name',
-    required: true,
   },
   {
     name: 'email',
     label: 'Email',
     placeholder: 'Enter your email address',
-    type: 'email',
-    required: true,
+    type: SupportedFields.EMAIL,
   },
   {
     name: 'institutionName',
     label: 'Institution Name',
-    type: 'text',
+    type: SupportedFields.TEXT,
     placeholder: 'Enter your institution name',
-    required: true,
   },
   {
     name: 'message',
     label: 'Message',
     placeholder: 'Enter your message',
-    type: 'textarea',
-    required: true,
+    type: SupportedFields.TEXTAREA,
   },
 ];
 
@@ -69,9 +66,13 @@ function ContactForm() {
   };
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-y-4 w-full bg-secondary p-4 md:p-8 rounded-lg shadow-md"
+      >
         {contactFormFields.map((field) => (
           <FormField
+            key={`contact-form-${field.name}`}
             control={form.control}
             name={field.name}
             render={({ field: formField }) => (
@@ -79,6 +80,9 @@ function ContactForm() {
             )}
           />
         ))}
+        <Button type="submit" className="self-center">
+          Enviar
+        </Button>
       </form>
     </Form>
   );
