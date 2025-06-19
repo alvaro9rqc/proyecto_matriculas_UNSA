@@ -1,5 +1,4 @@
 import GoogleLogo from '@/assets/google.svg?react';
-import Logo from '@/assets/logo.svg?react';
 import MicrosoftLogo from '@/assets/microsoft.svg?react';
 import { Button } from '@/modules/core/ui/button';
 import {
@@ -10,6 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/modules/core/ui/dialog';
+import { LogoExtended } from '@/modules/core/ui/logoExtended';
 
 export default function SignInModal() {
   return (
@@ -20,8 +20,7 @@ export default function SignInModal() {
       <DialogContent className="p-10 gap-y-14">
         <DialogHeader className="flex flex-col items-center gap-y-4">
           <DialogTitle className="inline-flex items-center gap-x-2">
-            <Logo className="h-8" />
-            <span className="text-2xl font-semibold">Tuitions</span>
+            <LogoExtended size="lg" />
           </DialogTitle>
           <DialogDescription>
             Ingresa a tu cuenta y revisa tus matrículas
