@@ -1,19 +1,19 @@
 ---
 import SignInModal from '@/modules/auth/components/SignInModal';
 import LogoExtended from '@/modules/core/ui/LogoExtended.astro';
-import Button from '@/modules/landing/ui/Button.astro';
+import Button from '@/modules/core/ui/button.astro';
 ---
 <nav class="flex justify-between px-4 py-2">
   <LogoExtended />
   <div class="flex gap-2">
-    <Button variant="muted">
+    <Button variant="ghost">
       Beneficios
     </Button>
-    <Button variant="muted">
+    <Button variant="ghost">
       Precios
     </Button>
     <SignInModal client:load />
-    <Button variant="secondary">
+    <Button variant="outline">
       Contactar a ventas
     </Button>
   </div>

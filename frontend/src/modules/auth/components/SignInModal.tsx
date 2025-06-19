@@ -1,7 +1,7 @@
 import GoogleLogo from '@/assets/google.svg?react';
 import Logo from '@/assets/logo.svg?react';
 import MicrosoftLogo from '@/assets/microsoft.svg?react';
-import Button from '@/modules/landing/ui/Button';
+import { Button } from '@/modules/core/ui/button';
 import * as Dialog from '@radix-ui/react-dialog';
 
 export default function SignInModal() {

@@ -5,7 +5,9 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+
 	oauth "github.com/enrollment/gen/oauth"
+
 	//. "github.com/enrollment/src/db"
 	"goa.design/clue/log"
 	"golang.org/x/oauth2"
@@ -93,9 +95,7 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 	// put all data in the user.
 	// create a new session
 	res = &oauth.LoginResult{}
-	res.AccessToken = userinfo.Email
-	res.SessionToken = &userinfo.Email
-	res.ExpiresAt = "2025-06-12"
+	res.SessionToken = userinfo.Email
 	log.Printf(ctx, "oauth.callback")
 	return
 }
