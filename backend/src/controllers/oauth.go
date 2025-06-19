@@ -6,7 +6,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	oauth "github.com/enrollment/gen/oauth"
-	db "github.com/enrollment/src/db"
 	"github.com/enrollment/src/db/ports"
 	//. "github.com/enrollment/src/db"
 	"goa.design/clue/log"
