@@ -1,7 +1,8 @@
 ---
 import type { Polymorphic } from 'astro/types';
 import { type VariantProps } from 'tailwind-variants';
-import { buttonVariants, type SupportedTags } from '@/modules/landing/lib/buttonUtils.ts';
+import type { SupportedTags } from '@/modules/core/types/button';
+import { buttonVariants } from '@/modules/core/lib/button';
 
 type Props<Tag extends SupportedTags> = Polymorphic<{ as: Tag } & VariantProps<typeof buttonVariants>>;
 
