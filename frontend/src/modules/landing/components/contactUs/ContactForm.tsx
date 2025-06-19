@@ -68,7 +68,7 @@ function ContactForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-y-4 w-full p-4 md:p-8 rounded-lg border border-border shadow-md bg-card"
+        className="flex flex-col gap-y-4 w-full p-4 md:p-8 rounded-lg border border-border shadow-xl bg-card"
       >
         {contactFormFields.map((field) => (
           <FormField
