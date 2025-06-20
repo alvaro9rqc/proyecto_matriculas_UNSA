@@ -1,11 +1,14 @@
 package ports
 
-// import (
-// 	"context"
+import (
+	"context"
 
-// 	"github.com/enrollment/gen/db"
-// )
+	"github.com/enrollment/gen/db"
+)
 
 type CourseRepositoryInterface interface {
-	// CreateCourse(ctx context.Context, arg db.cour) (db.Course, error)
+	CreateCourse(ctx context.Context, arg db.CreateCourseParams) error
+	DeleteCourse(ctx context.Context, id int32) error
+	ListCourses(ctx context.Context) ([]db.Course, error)
+	UpdateCourse(ctx context.Context, arg db.UpdateCourseParams) error
 }

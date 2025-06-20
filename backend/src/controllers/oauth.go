@@ -24,15 +24,14 @@ import (
 // The example methods log the requests and return zero values.
 type oauthsrvc struct {
 	GoogleOAuthConfig *oauth2.Config
-	AccountRep        ports.AccountRepositoryInterface
-	AccountSessionRep ports.AccountSessionRepositoryInterface
+	OauthRep          ports.OauthRepositoryInterface
 }
 
 // NewOauth returns the oauth service implementation.
-func NewOauth(oauthConfig *oauth2.Config, accountRepo ports.AccountRepositoryInterface) oauth.Service {
+func NewOauth(oauthConfig *oauth2.Config, oauthRep ports.OauthRepositoryInterface) oauth.Service {
 	return &oauthsrvc{
 		GoogleOAuthConfig: oauthConfig,
-		AccountRep:        accountRepo,
+		OauthRep:          oauthRep,
 	}
 }
 
@@ -123,7 +122,7 @@ func createAccountSession(s *oauthsrvc, ctx *context.Context, p *oauth.CallbackP
 		Time:  time.Now().Add(24 * time.Hour),
 		Valid: true,
 	}
-	s.AccountSessionRep.CreateAccountSession(*ctx, db.CreateAccountSessionParams{
+	s.OauthRep.CreateAccountSession(*ctx, db.CreateAccountSessionParams{
 		Token:          token,
 		UserAgent:      userAgent,
 		IpAddress:      ipAddress,
@@ -139,7 +138,7 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 		return nil, oauth.MakeServerError(fmt.Errorf("failed to exchange code: %w", err))
 	}
 	// search if account exists in the database
-	account, err := s.AccountRep.GetAccountByEmail(ctx, userinfo.Email)
+	account, err := s.OauthRep.GetAccountByEmail(ctx, userinfo.Email)
 
 	if err != nil {
 		return nil, oauth.MakeUnauthorized(fmt.Errorf("failed to get account by email: %w", err))

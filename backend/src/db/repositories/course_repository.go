@@ -1,4 +1,4 @@
-package db
+package repositories
 
 import (
 	"github.com/enrollment/gen/db"
@@ -6,12 +6,12 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type AccountRepository struct {
+type CourseRepository struct {
 	*db.Queries
 }
 
-func NewAccountRepository(conn *pgx.Conn) ports.AccountRepositoryInterface {
-	return &AccountRepository{
+func NewCourseRepository(conn *pgx.Conn) ports.CourseRepositoryInterface {
+	return &CourseRepository{
 		Queries: db.New(conn),
 	}
 }
