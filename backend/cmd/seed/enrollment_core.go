@@ -20,7 +20,19 @@ const (
 	HYBRID_MODALITY     string = "hybrid"
 )
 
+const (
+	NUM_STUDENTS int = NUM_ACCOUNTS - 10
+)
+
 var MODALITIES [3]string = [3]string{VIRTUAL_MODALITY, PRESENTIAL_MODALITY, HYBRID_MODALITY}
+
+func createRandomStudent(faker faker.Faker, account db.Account, studentGroup db.StudentGroup) (db.CreateStudentParams, error) {
+	return db.CreateStudentParams{
+		AccountID:      account.ID,
+		Code:           faker.Person().SSN(),
+		StudentGroupID: studentGroup.ID,
+	}, nil
+}
 
 func createRandomMajor(faker faker.Faker) string {
 	return strings.Join(faker.Lorem().Words(2), " ")
@@ -59,7 +71,17 @@ func createStudentGroup(priority int16) db.CreateStudentGroupParams {
 	}
 }
 
-func seedEnrollmentRepository(ctx context.Context, studentGroupRepo ports.StudentGroupRepositoryInterface, installationRepo ports.InstallationRepositoryInterface, courseRepo ports.CourseRepositoryInterface, majorRepo ports.MajorRepositoryInterface, modalityRepo ports.ModalityRepositoryInterface) {
+func seedEnrollmentCoreTables(
+	ctx context.Context,
+	studentGroupRepo ports.StudentGroupRepositoryInterface,
+	installationRepo ports.InstallationRepositoryInterface,
+	courseRepo ports.CourseRepositoryInterface,
+	majorRepo ports.MajorRepositoryInterface,
+	modalityRepo ports.ModalityRepositoryInterface,
+	oauthRepo ports.OauthRepositoryInterface,
+	studentRepo ports.StudentRepositoryInterface,
+	speakerRepo ports.SpeakerRepositoryInterface,
+) {
 	faker := faker.New()
 
 	log.Println("Seeding student groups...")
@@ -107,4 +129,42 @@ func seedEnrollmentRepository(ctx context.Context, studentGroupRepo ports.Studen
 		}
 	}
 
+	log.Print("Seeding students...")
+	accounts, err := oauthRepo.ListAccounts(ctx, db.ListAccountsParams{
+		Limit:  int32(NUM_STUDENTS),
+		Offset: 0,
+	})
+	if err != nil {
+		log.Fatalf("Failed to list accounts: %v", err)
+	}
+	studentGroups, err := studentGroupRepo.ListStudentGroups(ctx)
+	if err != nil {
+		log.Fatalf("Failed to list student groups: %v", err)
+	}
+	for i, account := range accounts {
+		studentGroup := studentGroups[i%len(studentGroups)]
+		student, err := createRandomStudent(faker, account, studentGroup)
+		if err != nil {
+			log.Fatalf("Failed to create student: %v", err)
+		}
+		err = studentRepo.CreateStudent(ctx, student)
+		if err != nil {
+			log.Fatalf("Failed to create student for account %d: %v", account.ID, err)
+		}
+	}
+
+	log.Println("Seeding skeapers...")
+	accounts, err = oauthRepo.ListAccounts(ctx, db.ListAccountsParams{
+		Limit:  int32(NUM_ACCOUNTS),
+		Offset: int32(NUM_STUDENTS),
+	})
+	if err != nil {
+		log.Fatalf("Failed to list accounts: %v", err)
+	}
+	for _, account := range accounts {
+		err = speakerRepo.CreateSpeaker(ctx, account.ID)
+		if err != nil {
+			log.Fatalf("Failed to create skeaper for account %d: %v", account.ID, err)
+		}
+	}
 }

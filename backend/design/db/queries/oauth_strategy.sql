@@ -2,6 +2,15 @@
 SELECT * FROM account
 WHERE email = $1;
 
+-- name: FullListAccounts :many
+SELECT * FROM account
+ORDER BY id;
+
+-- name: ListAccounts :many
+SELECT * FROM account
+ORDER BY id
+LIMIT $1 OFFSET $2;
+
 -- name: CreateAccount :exec
 INSERT INTO account (
     email,

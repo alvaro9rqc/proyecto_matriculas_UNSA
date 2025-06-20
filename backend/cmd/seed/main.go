@@ -17,14 +17,32 @@ func main() {
 		panic(err)
 	}
 
-	oauthRepo := repositories.NewOauthRepository(conn)
-	studentGroupRepo := repositories.NewStudentGroupRepository(conn)
-	installationRepo := repositories.NewInstallationRepository(conn)
-	courseRepo := repositories.NewCourseRepository(conn)
-	majorRepo := repositories.NewMajorRepository(conn)
-	modalityRepo := repositories.NewModalityRepository(conn)
+	var (
+		oauthRepo        = repositories.NewOauthRepository(conn)
+		studentGroupRepo = repositories.NewStudentGroupRepository(conn)
+		installationRepo = repositories.NewInstallationRepository(conn)
+		courseRepo       = repositories.NewCourseRepository(conn)
+		majorRepo        = repositories.NewMajorRepository(conn)
+		modalityRepo     = repositories.NewModalityRepository(conn)
+		studentRepo      = repositories.NewStudentRepository(conn)
+		speakerRepo      = repositories.NewSpeakerRepository(conn)
+	)
 
-	seedOauthRepository(cfg.Ctx, oauthRepo)
-
-	seedEnrollmentRepository(cfg.Ctx, studentGroupRepo, installationRepo, courseRepo, majorRepo, modalityRepo)
+	seedOauthTables(
+		cfg.Ctx,
+		oauthRepo,
+	)
+	seedEnrollmentCoreTables(
+		cfg.Ctx,
+		studentGroupRepo,
+		installationRepo,
+		courseRepo,
+		majorRepo,
+		modalityRepo,
+		oauthRepo,
+		studentRepo,
+		speakerRepo,
+	)
+	// seedEnrollmentProcessTables(
+	// )
 }

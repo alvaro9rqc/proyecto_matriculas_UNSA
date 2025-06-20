@@ -15,6 +15,10 @@ const (
 )
 
 const (
+	NUM_ACCOUNTS int = 100
+)
+
+const (
 	AVATAR_URL string = "https://ynoa-uploader.ynoacamino.site/uploads/1750016704_ACg8ocLnHIiNMcd-ltRxMAQZ6Qo1hKAeSyZsktQKBp5kNltpKDzlg4_q=s96-c.webp"
 )
 
@@ -30,7 +34,7 @@ func createRandomAccount(faker faker.Faker) db.CreateAccountWithProviderNamePara
 	}
 }
 
-func seedOauthRepository(ctx context.Context, oauthRepo ports.OauthRepositoryInterface) {
+func seedOauthTables(ctx context.Context, oauthRepo ports.OauthRepositoryInterface) {
 	faker := faker.New()
 
 	log.Println("Seeding OAuth providers...")
@@ -45,7 +49,7 @@ func seedOauthRepository(ctx context.Context, oauthRepo ports.OauthRepositoryInt
 	}
 
 	log.Println("Seeding OAuth accounts...")
-	for range 100 {
+	for range NUM_ACCOUNTS {
 		account := createRandomAccount(faker)
 		err = oauthRepo.CreateAccountWithProviderName(ctx, account)
 		if err != nil {
