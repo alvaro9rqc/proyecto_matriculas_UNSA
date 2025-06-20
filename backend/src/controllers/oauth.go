@@ -5,8 +5,9 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"github.com/jackc/pgx/v5/pgtype"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 
 	"github.com/enrollment/gen/db"
 	oauth "github.com/enrollment/gen/oauth"
@@ -23,15 +24,15 @@ import (
 // The example methods log the requests and return zero values.
 type oauthsrvc struct {
 	GoogleOAuthConfig *oauth2.Config
-	AccountRep        ports.AccountRepository
-	AccountSessionRep ports.AccountSessionRepository
+	AccountRep        ports.AccountRepositoryInterface
+	AccountSessionRep ports.AccountSessionRepositoryInterface
 }
 
 // NewOauth returns the oauth service implementation.
-func NewOauth(oauthConfig *oauth2.Config, account_repo ports.AccountRepository) oauth.Service {
+func NewOauth(oauthConfig *oauth2.Config, accountRepo ports.AccountRepositoryInterface) oauth.Service {
 	return &oauthsrvc{
 		GoogleOAuthConfig: oauthConfig,
-		AccountRep:        account_repo,
+		AccountRep:        accountRepo,
 	}
 }
 
@@ -143,7 +144,7 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 	if err != nil {
 		return nil, oauth.MakeUnauthorized(fmt.Errorf("failed to get account by email: %w", err))
 	}
-	err = createAccountSession(s, &ctx, p, userinfo, &account)
+	err = createAccountSession(s, &ctx, p, &account)
 	if err != nil {
 		return nil, oauth.MakeServerError(fmt.Errorf("failed to create account session: %w", err))
 	}
@@ -153,7 +154,7 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 	//res.AccessToken = userinfo.Email
 	//res.SessionToken = &userinfo.Email
 	//res.ExpiresAt = "2025-06-12"
-	res.SessionToken = userinfo.Email
+	// res.SessionToken = userinfo.Email
 	log.Printf(ctx, "oauth.callback")
 	return
 }

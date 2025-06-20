@@ -14,6 +14,7 @@ import (
 	"github.com/enrollment/gen/oauth"
 	"github.com/enrollment/gen/queue"
 	controllers "github.com/enrollment/src/controllers"
+	"github.com/enrollment/src/db"
 	dbController "github.com/enrollment/src/db"
 
 	"goa.design/clue/debug"
@@ -21,10 +22,17 @@ import (
 )
 
 func main() {
-	cfg, err := config.NewConfig()
+	cfg, err := config.NewMainConfig()
 	if err != nil {
 		panic(err)
 	}
+
+	conn := db.InstanceDB()
+
+	var (
+		accountRepo = dbController.NewAccountRepository(conn)
+		// accountSessionRepo = dbController.NewAccountSessionRepository(conn)
+	)
 
 	var (
 		courseSvc     course.Service
@@ -35,7 +43,7 @@ func main() {
 	{
 		courseSvc = controllers.NewCourse()
 		enrollmentSvc = controllers.NewEnrollment()
-		oauthSvc = controllers.NewOauth(&cfg.GoogleOAuthConfig, dbController.NewAccountRepository())
+		oauthSvc = controllers.NewOauth(&cfg.GoogleOAuthConfig, accountRepo)
 		queueSvc = controllers.NewQueue()
 	}
 

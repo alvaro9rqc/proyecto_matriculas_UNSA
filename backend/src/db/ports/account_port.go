@@ -6,6 +6,6 @@ import (
 	"github.com/enrollment/gen/db"
 )
 
-type AccountRepository interface {
+type AccountRepositoryInterface interface {
 	GetAccountByEmail(ctx context.Context, email string) (db.Account, error)
 }

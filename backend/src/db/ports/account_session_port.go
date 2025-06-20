@@ -6,6 +6,6 @@ import (
 	"github.com/enrollment/gen/db"
 )
 
-type AccountSessionRepository interface {
+type AccountSessionRepositoryInterface interface {
 	CreateAccountSession(ctx context.Context, arg db.CreateAccountSessionParams) (db.AccountSession, error)
 }
