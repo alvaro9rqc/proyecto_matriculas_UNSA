@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/enrollment/config"
 	"github.com/enrollment/src/db"
+	"github.com/enrollment/src/db/repositories"
 )
 
 func main() {
@@ -11,13 +12,13 @@ func main() {
 		panic(err)
 	}
 
-	conn, err := connectDB(cfg)
+	conn, err := db.ConnectDB(cfg)
 	if err != nil {
 		panic(err)
 	}
 
-	accountRepo := db.NewAccountRepository(conn)
-	accountSessionRepo := db.NewAccountSessionRepository(conn)
-	courseRepo := db.NewCourseRepository(conn)
+	oauthRepo := repositories.NewOauthRepository(conn)
+
+	seedOauthRepository(cfg.Ctx, oauthRepo)
 
 }

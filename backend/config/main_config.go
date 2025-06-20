@@ -86,3 +86,7 @@ func NewMainConfig() (*MainConfig, error) {
 		Ctx:               ctx,
 	}, nil
 }
+
+func (c *MainConfig) GetConnectDBConfig() (string, context.Context) {
+	return c.DatabaseURL, c.Ctx
+}

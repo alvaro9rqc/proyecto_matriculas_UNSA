@@ -43,3 +43,7 @@ func NewSeedConfig() (*SeedConfig, error) {
 		Ctx:         ctx,
 	}, nil
 }
+
+func (c *SeedConfig) GetConnectDBConfig() (string, context.Context) {
+	return c.DatabaseURL, c.Ctx
+}
