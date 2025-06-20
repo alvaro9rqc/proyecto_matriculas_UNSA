@@ -1,6 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 
+-- Enrollment Major Process Table: (1, 2025, 1, true)
 CREATE TABLE enrollment_major_process (
     id SERIAL PRIMARY KEY,
     major_id INTEGER,
@@ -13,6 +14,7 @@ CREATE TABLE enrollment_major_process (
     UNIQUE (major_id, year, cicle_type)
 );
 
+-- Installation Table: se refiere a los cupos disponibles para un curso
 CREATE TABLE tuition (
     id SERIAL PRIMARY KEY,
     total_places INTEGER,
@@ -21,6 +23,7 @@ CREATE TABLE tuition (
     FOREIGN KEY (enrollment_major_process_id) REFERENCES enrollment_major_process (id)
 );
 
+-- Event Table: A los horarios de un curso
 CREATE TABLE event (
     id SERIAL PRIMARY KEY,
     start_date TIMESTAMP NOT NULL,
@@ -31,6 +34,7 @@ CREATE TABLE event (
     FOREIGN KEY (installation_id) REFERENCES installation (id) ON DELETE CASCADE
 );
 
+-- Student Major Table: Se refiere a la carrera profesional del estudiante
 CREATE TABLE student_major (
     student_id INTEGER,
     major_id INTEGER,
@@ -39,6 +43,7 @@ CREATE TABLE student_major (
     FOREIGN KEY (student_id) REFERENCES student (id) ON DELETE CASCADE
 );
 
+-- Student Course Table: Se refiere al curso que un estudiante ha llevado con anterioridad, el numero de intentos y si aprobó o no
 CREATE TABLE student_course (
     student_id INTEGER,
     course_id INTEGER,
@@ -49,6 +54,7 @@ CREATE TABLE student_course (
     FOREIGN KEY (course_id) REFERENCES course (id)
 );
 
+-- Course Major Table: Se refiere a los cursos que son parte de una carrera profesional
 CREATE TABLE course_major (
     course_id INTEGER,
     major_id INTEGER,
@@ -57,6 +63,7 @@ CREATE TABLE course_major (
     FOREIGN KEY (major_id) REFERENCES major (id) ON DELETE CASCADE
 );
 
+-- Course Prerequisite Table: Se refiere a los cursos que son prerequisitos de otro curso
 CREATE TABLE course_prerequisite (
     course_id INTEGER,
     prerequisite_id INTEGER,
@@ -66,6 +73,7 @@ CREATE TABLE course_prerequisite (
     CHECK (course_id <> prerequisite_id)
 );
 
+-- Course Modality Table: Se refiere a los cursos que tienen una modalidad especifica y el numero de horas que se dictan
 CREATE TABLE course_modality (
     course_id INTEGER,
     modality_id INTEGER,
@@ -76,6 +84,7 @@ CREATE TABLE course_modality (
     CONSTRAINT hours_format CHECK (hours > 0)
 );
 
+-- Tuition Speaker Table: Se refiere a los oradores que dictan un curso
 CREATE TABLE tuition_speaker (
     tuition_id INTEGER,
     speaker_id INTEGER,
@@ -83,6 +92,7 @@ CREATE TABLE tuition_speaker (
     FOREIGN KEY (speaker_id) REFERENCES speaker (id) ON DELETE CASCADE
 );
 
+-- Tuition Modality Course Table: Se refiere a los cursos que se dictan en una modalidad especifica
 CREATE TABLE tuition_modality_course (
     tuition_id INTEGER,
     modality_id INTEGER,
