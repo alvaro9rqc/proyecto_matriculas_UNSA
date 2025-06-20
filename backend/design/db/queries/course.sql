@@ -1,6 +1,6 @@
 -- name: CreateCourse :exec
 INSERT INTO course (
-    name, credits, cicle_number
+    name, credits, cycle_number
 ) VALUES (
     $1, $2, $3
 );
@@ -10,7 +10,7 @@ UPDATE course
 SET
     name = $1,
     credits = $2,
-    cicle_number = $3
+    cycle_number = $3
 WHERE id = $4;
 
 -- name: DeleteCourse :exec
@@ -22,6 +22,6 @@ SELECT
     id,
     name,
     credits,
-    cicle_number
+    cycle_number
 FROM course
-ORDER BY cicle_number, name;
+ORDER BY cycle_number, name;

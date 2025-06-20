@@ -1,9 +1,3 @@
-CREATE TABLE installation (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(40) NOT NULL,
-    description VARCHAR(255)
-);
-
 -- name: CreateInstalation :exec
 INSERT INTO installation (name, description)
 VALUES ($1, $2);
