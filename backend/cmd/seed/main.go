@@ -18,7 +18,13 @@ func main() {
 	}
 
 	oauthRepo := repositories.NewOauthRepository(conn)
+	studentGroupRepo := repositories.NewStudentGroupRepository(conn)
+	installationRepo := repositories.NewInstallationRepository(conn)
+	courseRepo := repositories.NewCourseRepository(conn)
+	majorRepo := repositories.NewMajorRepository(conn)
+	modalityRepo := repositories.NewModalityRepository(conn)
 
 	seedOauthRepository(cfg.Ctx, oauthRepo)
 
+	seedEnrollmentRepository(cfg.Ctx, studentGroupRepo, installationRepo, courseRepo, majorRepo, modalityRepo)
 }
