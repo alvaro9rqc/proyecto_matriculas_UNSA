@@ -5,8 +5,9 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"github.com/jackc/pgx/v5/pgtype"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 
 	"github.com/enrollment/gen/db"
 	oauth "github.com/enrollment/gen/oauth"
@@ -23,15 +24,14 @@ import (
 // The example methods log the requests and return zero values.
 type oauthsrvc struct {
 	GoogleOAuthConfig *oauth2.Config
-	AccountRep        ports.AccountRepository
-	AccountSessionRep ports.AccountSessionRepository
+	OauthRep          ports.OauthRepositoryInterface
 }
 
 // NewOauth returns the oauth service implementation.
-func NewOauth(oauthConfig *oauth2.Config, account_repo ports.AccountRepository) oauth.Service {
+func NewOauth(oauthConfig *oauth2.Config, oauthRep ports.OauthRepositoryInterface) oauth.Service {
 	return &oauthsrvc{
 		GoogleOAuthConfig: oauthConfig,
-		AccountRep:        account_repo,
+		OauthRep:          oauthRep,
 	}
 }
 
@@ -122,7 +122,7 @@ func createAccountSession(s *oauthsrvc, ctx *context.Context, p *oauth.CallbackP
 		Time:  time.Now().Add(24 * time.Hour),
 		Valid: true,
 	}
-	s.AccountSessionRep.CreateAccountSession(*ctx, db.CreateAccountSessionParams{
+	s.OauthRep.CreateAccountSession(*ctx, db.CreateAccountSessionParams{
 		Token:          token,
 		UserAgent:      userAgent,
 		IpAddress:      ipAddress,
@@ -138,12 +138,12 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 		return nil, oauth.MakeServerError(fmt.Errorf("failed to exchange code: %w", err))
 	}
 	// search if account exists in the database
-	account, err := s.AccountRep.GetAccountByEmail(ctx, userinfo.Email)
+	account, err := s.OauthRep.GetAccountByEmail(ctx, userinfo.Email)
 
 	if err != nil {
 		return nil, oauth.MakeUnauthorized(fmt.Errorf("failed to get account by email: %w", err))
 	}
-	err = createAccountSession(s, &ctx, p, userinfo, &account)
+	err = createAccountSession(s, &ctx, p, &account)
 	if err != nil {
 		return nil, oauth.MakeServerError(fmt.Errorf("failed to create account session: %w", err))
 	}
@@ -153,7 +153,7 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 	//res.AccessToken = userinfo.Email
 	//res.SessionToken = &userinfo.Email
 	//res.ExpiresAt = "2025-06-12"
-	res.SessionToken = userinfo.Email
+	// res.SessionToken = userinfo.Email
 	log.Printf(ctx, "oauth.callback")
 	return
 }

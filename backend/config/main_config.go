@@ -17,13 +17,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 )
 
-const (
-	HTTP_PORT    = "HTTP_PORT"
-	DATABASE_URL = "DATABASE_URL"
-	DBG          = "DEBUG"
-)
-
-type Config struct {
+type MainConfig struct {
 	DatabaseURL       string
 	HttpPort          string
 	Dbg               bool
@@ -31,7 +25,7 @@ type Config struct {
 	Ctx               context.Context
 }
 
-func NewConfig() (*Config, error) {
+func NewMainConfig() (*MainConfig, error) {
 	devMode := flag.Bool("development", false, "Usar configuración de desarrollo")
 	flag.Parse()
 
@@ -84,11 +78,15 @@ func NewConfig() (*Config, error) {
 		Endpoint:     google.Endpoint,
 		Scopes:       []string{googleOauth2.UserinfoEmailScope, googleOauth2.UserinfoProfileScope},
 	}
-	return &Config{
+	return &MainConfig{
 		DatabaseURL:       databaseURL,
 		HttpPort:          httpPort,
 		Dbg:               dbg,
 		GoogleOAuthConfig: googleOAuthConfig,
 		Ctx:               ctx,
 	}, nil
+}
+
+func (c *MainConfig) GetConnectDBConfig() (string, context.Context) {
+	return c.DatabaseURL, c.Ctx
 }
