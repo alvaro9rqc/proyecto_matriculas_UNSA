@@ -100,15 +100,18 @@ var _ = Service("oauth", func() {
 		Description("Terminate the current session and invalidate the token")
 
 		Payload(func() {
-			Attribute("token", String, "Session token to invalidate")
-			Required("token")
+			Attribute("session_token", String, "Session token to invalidate")
+			Required("session_token")
 		})
 
 		Error("unauthorized", ErrorResult, "Missing or invalid token")
 
 		HTTP(func() {
 			POST("/auth/logout")
-			Header("token:Authorization")
+			Cookie("session_token:session_token", String, func() {
+				Description("Session token to invalidate")
+				Example("session_token=abc123xyz")
+			})
 			Response(StatusNoContent)
 			Response("unauthorized", StatusUnauthorized)
 		})
