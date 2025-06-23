@@ -9,7 +9,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/modules/core/ui/dialog';
+import { Link } from '@/modules/core/ui/link';
 import { LogoExtended } from '@/modules/core/ui/logoExtended';
+import { getLoginURL } from '@/modules/auth/lib/authClient';
+import { OAuthProvidersName } from '@/modules/auth/lib/oauthProvider';
 
 export default function SignInModal() {
   return (
@@ -27,20 +30,20 @@ export default function SignInModal() {
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-y-4">
-          <Button
+          <Link
             variant="secondary"
-            className="inline-flex justify-center items-center gap-x-2 w-full"
+            href={getLoginURL(OAuthProvidersName.GOOGLE)}
           >
             <GoogleLogo className="size-4" />
             Google
-          </Button>
-          <Button
+          </Link>
+          <Link
             variant="secondary"
-            className="inline-flex justify-center items-center gap-x-2 w-full"
+            href={getLoginURL(OAuthProvidersName.MICROSOFT)}
           >
             <MicrosoftLogo className="size-4" />
             Microsoft
-          </Button>
+          </Link>
         </div>
       </DialogContent>
     </Dialog>
