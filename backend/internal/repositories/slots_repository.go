@@ -10,8 +10,8 @@ type SlotsRepository struct {
 	*db.Queries
 }
 
-func NewSlotsRepository(conn *pgx.Conn) ports.CourseRepositoryInterface {
-	return &CourseRepository{
+func NewSlotsRepository(conn *pgx.Conn) ports.SlotsRepositoryInterface {
+	return &SlotsRepository{
 		Queries: db.New(conn),
 	}
 }
