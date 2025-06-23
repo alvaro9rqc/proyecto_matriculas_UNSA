@@ -181,6 +181,7 @@ func (s *oauthsrvc) Logout(ctx context.Context, p *oauth.LogoutPayload) (res *oa
 	p.SessionToken = ""
 	res = &oauth.LogoutResult{}
 	res.SessionToken = ""
+	res.Location = &s.FrontendURL
 	return res, nil
 }
 

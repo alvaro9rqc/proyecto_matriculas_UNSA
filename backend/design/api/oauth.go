@@ -118,7 +118,7 @@ var _ = Service("oauth", func() {
 		Error("unauthorized", ErrorResult, "Missing or invalid token")
 
 		HTTP(func() {
-			POST("/auth/logout")
+			GET("/auth/logout")
 			Cookie("session_token:session_token", String, func() {
 				Description("Session token to invalidate")
 				Example("session_token=abc123xyz")
@@ -130,6 +130,7 @@ var _ = Service("oauth", func() {
 				})
 				CookieMaxAge(0) // Clear the Cookie
 				CookiePath("/")
+				Header("Location", String, "Redirect URL after successful login")
 			})
 			Response("unauthorized", StatusUnauthorized)
 		})
