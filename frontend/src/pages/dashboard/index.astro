@@ -1,0 +1,16 @@
+---
+import { authApi } from '@/modules/auth/lib/api';
+import { routesConfig } from '@/modules/core/config/routes';
+import RootLayout from '@/modules/core/layouts/RootLayout.astro';
+
+const { data: user, error } = await authApi.getUser();
+
+if (error) {
+  return Astro.redirect('/');
+}
+---
+<RootLayout title="Dashboard">
+  <h2>Welcome, {user.name}!</h2>
+  <img src={user.avatar_url} alt="xd">
+  <p>{user.email}</p>
+</RootLayout>
