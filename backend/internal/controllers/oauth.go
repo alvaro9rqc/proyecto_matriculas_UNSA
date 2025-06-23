@@ -143,7 +143,7 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 	if err != nil {
 		return nil, oauth.MakeUnauthorized(fmt.Errorf("failed to get account by email: %w", err))
 	}
-	err = createAccountSession(s, &ctx, p, &account)
+	token, err := createAccountSession(s, &ctx, p, &account)
 	if err != nil {
 		return nil, oauth.MakeServerError(fmt.Errorf("failed to create account session: %w", err))
 	}
