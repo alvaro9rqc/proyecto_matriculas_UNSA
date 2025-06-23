@@ -14,4 +14,5 @@ type OauthRepositoryInterface interface {
 	CreateAccountSession(ctx context.Context, arg db.CreateAccountSessionParams) (db.AccountSession, error)
 	CreateOauthProvider(ctx context.Context, name string) error
 	CreateAccountWithProviderName(ctx context.Context, arg db.CreateAccountWithProviderNameParams) error
+	DeleteAccountByToken(ctx context.Context, token string) error
 }

@@ -9,6 +9,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
+	"github.com/enrollment/config"
 	"github.com/enrollment/gen/db"
 	oauth "github.com/enrollment/gen/oauth"
 	"github.com/enrollment/internal/ports"
@@ -24,13 +25,15 @@ import (
 type oauthsrvc struct {
 	GoogleOAuthConfig *oauth2.Config
 	OauthRep          ports.OauthRepositoryInterface
+	FrontendURL       string
 }
 
 // NewOauth returns the oauth service implementation.
-func NewOauth(oauthConfig *oauth2.Config, oauthRep ports.OauthRepositoryInterface) oauth.Service {
+func NewOauth(cfg *config.MainConfig, oauthRep ports.OauthRepositoryInterface) oauth.Service {
 	return &oauthsrvc{
-		GoogleOAuthConfig: oauthConfig,
+		GoogleOAuthConfig: &cfg.GoogleOAuthConfig,
 		OauthRep:          oauthRep,
+		FrontendURL:       cfg.FrontendURL,
 	}
 }
 
@@ -154,14 +157,32 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 	//res.SessionToken = &userinfo.Email
 	//res.ExpiresAt = "2025-06-12"
 	res.SessionToken = token
+	url := s.FrontendURL + "/dashboard"
+	res.Location = &url
 	log.Printf(ctx, "oauth.callback")
 	return
 }
 
 // Terminate the current session and invalidate the token
-func (s *oauthsrvc) Logout(ctx context.Context, p *oauth.LogoutPayload) (err error) {
+// 1. Retrieeve the session token from the requests
+// 2. Erase the session token from the database
+// 3. Erase the session token from the cookies
+// 4. Redirect the user to the frontend URL
+func (s *oauthsrvc) Logout(ctx context.Context, p *oauth.LogoutPayload) (res *oauth.LogoutResult, err error) {
 	log.Printf(ctx, "oauth.logout")
-	return
+	// retrieve the session token from the payload
+	token := p.SessionToken
+	//erase the session token from the database
+	err = s.OauthRep.DeleteAccountByToken(ctx, token)
+	if err != nil {
+		return nil, oauth.MakeUnauthorized(fmt.Errorf("failed to delete account by token: %w", err))
+	}
+	// erase the session token from the cookies (in design too)
+	p.SessionToken = ""
+	res = &oauth.LogoutResult{}
+	res.SessionToken = ""
+	res.Location = &s.FrontendURL
+	return res, nil
 }
 
 // Returns the authenticated user's information

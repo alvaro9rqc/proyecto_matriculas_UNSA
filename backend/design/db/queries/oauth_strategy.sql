@@ -61,3 +61,9 @@ RETURNING id, token, expiration_date, user_agent, ip_address, account_id;
 
 -- name: CreateOauthProvider :exec
 INSERT INTO oauth_provider (name) VALUES ($1);
+
+
+-- name: DeleteAccountByToken :exec
+
+DELETE FROM account_session
+WHERE token = $1;
