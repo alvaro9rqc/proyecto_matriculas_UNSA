@@ -10,8 +10,8 @@ CREATE TABLE section (
 
 CREATE TABLE slots (
     id SERIAL PRIMARY KEY,
-    total_places INTEGER,
-    taken_places INTEGER,
+    total_places INTEGER NOT NULL,
+    taken_places INTEGER NOT NULL,
     section_id INTEGER NOT NULL,
     FOREIGN KEY (section_id) REFERENCES section (id) ON DELETE CASCADE
 );
@@ -22,7 +22,7 @@ CREATE TABLE event (
     start_date TIMESTAMP NOT NULL,
     end_date TIMESTAMP NOT NULL,
     section_id INTEGER NOT NULL,
-    installation_id INTEGER,
+    installation_id INTEGER NOT NULL,
     modality_id INTEGER NOT NULL,
 
     FOREIGN KEY (modality_id) REFERENCES modality (id) ON DELETE RESTRICT,

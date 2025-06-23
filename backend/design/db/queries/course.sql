@@ -19,9 +19,6 @@ WHERE id = $1;
 
 -- name: ListCourses :many
 SELECT
-    id,
-    name,
-    credits,
-    cycle_number
+    *
 FROM course
 ORDER BY cycle_number, name;

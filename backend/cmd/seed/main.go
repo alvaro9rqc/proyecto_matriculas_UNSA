@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/enrollment/config"
-	"github.com/enrollment/src/db"
-	"github.com/enrollment/src/db/repositories"
+	"github.com/enrollment/internal/db"
+	"github.com/enrollment/internal/repositories"
 )
 
 func main() {

@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/enrollment/gen/db"
-	"github.com/enrollment/src/db/ports"
+	"github.com/enrollment/internal/ports"
 	"github.com/jaswdr/faker"
 	"golang.org/x/net/context"
 )
