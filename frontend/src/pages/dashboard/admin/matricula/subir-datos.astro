@@ -1,18 +1,18 @@
 ---
 import GridPageLayout from '@/modules/core/layouts/GridPageLayout.astro';
+import H1 from '@/modules/core/ui/H1.astro';
+import H2 from '@/modules/core/ui/H2.astro';
 import LogoExtended from '@/modules/core/ui/LogoExtended.astro';
-import SubtitlePage from '@/modules/core/ui/SubtitlePage.astro';
-import TitlePage from '@/modules/core/ui/TitlePage.astro';
 import Button from '@/modules/core/ui/button.astro';
 ---
 
 <GridPageLayout title="Datos de alumnos y estudiantes">
   <LogoExtended class="col-span-2 self-end justify-self-center row-auto" size="xl" />
   <div class="flex flex-col gap-4">
-    <TitlePage>Tu proceso se ha iniciado</TitlePage>
-    <SubtitlePage>
+    <H1>Tu proceso se ha iniciado</H1>
+    <H2>
       Necesitamos los datos de los estudiantes y cursos. Por favor, descarga el formato, completálo y súbelo. Podrás modificar los datos en la aplicación luego.
-    </SubtitlePage>
+    </H2>
   </div>
 
   <div class="flex flex-col gap-y-4 place-self-center items-center">
