@@ -24,6 +24,7 @@ var OAuthRedirectResult = Type("OAuthRedirectResult", func() {
 var LoginResult = Type("LoginResult", func() {
 	Description("Successful login result containing access token")
 	Attribute("session_token", String, "Cookie for session management")
+	Attribute("Location", String, "Redirect URL after login")
 	Required("session_token")
 })
 
@@ -80,12 +81,13 @@ var _ = Service("oauth", func() {
 			Param("state")
 			Header("user_agent:User-Agent", String, "User agent of the client")
 			Header("ip_address:X-Forwarded-For", String, "IP address of the client")
-			Response(StatusOK, func() {
+			Response(StatusTemporaryRedirect, func() {
 				Cookie("session_token:session_token", String, func() {
 					Description("Session token set in cookie after successful login")
 					Example("session_token=abc123xyz")
 				})
 				CookieHTTPOnly()
+				Header("Location", String, "Redirect URL after successful login")
 			})
 			Response("invalid_token", StatusBadRequest)
 			Response("server_error", StatusInternalServerError)

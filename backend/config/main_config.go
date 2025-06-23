@@ -22,6 +22,7 @@ type MainConfig struct {
 	HttpPort          string
 	Dbg               bool
 	GoogleOAuthConfig oauth2.Config
+	FrontendURL       string
 	Ctx               context.Context
 }
 
@@ -49,6 +50,12 @@ func NewMainConfig() (*MainConfig, error) {
 	if httpPort == "" {
 		httpPort = "8080"
 		log.Printf("Environment variable %s not found, using default value: %s\n", HTTP_PORT, httpPort)
+	}
+
+	frontendURL := os.Getenv(FRONTEND_URL)
+	if frontendURL == "" {
+		frontendURL = "http://localhost:4321"
+		log.Printf("Environment variable %s not found, using default value: %s\n", FRONTEND_URL, frontendURL)
 	}
 
 	dbg, err := strconv.ParseBool(os.Getenv(DBG))
@@ -83,6 +90,7 @@ func NewMainConfig() (*MainConfig, error) {
 		HttpPort:          httpPort,
 		Dbg:               dbg,
 		GoogleOAuthConfig: googleOAuthConfig,
+		FrontendURL:       frontendURL,
 		Ctx:               ctx,
 	}, nil
 }

@@ -9,6 +9,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
+	"github.com/enrollment/config"
 	"github.com/enrollment/gen/db"
 	oauth "github.com/enrollment/gen/oauth"
 	"github.com/enrollment/internal/ports"
@@ -24,13 +25,15 @@ import (
 type oauthsrvc struct {
 	GoogleOAuthConfig *oauth2.Config
 	OauthRep          ports.OauthRepositoryInterface
+	FrontendURL       string
 }
 
 // NewOauth returns the oauth service implementation.
-func NewOauth(oauthConfig *oauth2.Config, oauthRep ports.OauthRepositoryInterface) oauth.Service {
+func NewOauth(cfg *config.MainConfig, oauthRep ports.OauthRepositoryInterface) oauth.Service {
 	return &oauthsrvc{
-		GoogleOAuthConfig: oauthConfig,
+		GoogleOAuthConfig: &cfg.GoogleOAuthConfig,
 		OauthRep:          oauthRep,
+		FrontendURL:       cfg.FrontendURL,
 	}
 }
 
@@ -154,6 +157,8 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 	//res.SessionToken = &userinfo.Email
 	//res.ExpiresAt = "2025-06-12"
 	res.SessionToken = token
+	url := s.FrontendURL + "/dashboard"
+	res.Location = &url
 	log.Printf(ctx, "oauth.callback")
 	return
 }

@@ -45,7 +45,7 @@ func main() {
 	{
 		courseSvc = controllers.NewCourse()
 		enrollmentSvc = controllers.NewEnrollment()
-		oauthSvc = controllers.NewOauth(&cfg.GoogleOAuthConfig, oauthRepo)
+		oauthSvc = controllers.NewOauth(cfg, oauthRepo)
 		queueSvc = controllers.NewQueue()
 	}
 
