@@ -96,11 +96,11 @@ func generateSessionToken() (string, error) {
 // TODO: search a way to prevent unlimited login attempts ans unlimited sessions created
 // TODO: erase access token for original result type
 
-func createAccountSession(s *oauthsrvc, ctx *context.Context, p *oauth.CallbackPayload, account *db.Account) (err error) {
+func createAccountSession(s *oauthsrvc, ctx *context.Context, p *oauth.CallbackPayload, account *db.Account) (res string, err error) {
 
 	token, err := generateSessionToken()
 	if err != nil {
-		return fmt.Errorf("failed to generate session token: %w", err)
+		return res, fmt.Errorf("failed to generate session token: %w", err)
 	}
 	//get user agent
 	var userAgent string
@@ -121,6 +121,7 @@ func createAccountSession(s *oauthsrvc, ctx *context.Context, p *oauth.CallbackP
 		Time:  time.Now().Add(24 * time.Hour),
 		Valid: true,
 	}
+
 	s.OauthRep.CreateAccountSession(*ctx, db.CreateAccountSessionParams{
 		Token:          token,
 		UserAgent:      userAgent,
@@ -128,7 +129,7 @@ func createAccountSession(s *oauthsrvc, ctx *context.Context, p *oauth.CallbackP
 		ExpirationDate: expirationDate,
 		AccountID:      account.ID,
 	})
-	return nil
+	return token, nil
 }
 func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res *oauth.LoginResult, err error) {
 	// returns the user info from the google's oauth service
@@ -142,7 +143,7 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 	if err != nil {
 		return nil, oauth.MakeUnauthorized(fmt.Errorf("failed to get account by email: %w", err))
 	}
-	err = createAccountSession(s, &ctx, p, &account)
+	token, err := createAccountSession(s, &ctx, p, &account)
 	if err != nil {
 		return nil, oauth.MakeServerError(fmt.Errorf("failed to create account session: %w", err))
 	}
@@ -152,7 +153,7 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 	//res.AccessToken = userinfo.Email
 	//res.SessionToken = &userinfo.Email
 	//res.ExpiresAt = "2025-06-12"
-	// res.SessionToken = userinfo.Email
+	res.SessionToken = token
 	log.Printf(ctx, "oauth.callback")
 	return
 }
