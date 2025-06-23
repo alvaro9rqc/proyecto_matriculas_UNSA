@@ -7,11 +7,11 @@ import (
 var AccountUser = Type("AccountUser", func() {
 	Description("AccountUser type")
 
-	Attribute("id", String, "Unique user ID")
+	Attribute("id", Int, "Unique user ID")
 	Attribute("email", String, "User email")
-	Attribute("firstName", String, "User first name")
-	Attribute("lastNames", String, "User last names")
-	Attribute("remainingNames", String, "User remaining names")
+	Attribute("name", String, "User first name")
+	Attribute("surname", String, "User last names")
+	Attribute("avatar_url", String, "User remaining names")
 
-	Required("id", "email", "firstName", "lastNames", "remainingNames")
+	Required("id", "email", "name", "surname", "avatar_url")
 })
