@@ -164,9 +164,24 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 }
 
 // Terminate the current session and invalidate the token
-func (s *oauthsrvc) Logout(ctx context.Context, p *oauth.LogoutPayload) (err error) {
+// 1. Retrieeve the session token from the requests
+// 2. Erase the session token from the database
+// 3. Erase the session token from the cookies
+// 4. Redirect the user to the frontend URL
+func (s *oauthsrvc) Logout(ctx context.Context, p *oauth.LogoutPayload) (res *oauth.LogoutResult, err error) {
 	log.Printf(ctx, "oauth.logout")
-	return
+	// retrieve the session token from the payload
+	token := p.SessionToken
+	//erase the session token from the database
+	err = s.OauthRep.DeleteAccountByToken(ctx, token)
+	if err != nil {
+		return nil, oauth.MakeUnauthorized(fmt.Errorf("failed to delete account by token: %w", err))
+	}
+	// erase the session token from the cookies (in design too)
+	p.SessionToken = ""
+	res = &oauth.LogoutResult{}
+	res.SessionToken = ""
+	return res, nil
 }
 
 // Returns the authenticated user's information

@@ -28,6 +28,13 @@ var LoginResult = Type("LoginResult", func() {
 	Required("session_token")
 })
 
+var LogoutResult = Type("LogoutResult", func() {
+	Description("Result after logout operation")
+	Attribute("Location", String, "Redirect url")
+	Attribute("session_token", String, "Session token to invalidate")
+	Required("session_token")
+})
+
 var _ = Service("oauth", func() {
 	Description("OAuth-based authentication service for Google and Microsoft")
 
@@ -88,6 +95,8 @@ var _ = Service("oauth", func() {
 				})
 				CookieHTTPOnly()
 				Header("Location", String, "Redirect URL after successful login")
+				CookieMaxAge(86400) // 1 day
+				CookiePath("/")
 			})
 			Response("invalid_token", StatusBadRequest)
 			Response("server_error", StatusInternalServerError)
@@ -104,6 +113,8 @@ var _ = Service("oauth", func() {
 			Required("session_token")
 		})
 
+		Result(LogoutResult)
+
 		Error("unauthorized", ErrorResult, "Missing or invalid token")
 
 		HTTP(func() {
@@ -112,7 +123,14 @@ var _ = Service("oauth", func() {
 				Description("Session token to invalidate")
 				Example("session_token=abc123xyz")
 			})
-			Response(StatusNoContent)
+			Response(StatusTemporaryRedirect, func() {
+				Cookie("session_token:session_token", String, func() {
+					Description("Clears the session token cookie on logout")
+					Example("session_token=; Max-Age=0; Path=/")
+				})
+				CookieMaxAge(0) // Clear the Cookie
+				CookiePath("/")
+			})
 			Response("unauthorized", StatusUnauthorized)
 		})
 	})
