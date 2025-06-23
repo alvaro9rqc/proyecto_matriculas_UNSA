@@ -38,11 +38,12 @@ func createRandomMajor(faker faker.Faker) string {
 	return strings.Join(faker.Lorem().Words(2), " ")
 }
 
-func createRandomCourse(faker faker.Faker) db.CreateCourseParams {
+func createRandomCourse(faker faker.Faker, major db.Major) db.CreateCourseParams {
 	return db.CreateCourseParams{
 		Name:        strings.Join(faker.Lorem().Words(2), " "),
 		Credits:     int16(rand.Intn(5) + 1),
 		CycleNumber: int16(rand.Intn(5) + 1),
+		MajorID:     major.ID,
 	}
 }
 
@@ -103,21 +104,26 @@ func seedEnrollmentCoreTables(
 		}
 	}
 
-	log.Println("Seeding courses...")
-	for range 100 {
-		course := createRandomCourse(faker)
-		err := courseRepo.CreateCourse(ctx, course)
-		if err != nil {
-			log.Fatalf("Failed to create course: %v", err)
-		}
-	}
-
 	log.Println("Seeding majors...")
 	for range 20 {
 		majorName := createRandomMajor(faker)
 		err := majorRepo.CreateMajor(ctx, majorName)
 		if err != nil {
 			log.Fatalf("Failed to create major: %v", err)
+		}
+	}
+
+	log.Println("Seeding courses...")
+	majors, err := majorRepo.ListMajors(ctx)
+	if err != nil {
+		log.Fatalf("Failed to list majors: %v", err)
+	}
+	for range 100 {
+		major := majors[rand.Intn(len(majors))]
+		course := createRandomCourse(faker, major)
+		err := courseRepo.CreateCourse(ctx, course)
+		if err != nil {
+			log.Fatalf("Failed to create course: %v", err)
 		}
 	}
 

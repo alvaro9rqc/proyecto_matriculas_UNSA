@@ -16,7 +16,7 @@ const hourLayout = "15:04:00"
 
 var HOURS [16][2]string = [16][2]string{
 	{"07:00:00", "07:50:00"},
-	{"07:50:50", "08:40:00"},
+	{"07:50:00", "08:40:00"},
 	{"08:50:00", "09:40:00"},
 	{"09:40:00", "10:30:00"},
 	{"10:40:00", "11:30:00"},
@@ -93,6 +93,8 @@ func seedEnrollmentProcessTables(
 	studentRepo ports.StudentRepositoryInterface,
 	majorRepo ports.MajorRepositoryInterface,
 	studentMajorRepo ports.StudentMajorRepositoryInterface,
+	speakerRepo ports.SpeakerRepositoryInterface,
+	sectionSpeakerRepo ports.SectionSpeakerRepositoryInterface,
 ) {
 	// faker := faker.New()
 
@@ -191,9 +193,46 @@ func seedEnrollmentProcessTables(
 
 			err := studentMajorRepo.CreateStudentMajor(ctx, studentMajor)
 			if err != nil {
-				log.Fatalf("Failed to create student-major relation for student %d and major %d: %v", student.ID, major.ID, err)
+				log.Printf("Failed to create student-major relation for student %d and major %d: %v", student.ID, major.ID, err)
 			}
 		}
 	}
 
+	log.Println("Seeding Sections Speakers...")
+	sectionsAsync := <-utils.Async(func() ([]db.Section, error) {
+		return sectionRepo.ListSections(ctx)
+	})
+	if sectionsAsync.Err != nil {
+		log.Fatalf("Failed to list sections: %v", sectionsAsync.Err)
+	}
+
+	sections = sectionsAsync.Value
+
+	speakersAsync := <-utils.Async(func() ([]db.FullListSpeakersRow, error) {
+		return speakerRepo.FullListSpeakers(ctx)
+	})
+	if speakersAsync.Err != nil {
+		log.Fatalf("Failed to list speakers: %v", speakersAsync.Err)
+	}
+
+	speakers := speakersAsync.Value
+
+	for _, section := range sections {
+		numOfSpeakersBySection := rand.Intn(2) + 1
+
+		for range numOfSpeakersBySection {
+			speaker := speakers[rand.Intn(len(speakers))]
+			createSectionSpeakerParams := db.CreateSectionSpeakerParams{
+				SectionID: pgtype.Int4{Int32: section.ID, Valid: true},
+				SpeakerID: pgtype.Int4{Int32: speaker.ID, Valid: true},
+			}
+
+			err := sectionSpeakerRepo.CreateSectionSpeaker(ctx, createSectionSpeakerParams)
+			if err != nil {
+				log.Fatalf("Failed to create section speaker relation for section %d and speaker %d: %v", section.ID, speaker.ID, err)
+			}
+		}
+	}
+
+	log.Println("Enrollment process tables seeded successfully!")
 }

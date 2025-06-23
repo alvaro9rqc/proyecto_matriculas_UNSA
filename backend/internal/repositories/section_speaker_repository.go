@@ -6,12 +6,12 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type SlotsRepository struct {
+type SectionSpeakerRepository struct {
 	*db.Queries
 }
 
-func NewSlotsRepository(conn *pgx.Conn) ports.SlotsRepositoryInterface {
-	return &SlotsRepository{
+func NewSectionSpeakerRepository(conn *pgx.Conn) ports.SectionSpeakerRepositoryInterface {
+	return &SectionSpeakerRepository{
 		Queries: db.New(conn),
 	}
 }
