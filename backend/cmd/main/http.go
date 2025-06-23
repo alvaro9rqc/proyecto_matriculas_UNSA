@@ -36,13 +36,13 @@ func handleHTTPServer(
 		enc = goahttp.ResponseEncoder
 	)
 
-	var mux goahttp.Muxer
-	{
-		mux = goahttp.NewMuxer()
-		if dbg {
-			debug.MountPprofHandlers(debug.Adapt(mux))
-			debug.MountDebugLogEnabler(debug.Adapt(mux))
-		}
+	var mux goahttp.Muxer = goahttp.NewMuxer()
+
+	//mux.
+
+	if dbg {
+		debug.MountPprofHandlers(debug.Adapt(mux))
+		debug.MountDebugLogEnabler(debug.Adapt(mux))
 	}
 
 	var (
