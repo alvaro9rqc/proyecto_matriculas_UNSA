@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/enrollment/gen/db"
-	"github.com/enrollment/src/db/ports"
+	"github.com/enrollment/internal/ports"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jaswdr/faker"
 	"golang.org/x/net/context"
@@ -42,7 +42,7 @@ func createRandomCourse(faker faker.Faker) db.CreateCourseParams {
 	return db.CreateCourseParams{
 		Name:        strings.Join(faker.Lorem().Words(2), " "),
 		Credits:     int16(rand.Intn(5) + 1),
-		CicleNumber: int16(rand.Intn(5) + 1),
+		CycleNumber: int16(rand.Intn(5) + 1),
 	}
 }
 

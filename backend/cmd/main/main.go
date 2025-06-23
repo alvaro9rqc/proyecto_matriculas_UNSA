@@ -13,9 +13,9 @@ import (
 	enrollment "github.com/enrollment/gen/enrollment"
 	"github.com/enrollment/gen/oauth"
 	"github.com/enrollment/gen/queue"
-	controllers "github.com/enrollment/src/controllers"
-	"github.com/enrollment/src/db"
-	repositories "github.com/enrollment/src/db/repositories"
+	controllers "github.com/enrollment/internal/controllers"
+	"github.com/enrollment/internal/db"
+	repositories "github.com/enrollment/internal/repositories"
 
 	"goa.design/clue/debug"
 	"goa.design/clue/log"

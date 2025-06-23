@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"github.com/enrollment/gen/db"
-	"github.com/enrollment/src/db/ports"
+	"github.com/enrollment/internal/ports"
 	"github.com/jackc/pgx/v5"
 )
 

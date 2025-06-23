@@ -11,9 +11,8 @@ import (
 
 	"github.com/enrollment/gen/db"
 	oauth "github.com/enrollment/gen/oauth"
-	"github.com/enrollment/src/db/ports"
+	"github.com/enrollment/internal/ports"
 
-	//. "github.com/enrollment/src/db"
 	"goa.design/clue/log"
 	"golang.org/x/oauth2"
 	googleOauth2 "google.golang.org/api/oauth2/v2"
