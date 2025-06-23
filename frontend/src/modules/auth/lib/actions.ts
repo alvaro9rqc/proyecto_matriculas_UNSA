@@ -1,6 +1,6 @@
 import { defineAction } from 'astro:actions';
-import { getUser } from '@/modules/auth/lib/authServer';
+import { authApi } from '@/modules/auth/lib/api';
 
 export const user = {
-  getUser: defineAction({ handler: () => getUser() }),
+  getUser: defineAction({ handler: () => authApi.getUser() }),
 };
