@@ -1,8 +1,14 @@
 ---
-import { routesConfig } from '@/modules/core/config/routes';
+import type { Admin, AuthRequired } from '@/modules/auth/types/user';
+import { getRouteFromPath } from '@/modules/core/lib/routes';
 import { capitalize } from '@/modules/core/lib/utils';
 
-const currentPath = Astro.url.pathname;
+const currentPath = getRouteFromPath(Astro.url.pathname);
+
+type Props = AuthRequired<Admin>;
+
+const { user } = Astro.props;
+
 ---
 
 <aside class="w-full max-w-2xs px-4 py-10 sticky top-0 bg-background gap-6 flex flex-col">
@@ -12,7 +18,7 @@ const currentPath = Astro.url.pathname;
         <span class="sr-only">Personal photo</span>
         <img
           class="w-full h-full object-cover rounded-full"
-          src={user.photo}
+          src={user.avatar_url}
           alt="User profile"
         />
       </button>
@@ -23,15 +29,6 @@ const currentPath = Astro.url.pathname;
     </div>
   </div>
   <nav class="flex flex-col gap-1" transition:name="lateralnav">
-    {routesConfig.teacherRoutes.map((item) => (
-      <a href={item.path} class="group flex items-center gap-2 px-6 py-3 hover:bg-secondary rounded-full transition-colors duration-75">
-        {
-          currentPath === item.path
-            ? <item.iconSelect size={24} />
-            : <item.icon size={24} />
-        }
-        <span>{item.name}</span>
-      </a>
-    ))}
+
   </nav>
 </aside>

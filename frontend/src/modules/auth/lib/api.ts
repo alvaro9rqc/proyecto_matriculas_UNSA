@@ -1,7 +1,7 @@
 import { BACKEND_URL } from 'astro:env/client';
 import type { User } from '@/modules/auth/types/user';
 import type { ApiResponse } from '@/modules/core/types/api';
-import { INTERNAL_SERVER_ERROR } from '@/modules/core/lib/error';
+import { INTERNAL_SERVER_ERROR } from '@/modules/core/lib/errors';
 
 class AuthApi {
   private apiAuthUrl: string;
