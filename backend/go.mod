@@ -4,7 +4,6 @@ go 1.24.1
 
 require (
 	github.com/gorilla/websocket v1.5.3
-	github.com/jackc/pgtype v1.14.4
 	github.com/jackc/pgx/v5 v5.7.5
 	github.com/jaswdr/faker v1.19.1
 	github.com/joho/godotenv v1.5.1
@@ -31,7 +30,6 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.6 // indirect
 	github.com/googleapis/gax-go/v2 v2.14.2 // indirect
-	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/manveru/faker v0.0.0-20171103152722-9fbc68a78c4d // indirect
