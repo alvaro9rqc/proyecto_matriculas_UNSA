@@ -12,7 +12,7 @@ function buildFullPath(route: Route, basePath = ''): string {
 
 function flattenRoutes(route: Route, basePath = '') {
   const fullPath = buildFullPath(route, basePath);
-  routeMap.set(`/${fullPath}`, { ...route, fullPath });
+  routeMap.set(`/${fullPath}`, { ...route, fullPath: `/${fullPath}` });
 
   for (const sub of route.sub || []) {
     flattenRoutes(sub, fullPath);
