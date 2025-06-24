@@ -2,10 +2,11 @@
 import ContactUs from '@/modules/landing/components/contactUs/ContactUs.astro';
 import Hero from '@/modules/landing/components/hero/Hero.astro';
 import LandingLayout from '@/modules/landing/layouts/LandingLayout.astro';
+import { LANDING_ROUTE } from '@/modules/landing/lib/routes';
 
 export const prerender = true;
 ---
-<LandingLayout title="Matrículas Unsa">
+<LandingLayout title={LANDING_ROUTE.title}>
   <Hero />
   <ContactUs />
 </LandingLayout>
