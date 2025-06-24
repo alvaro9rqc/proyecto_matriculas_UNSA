@@ -19,6 +19,10 @@ WHERE access_token = $1;
 SELECT * FROM account_session
 WHERE token = $1;
 
+-- name: GetAccountById :one
+SELECT * FROM account
+WHERE id = $1;
+
 
 -- name: CreateAccount :exec
 INSERT INTO account (
