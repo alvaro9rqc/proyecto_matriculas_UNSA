@@ -11,6 +11,19 @@ SELECT * FROM account
 ORDER BY id
 LIMIT $1 OFFSET $2;
 
+-- name: GetAccountByAccessToken :one
+SELECT * FROM account
+WHERE access_token = $1;
+
+-- name: GetSessionByToken :one
+SELECT * FROM account_session
+WHERE token = $1;
+
+-- name: GetAccountById :one
+SELECT * FROM account
+WHERE id = $1;
+
+
 -- name: CreateAccount :exec
 INSERT INTO account (
     email,
@@ -66,3 +79,6 @@ INSERT INTO oauth_provider (name) VALUES ($1);
 -- name: DeleteAccountByToken :exec
 DELETE FROM account_session
 WHERE token = $1;
+
+
+
