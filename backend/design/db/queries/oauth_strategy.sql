@@ -15,6 +15,11 @@ LIMIT $1 OFFSET $2;
 SELECT * FROM account
 WHERE access_token = $1;
 
+-- name: GetSessionByToken :one
+SELECT * FROM account_session
+WHERE token = $1;
+
+
 -- name: CreateAccount :exec
 INSERT INTO account (
     email,

@@ -8,6 +8,7 @@ import (
 )
 
 type OauthRepositoryInterface interface {
+	GetSessionByToken(ctx context.Context, token string) (db.AccountSession, error)
 	GetAccountByAccessToken(ctx context.Context, accessToken pgtype.Text) (db.Account, error)
 	GetAccountByEmail(ctx context.Context, email string) (db.Account, error)
 	FullListAccounts(ctx context.Context) ([]db.Account, error)
