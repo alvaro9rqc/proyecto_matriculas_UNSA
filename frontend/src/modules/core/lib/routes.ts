@@ -20,4 +20,5 @@ export function getRouteFromPath(path: string): Route {
   return result ?? ({} as Route);
 }
 
-export const NOT_FOUND_ROUTE = getRouteFromPath('/404');
+export const NOT_FOUND_ROUTE = getRouteFromPath('/not-found');
+export const UNAUTHORIZED_ROUTE = getRouteFromPath('/unauthorized');
