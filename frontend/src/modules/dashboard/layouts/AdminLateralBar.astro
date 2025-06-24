@@ -5,17 +5,9 @@ import { capitalize } from '@/modules/core/lib/utils';
 
 const currentPath = getRouteFromPath(Astro.url.pathname);
 
-if (!currentPath) {
-  return Astro.redirect('/404');
-}
-
 type Props = AuthRequired<Admin>;
 
 const { user } = Astro.props;
-
-if (!user) {
-  return Astro.redirect('/auth/login');
-}
 
 ---
 
