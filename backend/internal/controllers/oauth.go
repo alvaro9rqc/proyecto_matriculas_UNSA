@@ -186,8 +186,26 @@ func (s *oauthsrvc) Logout(ctx context.Context, p *oauth.LogoutPayload) (res *oa
 }
 
 // Returns the authenticated user's information
-func (s *oauthsrvc) Me(ctx context.Context) (res *oauth.AccountUser, err error) {
-	res = &oauth.AccountUser{}
+// read cookie with session token
+// search user id by session token
+// assign user data to the result
+func (s *oauthsrvc) Me(ctx context.Context, p *oauth.MePayload) (res *oauth.AccountUser, err error) {
 	log.Printf(ctx, "oauth.me")
-	return
+	// search user id by session token
+	userdata, err := s.OauthRep.GetAccountByAccessToken(ctx, pgtype.Text{
+		String: p.SessionToken,
+		Valid:  true,
+	})
+	if err != nil {
+		return nil, oauth.MakeUnauthorized(fmt.Errorf("failed to get account by access token: %w", err))
+	}
+	// assign user data to the result
+	res = &oauth.AccountUser{
+		ID:        int(userdata.ID),
+		Email:     userdata.Email,
+		Name:      userdata.Name,
+		Surname:   userdata.Surname.String,
+		AvatarURL: userdata.AvatarUrl.String,
+	}
+	return res, nil
 }
