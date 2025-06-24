@@ -7,6 +7,16 @@ export const routesConfig: Route = {
   path: '',
   sub: [
     {
+      name: 'not-found',
+      title: 'Página no encontrada',
+      path: 'not-found',
+    },
+    {
+      name: 'unauthorized',
+      title: 'No autorizado',
+      path: 'unauthorized',
+    },
+    {
       name: 'dashboard',
       title: 'Panel de control',
       path: 'dashboard',
