@@ -200,4 +200,4 @@ export const routesConfig: Route = {
       ],
     },
   ],
-} as const;
+};
