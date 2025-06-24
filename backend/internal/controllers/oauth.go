@@ -188,16 +188,26 @@ func (s *oauthsrvc) Logout(ctx context.Context, p *oauth.LogoutPayload) (res *oa
 // Returns the authenticated user's information
 // read cookie with session token
 // search user id by session token
+// check if the session's date is not expired
+// search user data by user id
 // assign user data to the result
+// TODO: erase expired token
+// TODO: redirect to login if session is expired
 func (s *oauthsrvc) Me(ctx context.Context, p *oauth.MePayload) (res *oauth.AccountUser, err error) {
 	log.Printf(ctx, "oauth.me")
 	// search user id by session token
-	userdata, err := s.OauthRep.GetAccountByAccessToken(ctx, pgtype.Text{
-		String: p.SessionToken,
-		Valid:  true,
-	})
+	session, err := s.OauthRep.GetSessionByToken(ctx, p.SessionToken)
 	if err != nil {
 		return nil, oauth.MakeUnauthorized(fmt.Errorf("failed to get account by access token: %w", err))
+	}
+	// check if the session's date is not expired
+	if session.ExpirationDate.Time.Before(time.Now()) {
+		return nil, oauth.MakeUnauthorized(fmt.Errorf("session expired"))
+	}
+	// search user data by user id
+	userdata, err := s.OauthRep.GetAccountById(ctx, session.AccountID)
+	if err != nil {
+		return nil, oauth.MakeUnauthorized(fmt.Errorf("failed to get account by id: %w", err))
 	}
 	// assign user data to the result
 	res = &oauth.AccountUser{
