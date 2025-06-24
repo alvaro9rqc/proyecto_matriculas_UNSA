@@ -9,6 +9,7 @@ import (
 	coursesvr "github.com/enrollment/gen/http/course/server"
 	enrollmentsvr "github.com/enrollment/gen/http/enrollment/server"
 	oauthsvr "github.com/enrollment/gen/http/oauth/server"
+	"github.com/enrollment/internal/utils"
 
 	"github.com/enrollment/gen/course"
 	"github.com/enrollment/gen/enrollment"
@@ -26,7 +27,7 @@ func handleHTTPServer(
 	courseEndpoints *course.Endpoints,
 	enrollmentEndpoints *enrollment.Endpoints,
 	oauthEndpoints *oauth.Endpoints,
-	queueEndpoints *queue.Endpoints,
+	_ *queue.Endpoints,
 	wg *sync.WaitGroup,
 	errc chan error,
 	dbg bool) {
@@ -68,6 +69,7 @@ func handleHTTPServer(
 		handler = debug.HTTP()(handler)
 	}
 	handler = log.HTTP(ctx)(handler)
+	handler = utils.SessionTokenMiddleware(handler)
 
 	srv := &http.Server{Addr: ":" + port, Handler: handler, ReadHeaderTimeout: time.Second * 60}
 	for _, m := range courseServer.Mounts {

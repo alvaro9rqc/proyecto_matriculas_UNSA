@@ -64,6 +64,5 @@ INSERT INTO oauth_provider (name) VALUES ($1);
 
 
 -- name: DeleteAccountByToken :exec
-
 DELETE FROM account_session
 WHERE token = $1;
