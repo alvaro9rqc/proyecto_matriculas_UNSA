@@ -1,23 +1,30 @@
 import type { Route } from '@/modules/core/types/route';
-import { routesConfig } from '@/modules/core/config/routes';
+import { getFlattenedRouteMap } from '@/modules/core/lib/route-map';
+
+const routeMap = getFlattenedRouteMap();
 
 export function getRouteFromPath(path: string): Route {
-  console.log('Get from path: ', path);
-  // Split path and filter out empty segments
-  const splittedPath = path.split('/').filter(Boolean);
-  // Map segments to Route object
-  const result = splittedPath.reduce<Route | undefined>(
-    (currentRoute, segment) => {
-      if (!currentRoute) return undefined;
-      const next = currentRoute.sub?.find(
-        (r) => r.path === segment || r.dynamic,
-      );
-      return next;
-    },
-    routesConfig,
-  );
+  const cleanPath = path.replace(/\/+$/, '') || '/';
 
-  return result ?? ({} as Route);
+  // Buscar ruta exacta
+  if (routeMap.has(cleanPath)) return routeMap.get(cleanPath)!;
+
+  // Buscar ruta que coincida con segmentos dinámicos (ej. /instituciones/123)
+  for (const [pattern, route] of routeMap.entries()) {
+    const routeSegments = pattern.split('/').filter(Boolean);
+    const pathSegments = cleanPath.split('/').filter(Boolean);
+
+    if (routeSegments.length !== pathSegments.length) continue;
+
+    const isMatch = routeSegments.every(
+      (seg, i) => seg.startsWith(':') || seg === pathSegments[i],
+    );
+    if (isMatch) {
+      return route;
+    }
+  }
+  return {} as Route;
 }
 
-export const NOT_FOUND_ROUTE = getRouteFromPath('/404');
+export const NOT_FOUND_ROUTE = getRouteFromPath('/not-found');
+export const UNAUTHORIZED_ROUTE = getRouteFromPath('/unauthorized');

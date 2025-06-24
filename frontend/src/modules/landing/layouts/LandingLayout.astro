@@ -1,10 +1,14 @@
 ---
 import RootLayout from '@/modules/core/layouts/RootLayout.astro';
+import type { RootLayoutProps } from '@/modules/core/types/layouts';
 import Footer from '@/modules/landing/layouts/Footer.astro';
 import NavBar from '@/modules/landing/layouts/NavBar.astro';
+
+type Props = RootLayoutProps;
+const { title } = Astro.props;
 ---
 
-<RootLayout title="Tuitions es para ti">
+<RootLayout title={title}>
   <NavBar />
   <main class="mx-auto max-w-7xl flex flex-col items-center px-2 sm:px-4 md:px-8">
     <slot />

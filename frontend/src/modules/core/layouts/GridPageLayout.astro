@@ -1,9 +1,8 @@
 ---
-import RootLayout from './RootLayout.astro';
+import type { RootLayoutProps } from '@/modules/core/types/layouts';
+import RootLayout from '@/modules/core/layouts/RootLayout.astro';
 
-type Props = {
-  title: string;
-};
+type Props = RootLayoutProps;
 
 const { title } = Astro.props;
 ---
