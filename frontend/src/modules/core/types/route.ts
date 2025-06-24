@@ -10,8 +10,10 @@ export type Route = RouteBase &
   (
     | {
         path: string;
+        dynamic: undefined;
       }
     | {
+        path: undefined;
         dynamic: true;
       }
   );
