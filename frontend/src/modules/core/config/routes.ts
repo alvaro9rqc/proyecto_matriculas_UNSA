@@ -55,6 +55,7 @@ export const routesConfig: Route = {
                   name: 'dashboard-admin-instituciones-one',
                   title: 'Institución - Panel de administración',
                   dynamic: true,
+                  param: 'institucion_id',
                   sub: [
                     {
                       name: 'dashboard-admin-instituciones-one-cursos',
@@ -66,6 +67,7 @@ export const routesConfig: Route = {
                           title:
                             'Curso - Institución - Panel de administración',
                           dynamic: true,
+                          param: 'curso_id',
                         },
                       ],
                     },
@@ -80,6 +82,7 @@ export const routesConfig: Route = {
                           title:
                             'Estudiante - Institución - Panel de administración',
                           dynamic: true,
+                          param: 'estudiante_id',
                         },
                       ],
                     },
@@ -120,6 +123,7 @@ export const routesConfig: Route = {
                           title:
                             'Matrícula - Institución - Panel de administración',
                           dynamic: true,
+                          param: 'matricula_id',
                           sub: [
                             {
                               name: 'dashboard-admin-instituciones-one-matriculas-one-horarios',
@@ -151,6 +155,7 @@ export const routesConfig: Route = {
                   name: 'dashboard-estudiante-instituciones-one',
                   title: 'Institución - Panel de estudiante',
                   dynamic: true,
+                  param: 'institucion_id',
                   sub: [
                     {
                       name: 'dashboard-estudiante-instituciones-one-cursos',
@@ -161,6 +166,7 @@ export const routesConfig: Route = {
                           name: 'dashboard-estudiante-instituciones-one-cursos-one',
                           title: 'Curso - Institución - Panel de estudiante',
                           dynamic: true,
+                          param: 'curso_id',
                         },
                       ],
                     },
@@ -174,6 +180,7 @@ export const routesConfig: Route = {
                           title:
                             'Matrícula - Institución - Panel de estudiante',
                           dynamic: true,
+                          param: 'matricula_id',
                           sub: [
                             {
                               name: 'dashboard-estudiante-instituciones-one-matriculas-one-constancia',
