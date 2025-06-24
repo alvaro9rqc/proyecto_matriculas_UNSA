@@ -1,0 +1,11 @@
+---
+import ErrorLayout from '@/modules/core/layouts/ErrorLayout.astro';
+import { NOT_FOUND_ERROR } from '@/modules/core/lib/errors';
+import { getRouteFromPath } from '@/modules/core/lib/routes';
+
+export const prerender = false;
+
+const route = getRouteFromPath(Astro.url.pathname);
+const error = NOT_FOUND_ERROR;
+---
+<ErrorLayout title={route.title} {...error} />
