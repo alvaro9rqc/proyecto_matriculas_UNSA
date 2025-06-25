@@ -157,7 +157,7 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 	//res.SessionToken = &userinfo.Email
 	//res.ExpiresAt = "2025-06-12"
 	res.SessionToken = token
-	url := s.FrontendURL + "/dashboard"
+	url := s.FrontendURL + "/api/auth/callback?session_token=" + token
 	res.Location = &url
 	log.Printf(ctx, "oauth.callback")
 	return
