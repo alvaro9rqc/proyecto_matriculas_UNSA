@@ -1,6 +1,8 @@
 import { defineAction } from 'astro:actions';
-import { authApi } from '@/modules/auth/lib/api';
+import { authService } from '@/modules/auth/services';
 
 export const user = {
-  getUser: defineAction({ handler: () => authApi.getUser() }),
+  getUser: defineAction({
+    handler: (_, context) => authService(context.cookies).getUser(),
+  }),
 };
