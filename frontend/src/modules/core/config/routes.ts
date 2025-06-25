@@ -5,6 +5,7 @@ export const routesConfig: Route = {
   name: 'landing',
   title: 'Tuitions - Administra tus matrículas',
   path: '',
+  fullPath: '/',
   sub: [
     {
       name: 'not-found',
