@@ -10,15 +10,19 @@ class AuthApi {
     this.apiAuthUrl = `${BACKEND_URL}/auth`;
   }
 
-  async getUser(): ApiResponse<User> {
+  async getUser(sessionToken?: string): ApiResponse<User> {
     try {
+      console.log('sessionToken on aoi request: ', sessionToken);
       const response = await fetch(`${this.apiAuthUrl}/me`, {
         method: 'GET',
-        credentials: 'include',
+        headers: {
+          Cookie: `session_token=${sessionToken}`,
+        },
       });
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.log(errorData);
         return {
           data: undefined,
           error: {

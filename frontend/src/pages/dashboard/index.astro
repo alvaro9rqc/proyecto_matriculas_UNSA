@@ -4,18 +4,15 @@ import { getRouteFromPath } from '@/modules/core/lib/routes';
 import { LANDING_ROUTE } from '@/modules/landing/lib/routes';
 import { NOT_FOUND_ROUTE } from '@/modules/core/lib/routes';
 import RootLayout from '@/modules/core/layouts/RootLayout.astro';
+import { DASHBOARD_ROUTE } from '@/modules/dashboard/lib/routes';
 
-const { data: user, error } = await authApi.getUser();
+const { data: user, error } = await authApi.getUser(Astro.cookies.get('session_token')?.value);
 
 if (error) {
-  return Astro.redirect(LANDING_ROUTE.path);
+  return Astro.redirect(LANDING_ROUTE.fullPath);
 }
 
-const route = getRouteFromPath(Astro.url.pathname);
-
-if (!route.name) {
-  return Astro.redirect(NOT_FOUND_ROUTE.path);
-}
+const route = DASHBOARD_ROUTE;
 
 ---
 <RootLayout title={route.title}>

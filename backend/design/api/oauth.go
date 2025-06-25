@@ -89,14 +89,16 @@ var _ = Service("oauth", func() {
 			Header("user_agent:User-Agent", String, "User agent of the client")
 			Header("ip_address:X-Forwarded-For", String, "IP address of the client")
 			Response(StatusTemporaryRedirect, func() {
-				Cookie("session_token:session_token", String, func() {
-					Description("Session token set in cookie after successful login")
-					Example("session_token=abc123xyz")
-				})
-				CookieHTTPOnly()
-				Header("Location", String, "Redirect URL after successful login")
-				CookieMaxAge(86400) // 1 day
-				CookiePath("/")
+				// Cookie("session_token:session_token", String, func() {
+				// 	Description("Session token set in cookie after successful login")
+				// 	Example("session_token=abc123xyz")
+				// })
+				// CookieHTTPOnly()
+				// 	CookieMaxAge(86400) // 1 day
+				// CookieSameSite(CookieSameSiteLax)
+				// CookiePath("/")
+				Header("Location", String, "Redirect URL after successful login that contains the session token in a query parameter")
+
 			})
 			Response("invalid_token", StatusBadRequest)
 			Response("server_error", StatusInternalServerError)
