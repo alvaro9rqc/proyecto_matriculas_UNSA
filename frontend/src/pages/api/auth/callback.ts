@@ -4,7 +4,6 @@ import type { APIRoute } from 'astro';
 
 export const GET: APIRoute = async ({ cookies, redirect, url }) => {
   const sessionTokenFromQuery = url.searchParams.get('session_token');
-  console.log('sessionTokenFromQuery: ', sessionTokenFromQuery);
 
   if (!sessionTokenFromQuery) {
     // No session token in query, redirect to landing page
