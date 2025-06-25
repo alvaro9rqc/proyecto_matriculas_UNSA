@@ -1,18 +1,32 @@
 import { BACKEND_URL } from 'astro:env/client';
 import type { User } from '@/modules/auth/types/user';
 import type { ApiResponse } from '@/modules/core/types/api';
-import { INTERNAL_SERVER_ERROR } from '@/modules/core/lib/errors';
+import {
+  INTERNAL_SERVER_ERROR,
+  UNAUTHORIZED_ERROR,
+} from '@/modules/core/lib/errors';
+import type { AstroCookies } from 'astro';
 
-class AuthApi {
+class AuthService {
   private apiAuthUrl: string;
+  private astroCookies: AstroCookies;
 
-  constructor() {
+  constructor(astroCookies: AstroCookies) {
     this.apiAuthUrl = `${BACKEND_URL}/auth`;
+    this.astroCookies = astroCookies;
   }
 
-  async getUser(sessionToken?: string): ApiResponse<User> {
+  async getUser(): ApiResponse<User> {
+    const sessionToken = this.astroCookies.get('session_token')?.value;
+
+    if (!sessionToken) {
+      return {
+        data: undefined,
+        error: UNAUTHORIZED_ERROR,
+      };
+    }
+
     try {
-      console.log('sessionToken on aoi request: ', sessionToken);
       const response = await fetch(`${this.apiAuthUrl}/me`, {
         method: 'GET',
         headers: {
@@ -44,4 +58,5 @@ class AuthApi {
   }
 }
 
-export const authApi = new AuthApi();
+export const authService = (astroCookies: AstroCookies) =>
+  new AuthService(astroCookies);
