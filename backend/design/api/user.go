@@ -43,11 +43,14 @@ var _ = Service("user", func() {
 
 		Result(RoleMajors)
 
+		Error("server_error", ErrorResult, "Internal server error")
+		Error("unauthorized", ErrorResult, "Unauthorized access")
+
 		HTTP(func() {
 			GET("/user/majors")
 			Response(StatusOK)
-			Response("bad_request", StatusBadRequest)
-			Response("un_authorized", StatusUnauthorized)
+			Response("server_error", StatusInternalServerError)
+			Response("unauthorized", StatusUnauthorized)
 		})
 	})
 })
