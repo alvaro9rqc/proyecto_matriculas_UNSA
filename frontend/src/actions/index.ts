@@ -1,4 +1,4 @@
-import { user } from '@/modules/auth/lib/actions';
+import { user } from '@/modules/auth/core/lib/actions';
 
 export const server = {
   user,
