@@ -4,7 +4,7 @@ type RouteBase = {
   name: string;
   title: string;
   sub?: Route[];
-  fullPath?: string;
+  fullPath: string;
   icon?: AstroComponent;
 };
 export type Route = RouteBase &

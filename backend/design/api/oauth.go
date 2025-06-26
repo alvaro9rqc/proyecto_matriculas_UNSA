@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/enrollment/design/api/types"
 	. "goa.design/goa/v3/dsl"
 )
 
@@ -30,7 +31,6 @@ var LoginResult = Type("LoginResult", func() {
 
 var LogoutResult = Type("LogoutResult", func() {
 	Description("Result after logout operation")
-	Attribute("Location", String, "Redirect url")
 	Attribute("session_token", String, "Session token to invalidate")
 	Required("session_token")
 })
@@ -78,9 +78,9 @@ var _ = Service("oauth", func() {
 
 		Result(LoginResult)
 
+		Error("unauthorized", types.RedirectResult, "Redirect to login page if unauthorized")
 		Error("invalid_token", ErrorResult, "Invalid or expired OAuth token")
 		Error("server_error", ErrorResult, "Internal server error")
-		Error("unauthorized", ErrorResult, "Unauthorized access")
 
 		HTTP(func() {
 			GET("/auth/{provider}/callback")
@@ -102,7 +102,9 @@ var _ = Service("oauth", func() {
 			})
 			Response("invalid_token", StatusBadRequest)
 			Response("server_error", StatusInternalServerError)
-			Response("unauthorized", StatusUnauthorized)
+			Response("unauthorized", StatusTemporaryRedirect, func () {
+				Header("Location", String, "Redirect URL to the login page if unauthorized")
+			})
 		})
 	})
 
@@ -120,19 +122,18 @@ var _ = Service("oauth", func() {
 		Error("unauthorized", ErrorResult, "Missing or invalid token")
 
 		HTTP(func() {
-			GET("/auth/logout")
+			POST("/auth/logout")
 			Cookie("session_token:session_token", String, func() {
 				Description("Session token to invalidate")
 				Example("session_token=abc123xyz")
 			})
-			Response(StatusTemporaryRedirect, func() {
+			Response(StatusOK, func() {
 				Cookie("session_token:session_token", String, func() {
 					Description("Clears the session token cookie on logout")
 					Example("session_token=; Max-Age=0; Path=/")
 				})
 				CookieMaxAge(0) // Clear the Cookie
 				CookiePath("/")
-				Header("Location", String, "Redirect URL after successful login")
 			})
 			Response("unauthorized", StatusUnauthorized)
 		})
