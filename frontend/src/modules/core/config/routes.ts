@@ -1,4 +1,9 @@
-import { House } from '@lucide/astro';
+import {
+  CalendarClockIcon,
+  GraduationCapIcon,
+  House,
+  LibraryBigIcon,
+} from '@lucide/astro';
 import type { Route } from '../types/route';
 
 export const routesConfig: Route = {
@@ -126,6 +131,7 @@ export const routesConfig: Route = {
                               path: 'horarios',
                               fullPath:
                                 '/dashboard/admin/instituciones/:institucion_id/matriculas/:matricula_id/horarios',
+                              icon: CalendarClockIcon,
                             },
                             {
                               name: 'dashboard-admin-instituciones-one-matriculas-one-cursos',
@@ -134,6 +140,7 @@ export const routesConfig: Route = {
                               path: 'cursos',
                               fullPath:
                                 '/dashboard/admin/instituciones/:institucion_id/matriculas/:matricula_id/cursos',
+                              icon: LibraryBigIcon,
                               sub: [
                                 {
                                   name: 'dashboard-admin-instituciones-one-matriculas-one-cursos-one',
@@ -153,6 +160,7 @@ export const routesConfig: Route = {
                               path: 'estudiantes',
                               fullPath:
                                 '/dashboard/admin/instituciones/:institucion_id/matriculas/:matricula_id/estudiantes',
+                              icon: GraduationCapIcon,
                               sub: [
                                 {
                                   name: 'dashboard-admin-instituciones-one-matriculas-one-estudiantes-one',
