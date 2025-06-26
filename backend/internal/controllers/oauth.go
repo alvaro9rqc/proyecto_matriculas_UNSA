@@ -183,9 +183,9 @@ func (s *oauthsrvc) Logout(ctx context.Context, p *oauth.LogoutPayload) (res *oa
 	}
 	// erase the session token from the cookies (in design too)
 	p.SessionToken = ""
-	res = &oauth.LogoutResult{}
-	res.SessionToken = ""
-	res.Location = &s.FrontendURL
+	res = &oauth.LogoutResult{
+		SessionToken: "",
+	}
 	return res, nil
 }
 

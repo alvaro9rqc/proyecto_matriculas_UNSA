@@ -31,7 +31,6 @@ var LoginResult = Type("LoginResult", func() {
 
 var LogoutResult = Type("LogoutResult", func() {
 	Description("Result after logout operation")
-	Attribute("Location", String, "Redirect url")
 	Attribute("session_token", String, "Session token to invalidate")
 	Required("session_token")
 })
@@ -128,14 +127,13 @@ var _ = Service("oauth", func() {
 				Description("Session token to invalidate")
 				Example("session_token=abc123xyz")
 			})
-			Response(StatusTemporaryRedirect, func() {
+			Response(StatusOK, func() {
 				Cookie("session_token:session_token", String, func() {
 					Description("Clears the session token cookie on logout")
 					Example("session_token=; Max-Age=0; Path=/")
 				})
 				CookieMaxAge(0) // Clear the Cookie
 				CookiePath("/")
-				Header("Location", String, "Redirect URL after successful login")
 			})
 			Response("unauthorized", StatusUnauthorized)
 		})
