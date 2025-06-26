@@ -1,9 +1,9 @@
 ---
 import { authService } from '@/modules/auth/services';
-import RootLayout from '@/modules/core/layouts/RootLayout.astro';
 import Button from '@/modules/core/ui/button.astro';
 import { LANDING_ROUTE } from '@/modules/landing/lib/routes';
 import { DASHBOARD_ROUTE } from '@/modules/dashboard/lib/routes';
+import DashboardAdminLayout from '@/modules/dashboard/layouts/DashboardAdminLayout.astro';
 
 const { data: user, error } = await authService(Astro.cookies).getUser();
 
@@ -12,16 +12,16 @@ if (error) {
 }
 
 const route = DASHBOARD_ROUTE;
-
 ---
-<RootLayout title={route.title}>
+<DashboardAdminLayout title={route.title} user={user}>
   <h2>Welcome, {user.name}!</h2>
   <img src={user.avatar_url} alt="xd">
   <p>{user.email}</p>
   <Button id="logout">
     Logout
   </Button>
-</RootLayout>
+  <div class="min-h-screen"></div>
+</DashboardAdminLayout>
 <script>
 import { LANDING_ROUTE } from '@/modules/landing/lib/routes';
 import { actions } from 'astro:actions';
