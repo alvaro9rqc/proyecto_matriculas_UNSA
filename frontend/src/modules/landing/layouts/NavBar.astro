@@ -1,7 +1,7 @@
 ---
-import SignInModal from '@/modules/auth/components/SignInModal';
 import LogoExtended from '@/modules/core/ui/LogoExtended.astro';
 import Button from '@/modules/core/ui/button.astro';
+import DashboardOrSignin from '../components/DashboardOrSignin.astro';
 ---
 <nav class="flex justify-between px-4 py-2">
   <LogoExtended />
@@ -12,7 +12,7 @@ import Button from '@/modules/core/ui/button.astro';
     <Button variant="ghost">
       Precios
     </Button>
-    <SignInModal client:load />
+    <DashboardOrSignin server:defer />
     <Button variant="outline">
       Contactar a ventas
     </Button>
