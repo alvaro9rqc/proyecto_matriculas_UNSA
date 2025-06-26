@@ -16,7 +16,7 @@ class AuthService {
     this.astroCookies = astroCookies;
   }
 
-  async validateSessionToken(): ApiResponse<string> {
+  private async validateSessionToken(): ApiResponse<string> {
     const sessionToken = this.astroCookies.get('session_token')?.value;
 
     if (!sessionToken) {
