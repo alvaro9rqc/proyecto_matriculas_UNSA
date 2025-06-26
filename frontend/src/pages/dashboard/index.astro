@@ -1,23 +1,43 @@
 ---
-import { authApi } from '@/modules/auth/lib/api';
-import { getRouteFromPath } from '@/modules/core/lib/routes';
+import { authService } from '@/modules/auth/services';
 import RootLayout from '@/modules/core/layouts/RootLayout.astro';
+import Button from '@/modules/core/ui/button.astro';
+import { LANDING_ROUTE } from '@/modules/landing/lib/routes';
+import { DASHBOARD_ROUTE } from '@/modules/dashboard/lib/routes';
 
-const { data: user, error } = await authApi.getUser();
+const { data: user, error } = await authService(Astro.cookies).getUser();
 
 if (error) {
-  return Astro.redirect('/');
+  return Astro.redirect(LANDING_ROUTE.fullPath);
 }
 
-const route = getRouteFromPath(Astro.url.pathname);
-
-if (!route) {
-  return Astro.redirect('/');
-}
+const route = DASHBOARD_ROUTE;
 
 ---
 <RootLayout title={route.title}>
   <h2>Welcome, {user.name}!</h2>
   <img src={user.avatar_url} alt="xd">
   <p>{user.email}</p>
+  <Button id="logout">
+    Logout
+  </Button>
 </RootLayout>
+<script>
+import { LANDING_ROUTE } from '@/modules/landing/lib/routes';
+import { actions } from 'astro:actions';
+import { navigate } from 'astro:transitions/client';
+
+const logoutButton = document.getElementById('logout');
+logoutButton?.addEventListener('click', async () => {
+  const { error } = await actions.user.logout();
+  if (error) {
+    console.error('Logout failed:', error);
+  } else {
+    console.log(
+      'Session has been closed, redirect to: ',
+      LANDING_ROUTE.fullPath,
+    );
+    await navigate(LANDING_ROUTE.fullPath);
+  }
+});
+</script>
