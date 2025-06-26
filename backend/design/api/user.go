@@ -24,7 +24,7 @@ var RoleMajors = Type("RoleMajors", func() {
 		Example([]string{"Computer Science", "Mathematics"})
 	})
 
-	Attribute("teacher_majors", ArrayOf(String), "Majors where the user teaches", func() {
+	Attribute("speaker_majors", ArrayOf(String), "Majors where the user teaches", func() {
 		Example([]string{"Physics"})
 	})
 
@@ -32,7 +32,7 @@ var RoleMajors = Type("RoleMajors", func() {
 		Example([]string{}) // could be empty if user isn't admin
 	})
 
-	Required("student_majors", "teacher_majors", "admin_majors")
+	Required("student_majors", "speaker_majors", "admin_majors")
 })
 
 var _ = Service("user", func() {
