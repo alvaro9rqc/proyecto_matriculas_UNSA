@@ -16,13 +16,25 @@ class AuthService {
     this.astroCookies = astroCookies;
   }
 
-  async getUser(): ApiResponse<User> {
+  async validateSessionToken(): ApiResponse<string> {
     const sessionToken = this.astroCookies.get('session_token')?.value;
 
     if (!sessionToken) {
       return {
         data: undefined,
         error: UNAUTHORIZED_ERROR,
+      };
+    }
+    return { data: sessionToken, error: undefined };
+  }
+
+  async getUser(): ApiResponse<User> {
+    const { data: sessionToken, error } = await this.validateSessionToken();
+
+    if (error) {
+      return {
+        data: undefined,
+        error: error,
       };
     }
 
@@ -36,7 +48,6 @@ class AuthService {
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.log(errorData);
         return {
           data: undefined,
           error: {
@@ -50,6 +61,52 @@ class AuthService {
       return { data: user, error: undefined };
     } catch (error) {
       console.error('Error fetching user:', error);
+      return {
+        data: undefined,
+        error: INTERNAL_SERVER_ERROR,
+      };
+    }
+  }
+
+  async logout(): ApiResponse<void> {
+    const { data: sessionToken, error } = await this.validateSessionToken();
+
+    if (error) {
+      return {
+        data: undefined,
+        error: error,
+      };
+    }
+
+    try {
+      const response = await fetch(`${this.apiAuthUrl}/logout`, {
+        method: 'POST',
+        headers: {
+          Cookie: `session_token=${sessionToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        console.log(response);
+        const errorData = await response.json();
+        console.error('[authService]', errorData);
+        return {
+          data: undefined,
+          error: {
+            status: response.status,
+            message: errorData.message || 'Failed to logout',
+          },
+        };
+      }
+
+      this.astroCookies.delete('session_token', {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+      });
+      return { data: undefined, error: undefined };
+    } catch (error) {
+      console.error('Error logging out:', error);
       return {
         data: undefined,
         error: INTERNAL_SERVER_ERROR,
