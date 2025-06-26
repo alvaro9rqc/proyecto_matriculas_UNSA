@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/enrollment/design/api/types"
 	. "goa.design/goa/v3/dsl"
 )
 
@@ -78,9 +79,9 @@ var _ = Service("oauth", func() {
 
 		Result(LoginResult)
 
+		Error("unauthorized", types.RedirectResult, "Redirect to login page if unauthorized")
 		Error("invalid_token", ErrorResult, "Invalid or expired OAuth token")
 		Error("server_error", ErrorResult, "Internal server error")
-		Error("unauthorized", ErrorResult, "Unauthorized access")
 
 		HTTP(func() {
 			GET("/auth/{provider}/callback")
@@ -102,7 +103,9 @@ var _ = Service("oauth", func() {
 			})
 			Response("invalid_token", StatusBadRequest)
 			Response("server_error", StatusInternalServerError)
-			Response("unauthorized", StatusUnauthorized)
+			Response("unauthorized", StatusTemporaryRedirect, func () {
+				Header("Location", String, "Redirect URL to the login page if unauthorized")
+			})
 		})
 	})
 
@@ -120,7 +123,7 @@ var _ = Service("oauth", func() {
 		Error("unauthorized", ErrorResult, "Missing or invalid token")
 
 		HTTP(func() {
-			GET("/auth/logout")
+			POST("/auth/logout")
 			Cookie("session_token:session_token", String, func() {
 				Description("Session token to invalidate")
 				Example("session_token=abc123xyz")

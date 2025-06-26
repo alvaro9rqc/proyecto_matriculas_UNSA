@@ -144,7 +144,11 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 	account, err := s.OauthRep.GetAccountByEmail(ctx, userinfo.Email)
 
 	if err != nil {
-		return nil, oauth.MakeUnauthorized(fmt.Errorf("failed to get account by email: %w", err))
+		url := s.FrontendURL + "/unauthorized"
+		error := &oauth.RedirectResult{
+			Location: url,
+		}
+		return nil, oauth.MakeUnauthorized(error)
 	}
 	token, err := createAccountSession(s, &ctx, p, &account)
 	if err != nil {
