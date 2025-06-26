@@ -1,17 +1,18 @@
 ---
-import type { Admin, AuthRequired } from '@/modules/auth/types/user';
-import { getRouteFromPath } from '@/modules/core/lib/routes';
+import type { AuthRequired, User } from '@/modules/auth/types/user';
 import { capitalize } from '@/modules/core/lib/utils';
+import Button from '@/modules/core/ui/button.astro';
+import { DASHBOARD_ADMIN_INSTITUTION_ROUTE } from '@/modules/dashboard/lib/routes';
 
-const currentPath = getRouteFromPath(Astro.url.pathname);
-
-type Props = AuthRequired<Admin>;
+// Por ahora solo se requerira un usuario autenticado, ya que el usuario en la base de datos no tiene un rol como campo
+// Puede comportarse como un administrador o un usuario normal, dependiendo de la institucion a la que pertenezca
+type Props = AuthRequired<User>;
 
 const { user } = Astro.props;
 
+const adminOptions = DASHBOARD_ADMIN_INSTITUTION_ROUTE.sub;
 ---
-
-<aside class="w-full max-w-2xs px-4 py-10 sticky top-0 bg-background gap-6 flex flex-col">
+<aside class="flex-initial max-w-2xs px-4 py-10 sticky top-0 h-screen bg-background gap-6 flex flex-col overflow-y-auto">
   <div class="min-h-12">
     <div class="flex items-start gap-3 px-3">
       <button class="rounded-full aspect-square bg-zinc-300 w-9">
@@ -24,11 +25,17 @@ const { user } = Astro.props;
       </button>
       <div class="flex flex-col gap-1">
         <span class="font-medium">{user.name}</span>
-        <span class="text-sm">{capitalize(user.role)}</span>
       </div>
     </div>
   </div>
-  <nav class="flex flex-col gap-1" transition:name="lateralnav">
-
+  <nav class="flex flex-col gap-1">
+    {
+      adminOptions?.map((option) =>
+        <Button
+          as="a"
+          href={option.fullPath}
+        >{capitalize(option.path || '')}</Button>
+      )
+    }
   </nav>
 </aside>
