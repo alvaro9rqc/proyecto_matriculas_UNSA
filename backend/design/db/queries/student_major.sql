@@ -33,7 +33,7 @@ ORDER BY s.code;
 SELECT
     m.id AS major_id,
     m.name AS major_name
-FROM major m
-JOIN student_major sm ON m.id = sm.major_id
+FROM student_major sm
+JOIN major m ON m.id = sm.major_id
 WHERE sm.student_id = $1
 ORDER BY m.name;
