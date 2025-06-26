@@ -15,3 +15,39 @@ var AccountUser = Type("AccountUser", func() {
 
 	Required("id", "email", "name", "surname", "avatar_url")
 })
+
+// List of majors available for the user grouped by role
+var RoleMajors = Type("RoleMajors", func() {
+	Description("Majors available for the user based on their roles")
+
+	Attribute("student_majors", ArrayOf(String), "Majors in which the user is enrolled as a student", func() {
+		Example([]string{"Computer Science", "Mathematics"})
+	})
+
+	Attribute("teacher_majors", ArrayOf(String), "Majors where the user teaches", func() {
+		Example([]string{"Physics"})
+	})
+
+	Attribute("admin_majors", ArrayOf(String), "Majors the user manages administratively", func() {
+		Example([]string{}) // could be empty if user isn't admin
+	})
+
+	Required("student_majors", "teacher_majors", "admin_majors")
+})
+
+var _ = Service("user", func() {
+	Description("User management service")
+
+	Method("get_all_majors", func() {
+		Description("Get all majors available for the user")
+
+		Result(RoleMajors)
+
+		HTTP(func() {
+			GET("/user/majors")
+			Response(StatusOK)
+			Response("bad_request", StatusBadRequest)
+			Response("un_authorized", StatusUnauthorized)
+		})
+	})
+})
