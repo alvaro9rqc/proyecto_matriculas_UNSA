@@ -1,0 +1,17 @@
+---
+import DashboardLayout from '@/modules/dashboard/core/layouts/DashboardLayout.astro';
+import { authService } from '@/modules/auth/core/services/auth';
+import { LANDING_ROUTE } from '@/modules/landing/core/lib/routes';
+
+// Primero se verifica la autenticación
+const { data: user, error } = await authService(Astro.cookies).getUser();
+
+if (error) {
+  return Astro.redirect(LANDING_ROUTE.fullPath);
+}
+---
+<DashboardLayout user={user}>
+  <!-- Aquí se haría la petición de las instituciones por medio del user id (o token de sesión) en una isla del servidor -->
+  <h1>List institutions</h1>
+  <h2>Request an institution creation sending an mail with a form</h2>
+</DashboardLayout>

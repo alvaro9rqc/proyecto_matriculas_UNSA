@@ -32,146 +32,120 @@ export const routesConfig: Route = {
       fullPath: '/dashboard',
       sub: [
         {
-          name: 'dashboard-admin',
-          title: 'Panel de administración',
-          path: 'admin',
-          fullPath: '/dashboard/admin',
+          name: 'dashboard-instituciones',
+          title: 'Instituciones - Panel de control',
+          path: 'instituciones',
+          fullPath: '/dashboard/instituciones',
           sub: [
             {
-              name: 'dashboard-admin-instituciones',
-              title: 'Instituciones - Panel de administración',
-              path: 'instituciones',
-              fullPath: '/dashboard/admin/instituciones',
+              name: 'dashboard-instituciones-one',
+              title: 'Institución - Panel de control',
+              dynamic: true,
+              param: 'institucion_id',
+              fullPath: '/dashboard/instituciones/:institucion_id',
               sub: [
                 {
-                  name: 'dashboard-admin-instituciones-crear',
-                  title: 'Crear institución - Panel de administración',
-                  path: 'crear',
-                  fullPath: '/dashboard/admin/instituciones/crear',
+                  name: 'dashboard-instituciones-one-matriculas',
+                  title: 'Matrículas - Institución - Panel de control',
+                  path: 'matriculas',
+                  fullPath:
+                    '/dashboard/instituciones/:institucion_id/matriculas',
                   sub: [
                     {
-                      name: 'dashboard-admin-instituciones-crear-bienvenido',
-                      title:
-                        'Bienvenido - Crear institución - Panel de administración',
-                      path: 'bienvenido',
+                      name: 'dashboard-instituciones-one-matriculas-crear',
+                      title: 'Crear matrícula - Institución - Panel de control',
+                      path: 'crear',
                       fullPath:
-                        '/dashboard/admin/instituciones/crear/bienvenido',
-                    },
-                    {
-                      name: 'dashboard-admin-instituciones-crear-nombre',
-                      title:
-                        'Nombre - Crear institución - Panel de administración',
-                      path: 'nombre',
-                      fullPath: '/dashboard/admin/instituciones/crear/nombre',
-                    },
-                  ],
-                },
-                {
-                  name: 'dashboard-admin-instituciones-one',
-                  title: 'Institución - Panel de administración',
-                  dynamic: true,
-                  param: 'institucion_id',
-                  fullPath: '/dashboard/admin/instituciones/:institucion_id',
-                  sub: [
-                    {
-                      name: 'dashboard-admin-instituciones-one-matriculas',
-                      title:
-                        'Matrículas - Institución - Panel de administración',
-                      path: 'matriculas',
-                      fullPath:
-                        '/dashboard/admin/instituciones/:institucion_id/matriculas',
+                        '/dashboard/instituciones/:institucion_id/matriculas/crear',
                       sub: [
                         {
-                          name: 'dashboard-admin-instituciones-one-matriculas-crear',
+                          name: 'dashboard-instituciones-one-matriculas-crear-inicio',
                           title:
-                            'Crear matrícula - Institución - Panel de administración',
-                          path: 'crear',
+                            'Inicio - Crear matrícula - Institución - Panel de control',
+                          path: 'inicio',
                           fullPath:
-                            '/dashboard/admin/instituciones/:institucion_id/matriculas/crear',
+                            '/dashboard/instituciones/:institucion_id/matriculas/crear/inicio',
+                        },
+                        {
+                          name: 'dashboard-instituciones-one-matriculas-crear-subirDatos',
+                          title:
+                            'Subir Datos - Crear matrícula - Institución - Panel de control',
+                          path: 'subir-datos',
+                          fullPath:
+                            '/dashboard/instituciones/:institucion_id/matriculas/crear/subir-datos',
+                        },
+                        {
+                          name: 'dashboard-instituciones-one-matriculas-crear-listos',
+                          title:
+                            'Todo listo - Crear matrícula - Institución - Panel de control',
+                          path: 'listos',
+                          fullPath:
+                            '/dashboard/instituciones/:institucion_id/matriculas/crear/listos',
+                        },
+                      ],
+                    },
+                    {
+                      name: 'dashboard-instituciones-one-matriculas-one',
+                      title: 'Matrícula - Institución - Panel de control',
+                      dynamic: true,
+                      param: 'matricula_id',
+                      fullPath:
+                        '/dashboard/instituciones/:institucion_id/matriculas/:matricula_id',
+                      sub: [
+                        {
+                          name: 'dashboard-instituciones-one-matriculas-one-constancia',
+                          title:
+                            'Constancia - Matrícula - Institución - Panel de control',
+                          path: 'constancia',
+                          fullPath:
+                            '/dashboard/instituciones/:institucion_id/matriculas/:matricula_id/constancia',
+                        },
+                        {
+                          name: 'dashboard-instituciones-one-matriculas-one-horarios',
+                          title:
+                            'Horarios - Matrícula - Institución - Panel de control',
+                          path: 'horarios',
+                          fullPath:
+                            '/dashboard/instituciones/:institucion_id/matriculas/:matricula_id/horarios',
+                          icon: CalendarClockIcon,
+                        },
+                        {
+                          name: 'dashboard-instituciones-one-matriculas-one-cursos',
+                          title:
+                            'Cursos - Matrícula - Institución - Panel de control',
+                          path: 'cursos',
+                          fullPath:
+                            '/dashboard/instituciones/:institucion_id/matriculas/:matricula_id/cursos',
+                          icon: LibraryBigIcon,
                           sub: [
                             {
-                              name: 'dashboard-admin-instituciones-one-matriculas-crear-inicio',
+                              name: 'dashboard-instituciones-one-matriculas-one-cursos-one',
                               title:
-                                'Inicio - Crear matrícula - Institución - Panel de administración',
-                              path: 'inicio',
+                                'Curso - Matrícula - Institución - Panel de control',
+                              dynamic: true,
+                              param: 'curso_id',
                               fullPath:
-                                '/dashboard/admin/instituciones/:institucion_id/matriculas/crear/inicio',
-                            },
-                            {
-                              name: 'dashboard-admin-instituciones-one-matriculas-crear-subirDatos',
-                              title:
-                                'Subir Datos - Crear matrícula - Institución - Panel de administración',
-                              path: 'subir-datos',
-                              fullPath:
-                                '/dashboard/admin/instituciones/:institucion_id/matriculas/crear/subir-datos',
-                            },
-                            {
-                              name: 'dashboard-admin-instituciones-one-matriculas-crear-listos',
-                              title:
-                                'Todo listo - Crear matrícula - Institución - Panel de administración',
-                              path: 'listos',
-                              fullPath:
-                                '/dashboard/admin/instituciones/:institucion_id/matriculas/crear/listos',
+                                '/dashboard/instituciones/:institucion_id/matriculas/:matricula_id/cursos/:curso_id',
                             },
                           ],
                         },
                         {
-                          name: 'dashboard-admin-instituciones-one-matriculas-one',
+                          name: 'dashboard-instituciones-one-matriculas-one-estudiantes',
                           title:
-                            'Matrícula - Institución - Panel de administración',
-                          dynamic: true,
-                          param: 'matricula_id',
+                            'Estudiantes - Matrícula - Institución - Panel de control',
+                          path: 'estudiantes',
                           fullPath:
-                            '/dashboard/admin/instituciones/:institucion_id/matriculas/:matricula_id',
+                            '/dashboard/instituciones/:institucion_id/matriculas/:matricula_id/estudiantes',
+                          icon: GraduationCapIcon,
                           sub: [
                             {
-                              name: 'dashboard-admin-instituciones-one-matriculas-one-horarios',
+                              name: 'dashboard-instituciones-one-matriculas-one-estudiantes-one',
                               title:
-                                'Horarios - Matrícula - Institución - Panel de administración',
-                              path: 'horarios',
+                                'Estudiante - Matrícula - Institución - Panel de control',
+                              dynamic: true,
+                              param: 'estudiante_id',
                               fullPath:
-                                '/dashboard/admin/instituciones/:institucion_id/matriculas/:matricula_id/horarios',
-                              icon: CalendarClockIcon,
-                            },
-                            {
-                              name: 'dashboard-admin-instituciones-one-matriculas-one-cursos',
-                              title:
-                                'Cursos - Matrícula - Institución - Panel de administración',
-                              path: 'cursos',
-                              fullPath:
-                                '/dashboard/admin/instituciones/:institucion_id/matriculas/:matricula_id/cursos',
-                              icon: LibraryBigIcon,
-                              sub: [
-                                {
-                                  name: 'dashboard-admin-instituciones-one-matriculas-one-cursos-one',
-                                  title:
-                                    'Curso - Matrícula - Institución - Panel de administración',
-                                  dynamic: true,
-                                  param: 'curso_id',
-                                  fullPath:
-                                    '/dashboard/admin/instituciones/:institucion_id/matriculas/:matricula_id/cursos/:curso_id',
-                                },
-                              ],
-                            },
-                            {
-                              name: 'dashboard-admin-instituciones-one-matriculas-one-estudiantes',
-                              title:
-                                'Estudiantes - Matrícula - Institución - Panel de administración',
-                              path: 'estudiantes',
-                              fullPath:
-                                '/dashboard/admin/instituciones/:institucion_id/matriculas/:matricula_id/estudiantes',
-                              icon: GraduationCapIcon,
-                              sub: [
-                                {
-                                  name: 'dashboard-admin-instituciones-one-matriculas-one-estudiantes-one',
-                                  title:
-                                    'Estudiante - Matrícula - Institución - Panel de administración',
-                                  dynamic: true,
-                                  param: 'estudiante_id',
-                                  fullPath:
-                                    '/dashboard/admin/instituciones/:institucion_id/matriculas/:matricula_id/estudiantes/:estudiante_id',
-                                },
-                              ],
+                                '/dashboard/instituciones/:institucion_id/matriculas/:matricula_id/estudiantes/:estudiante_id',
                             },
                           ],
                         },
@@ -184,83 +158,22 @@ export const routesConfig: Route = {
           ],
         },
         {
-          name: 'dashboard-estudiante',
-          title: 'Panel de estudiante',
-          path: 'estudiante',
-          fullPath: '/dashboard/estudiante',
+          name: 'dashboard-instituciones-crear',
+          title: 'Crear institución - Panel de control',
+          path: 'crear',
+          fullPath: '/dashboard/instituciones/crear',
           sub: [
             {
-              name: 'dashboard-estudiante-instituciones',
-              title: 'Instituciones - Panel de estudiante',
-              path: 'instituciones',
-              fullPath: '/dashboard/estudiante/instituciones',
-              sub: [
-                {
-                  name: 'dashboard-estudiante-instituciones-one',
-                  title: 'Institución - Panel de estudiante',
-                  dynamic: true,
-                  param: 'institucion_id',
-                  fullPath:
-                    '/dashboard/estudiante/instituciones/:institucion_id',
-                  sub: [
-                    {
-                      name: 'dashboard-estudiante-instituciones-one-matriculas',
-                      title: 'Matrículas - Institución - Panel de estudiante',
-                      path: 'matriculas',
-                      fullPath:
-                        '/dashboard/estudiante/instituciones/:institucion_id/matriculas',
-                      sub: [
-                        {
-                          name: 'dashboard-estudiante-instituciones-one-matriculas-one',
-                          title:
-                            'Matrícula - Institución - Panel de estudiante',
-                          dynamic: true,
-                          param: 'matricula_id',
-                          fullPath:
-                            '/dashboard/estudiante/instituciones/:institucion_id/matriculas/:matricula_id',
-                          sub: [
-                            {
-                              name: 'dashboard-estudiante-instituciones-one-matriculas-one-constancia',
-                              title:
-                                'Constancia - Matrícula - Institución - Panel de estudiante',
-                              path: 'constancia',
-                              fullPath:
-                                '/dashboard/estudiante/instituciones/:institucion_id/matriculas/:matricula_id/constancia',
-                            },
-                            {
-                              name: 'dashboard-estudiante-instituciones-one-matriculas-one-horarios',
-                              title:
-                                'Horarios - Matrícula - Institución - Panel de estudiante',
-                              path: 'horarios',
-                              fullPath:
-                                '/dashboard/estudiante/instituciones/:institucion_id/matriculas/:matricula_id/horarios',
-                            },
-                            {
-                              name: 'dashboard-estudiante-instituciones-one-matriculas-one-cursos',
-                              title:
-                                'Cursos - Matrícula - Institución - Panel de estudiante',
-                              path: 'cursos',
-                              fullPath:
-                                '/dashboard/estudiante/instituciones/:institucion_id/matriculas/:matricula_id/cursos',
-                              sub: [
-                                {
-                                  name: 'dashboard-estudiante-instituciones-one-matriculas-one-cursos-one',
-                                  title:
-                                    'Curso - Matrícula - Institución - Panel de estudiante',
-                                  dynamic: true,
-                                  param: 'curso_id',
-                                  fullPath:
-                                    '/dashboard/estudiante/instituciones/:institucion_id/matriculas/:matricula_id/cursos/:curso_id',
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
+              name: 'dashboard-instituciones-crear-bienvenido',
+              title: 'Bienvenido - Crear institución - Panel de control',
+              path: 'bienvenido',
+              fullPath: '/dashboard/instituciones/crear/bienvenido',
+            },
+            {
+              name: 'dashboard-instituciones-crear-nombre',
+              title: 'Nombre - Crear institución - Panel de control',
+              path: 'nombre',
+              fullPath: '/dashboard/instituciones/crear/nombre',
             },
           ],
         },
