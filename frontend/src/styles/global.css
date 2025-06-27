@@ -14,7 +14,7 @@
   --primary-foreground: #ffffff;
   --secondary: #e2e8f0;
   --secondary-foreground: #1a202c;
-  --muted: #a0aec2;
+  --muted: #c5d5ec;
   --muted-foreground: #718096;
   --accent: #d1e0f4;
   --accent-foreground: #1a202c;
@@ -160,6 +160,7 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    color-scheme: light dark;
   }
   body {
     @apply bg-background text-foreground;

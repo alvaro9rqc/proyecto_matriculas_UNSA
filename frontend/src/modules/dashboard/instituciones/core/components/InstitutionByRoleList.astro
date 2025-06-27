@@ -1,0 +1,19 @@
+---
+import type { AuthRequired, User } from '@/modules/auth/core/types/user';
+import { institutionService } from '@/modules/dashboard/instituciones/core/services/mock-institution';
+import { InstitutionTabs } from '@/modules/dashboard/instituciones/core/components/InstitutionTabs';
+import { timeout } from '@/modules/core/lib/time';
+
+type Props = AuthRequired<User>;
+
+const { user } = Astro.props;
+await timeout(1000); // Simulate a delay for the server-side rendering
+const { data, error } = await institutionService().getInstitutionsGroupedByRole(user.id);
+---
+  {
+  data && !error ? (
+  <InstitutionTabs adminInstitutions={data.admin} studentInstitutions={data.student} client:visible />
+  ) : (
+  <h2 class="text-2xl font-bold mb-4 text-red-500">Error loading institutions</h2>
+  )
+  }
