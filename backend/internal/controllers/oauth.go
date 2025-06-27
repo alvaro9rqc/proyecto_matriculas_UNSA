@@ -29,7 +29,7 @@ type oauthsrvc struct {
 }
 
 // NewOauth returns the oauth service implementation.
-func NewOauth(cfg *config.MainConfig, oauthRep ports.OauthRepositoryInterface) oauth.Service {
+	func NewOauth(cfg *config.MainConfig, oauthRep ports.OauthRepositoryInterface) oauth.Service {
 	return &oauthsrvc{
 		GoogleOAuthConfig: &cfg.GoogleOAuthConfig,
 		OauthRep:          oauthRep,
@@ -200,11 +200,14 @@ func (s *oauthsrvc) Logout(ctx context.Context, p *oauth.LogoutPayload) (res *oa
 func (s *oauthsrvc) Me(ctx context.Context, p *oauth.MePayload) (res *oauth.AccountUser, err error) {
 	log.Printf(ctx, "oauth.me")
 	// search user id by session token
+	log.Printf(ctx, "session token: %s", p.SessionToken)
 	session, err := s.OauthRep.GetSessionByToken(ctx, p.SessionToken)
+	log.Printf(ctx, "session: %v", session)
 	if err != nil {
 		return nil, oauth.MakeUnauthorized(fmt.Errorf("failed to get account by access token: %w", err))
 	}
 	// check if the session's date is not expired
+	log.Printf(ctx, "session expiration date: %s", session.ExpirationDate.Time)
 	if session.ExpirationDate.Time.Before(time.Now()) {
 		return nil, oauth.MakeUnauthorized(fmt.Errorf("session expired"))
 	}

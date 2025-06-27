@@ -4,7 +4,7 @@ import { ClientRouter } from 'astro:transitions';
 import type { RootLayoutProps } from '@/modules/core/types/layouts';
 import { cn } from '@/modules/core/lib/utils';
 type Props = RootLayoutProps;
-const { title, class: className } = Astro.props;
+const { route, class: className } = Astro.props;
 ---
 <html lang="en">
 	<head>
@@ -12,7 +12,7 @@ const { title, class: className } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
+		<title>{route.title}</title>
 		<ClientRouter />
 	</head>
 	<body class:list={cn(className)}>

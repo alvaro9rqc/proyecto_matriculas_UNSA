@@ -2,11 +2,10 @@
 import ContactUs from '@/modules/landing/core/components/contactUs/ContactUs.astro';
 import Hero from '@/modules/landing/core/components/hero/Hero.astro';
 import LandingLayout from '@/modules/landing/core/layouts/LandingLayout.astro';
-import { LANDING_ROUTE } from '@/modules/landing/core/lib/routes';
 
 export const prerender = true;
 ---
-<LandingLayout title={LANDING_ROUTE.title}>
+<LandingLayout>
   <Hero />
   <ContactUs />
 </LandingLayout>

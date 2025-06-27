@@ -10,9 +10,9 @@ import { LANDING_ROUTE } from '@/modules/landing/core/lib/routes';
 
 type Props = RootLayoutProps & ErrorResponse;
 
-const { title, status, message} = Astro.props;
+const { route, status, message} = Astro.props;
 ---
-<RootLayout title={title}>
+<RootLayout route={route}>
   <main class="min-h-screen flex flex-col items-center justify-center text-center gap-6">
     <H1 class="text-6xl">{status}</H1>
     <LogoExtended size="xl" />
