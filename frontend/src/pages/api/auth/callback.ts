@@ -1,5 +1,5 @@
-import { DASHBOARD_ROUTE } from '@/modules/dashboard/lib/routes';
-import { LANDING_ROUTE } from '@/modules/landing/lib/routes';
+import { DASHBOARD_ROUTE } from '@/modules/dashboard/core/lib/routes';
+import { LANDING_ROUTE } from '@/modules/landing/core/lib/routes';
 import type { APIRoute } from 'astro';
 
 export const GET: APIRoute = async ({ cookies, redirect, url }) => {

@@ -69,43 +69,6 @@ export const routesConfig: Route = {
                   fullPath: '/dashboard/admin/instituciones/:institucion_id',
                   sub: [
                     {
-                      name: 'dashboard-admin-instituciones-one-cursos',
-                      title: 'Cursos - Institución - Panel de administración',
-                      path: 'cursos',
-                      fullPath:
-                        '/dashboard/admin/instituciones/:institucion_id/cursos',
-                      sub: [
-                        {
-                          name: 'dashboard-admin-instituciones-one-cursos-one',
-                          title:
-                            'Curso - Institución - Panel de administración',
-                          dynamic: true,
-                          param: 'curso_id',
-                          fullPath:
-                            '/dashboard/admin/instituciones/:institucion_id/cursos/:curso_id',
-                        },
-                      ],
-                    },
-                    {
-                      name: 'dashboard-admin-instituciones-one-estudiantes',
-                      title:
-                        'Estudiantes - Institución - Panel de administración',
-                      path: 'estudiantes',
-                      fullPath:
-                        '/dashboard/admin/instituciones/:institucion_id/estudiantes',
-                      sub: [
-                        {
-                          name: 'dashboard-admin-instituciones-one-estudiantes-one',
-                          title:
-                            'Estudiante - Institución - Panel de administración',
-                          dynamic: true,
-                          param: 'estudiante_id',
-                          fullPath:
-                            '/dashboard/admin/instituciones/:institucion_id/estudiantes/:estudiante_id',
-                        },
-                      ],
-                    },
-                    {
                       name: 'dashboard-admin-instituciones-one-matriculas',
                       title:
                         'Matrículas - Institución - Panel de administración',
@@ -164,6 +127,44 @@ export const routesConfig: Route = {
                               fullPath:
                                 '/dashboard/admin/instituciones/:institucion_id/matriculas/:matricula_id/horarios',
                             },
+                            {
+                              name: 'dashboard-admin-instituciones-one-matriculas-one-cursos',
+                              title:
+                                'Cursos - Matrícula - Institución - Panel de administración',
+                              path: 'cursos',
+                              fullPath:
+                                '/dashboard/admin/instituciones/:institucion_id/matriculas/:matricula_id/cursos',
+                              sub: [
+                                {
+                                  name: 'dashboard-admin-instituciones-one-matriculas-one-cursos-one',
+                                  title:
+                                    'Curso - Matrícula - Institución - Panel de administración',
+                                  dynamic: true,
+                                  param: 'curso_id',
+                                  fullPath:
+                                    '/dashboard/admin/instituciones/:institucion_id/matriculas/:matricula_id/cursos/:curso_id',
+                                },
+                              ],
+                            },
+                            {
+                              name: 'dashboard-admin-instituciones-one-matriculas-one-estudiantes',
+                              title:
+                                'Estudiantes - Matrícula - Institución - Panel de administración',
+                              path: 'estudiantes',
+                              fullPath:
+                                '/dashboard/admin/instituciones/:institucion_id/matriculas/:matricula_id/estudiantes',
+                              sub: [
+                                {
+                                  name: 'dashboard-admin-instituciones-one-matriculas-one-estudiantes-one',
+                                  title:
+                                    'Estudiante - Matrícula - Institución - Panel de administración',
+                                  dynamic: true,
+                                  param: 'estudiante_id',
+                                  fullPath:
+                                    '/dashboard/admin/instituciones/:institucion_id/matriculas/:matricula_id/estudiantes/:estudiante_id',
+                                },
+                              ],
+                            },
                           ],
                         },
                       ],
@@ -195,23 +196,6 @@ export const routesConfig: Route = {
                     '/dashboard/estudiante/instituciones/:institucion_id',
                   sub: [
                     {
-                      name: 'dashboard-estudiante-instituciones-one-cursos',
-                      title: 'Cursos - Institución - Panel de estudiante',
-                      path: 'cursos',
-                      fullPath:
-                        '/dashboard/estudiante/instituciones/:institucion_id/cursos',
-                      sub: [
-                        {
-                          name: 'dashboard-estudiante-instituciones-one-cursos-one',
-                          title: 'Curso - Institución - Panel de estudiante',
-                          dynamic: true,
-                          param: 'curso_id',
-                          fullPath:
-                            '/dashboard/estudiante/instituciones/:institucion_id/cursos/:curso_id',
-                        },
-                      ],
-                    },
-                    {
                       name: 'dashboard-estudiante-instituciones-one-matriculas',
                       title: 'Matrículas - Institución - Panel de estudiante',
                       path: 'matriculas',
@@ -242,6 +226,25 @@ export const routesConfig: Route = {
                               path: 'horarios',
                               fullPath:
                                 '/dashboard/estudiante/instituciones/:institucion_id/matriculas/:matricula_id/horarios',
+                            },
+                            {
+                              name: 'dashboard-estudiante-instituciones-one-matriculas-one-cursos',
+                              title:
+                                'Cursos - Matrícula - Institución - Panel de estudiante',
+                              path: 'cursos',
+                              fullPath:
+                                '/dashboard/estudiante/instituciones/:institucion_id/matriculas/:matricula_id/cursos',
+                              sub: [
+                                {
+                                  name: 'dashboard-estudiante-instituciones-one-matriculas-one-cursos-one',
+                                  title:
+                                    'Curso - Matrícula - Institución - Panel de estudiante',
+                                  dynamic: true,
+                                  param: 'curso_id',
+                                  fullPath:
+                                    '/dashboard/estudiante/instituciones/:institucion_id/matriculas/:matricula_id/cursos/:curso_id',
+                                },
+                              ],
                             },
                           ],
                         },
