@@ -8,4 +8,4 @@ export const prerender = true;
 const route = UNAUTHORIZED_ROUTE;
 const error = UNAUTHORIZED_ERROR;
 ---
-<ErrorLayout title={route.name} {...error} />
+<ErrorLayout route={route} {...error} />
