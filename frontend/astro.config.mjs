@@ -20,6 +20,9 @@ export default defineConfig({
       }),
     ],
   },
+  redirects: {
+    '/dashboard': '/dashboard/instituciones',
+  },
 
   env: {
     schema: {
