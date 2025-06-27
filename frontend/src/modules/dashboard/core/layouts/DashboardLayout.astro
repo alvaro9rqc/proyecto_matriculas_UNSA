@@ -13,7 +13,6 @@ type Props = AuthRequired<User>;
 const { user } = Astro.props;
 
 const route = getRouteFromPath(Astro.url.pathname);
-console.log(route);
 ---
 <RootLayout route={route} class="flex flex-col min-h-screen items-center justify-center">
   <DashboardNavBar />
