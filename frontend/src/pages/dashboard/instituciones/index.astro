@@ -2,6 +2,9 @@
 import DashboardLayout from '@/modules/dashboard/core/layouts/DashboardLayout.astro';
 import { authService } from '@/modules/auth/core/services/auth';
 import { LANDING_ROUTE } from '@/modules/landing/core/lib/routes';
+import InstitutionByRoleList from '@/modules/dashboard/instituciones/core/components/InstitutionByRoleList.astro';
+import TabsListSkeleton from '@/modules/dashboard/instituciones/core/components/TabsListSkeleton.astro';
+import Button from '@/modules/core/ui/button.astro';
 
 // Primero se verifica la autenticación
 const { data: user, error } = await authService(Astro.cookies).getUser();
@@ -12,6 +15,12 @@ if (error) {
 ---
 <DashboardLayout user={user}>
   <!-- Aquí se haría la petición de las instituciones por medio del user id (o token de sesión) en una isla del servidor -->
-  <h1>List institutions</h1>
-  <h2>Request an institution creation sending an mail with a form</h2>
+  <div class="min-h-full flex-1 flex flex-col justify-between py-4 gap-2">
+    <InstitutionByRoleList user={user} server:defer>
+      <TabsListSkeleton slot="fallback"/>
+    </InstitutionByRoleList>
+    <Button>
+      Crear otra institución
+    </Button>
+  </div>
 </DashboardLayout>
