@@ -29,7 +29,7 @@ type oauthsrvc struct {
 }
 
 // NewOauth returns the oauth service implementation.
-func NewOauth(cfg *config.MainConfig, oauthRep ports.OauthRepositoryInterface) oauth.Service {
+	func NewOauth(cfg *config.MainConfig, oauthRep ports.OauthRepositoryInterface) oauth.Service {
 	return &oauthsrvc{
 		GoogleOAuthConfig: &cfg.GoogleOAuthConfig,
 		OauthRep:          oauthRep,
@@ -144,7 +144,11 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 	account, err := s.OauthRep.GetAccountByEmail(ctx, userinfo.Email)
 
 	if err != nil {
-		return nil, oauth.MakeUnauthorized(fmt.Errorf("failed to get account by email: %w", err))
+		url := s.FrontendURL + "/unauthorized"
+		error := &oauth.RedirectResult{
+			Location: url,
+		}
+		return nil, oauth.MakeUnauthorized(error)
 	}
 	token, err := createAccountSession(s, &ctx, p, &account)
 	if err != nil {
@@ -157,8 +161,8 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 	//res.SessionToken = &userinfo.Email
 	//res.ExpiresAt = "2025-06-12"
 	res.SessionToken = token
-	// url := s.FrontendURL + "/dashboard"
-	// res.Location = &url
+	url := s.FrontendURL + "/api/auth/callback?session_token=" + token
+	res.Location = &url
 	log.Printf(ctx, "oauth.callback")
 	return
 }
@@ -169,20 +173,20 @@ func (s *oauthsrvc) Callback(ctx context.Context, p *oauth.CallbackPayload) (res
 // 3. Erase the session token from the cookies
 // 4. Redirect the user to the frontend URL
 func (s *oauthsrvc) Logout(ctx context.Context, p *oauth.LogoutPayload) (res *oauth.LogoutResult, err error) {
-	// log.Printf(ctx, "oauth.logout")
-	// // retrieve the session token from the payload
-	// token := p.SessionToken
-	// // erase the session token from the database
-	// err = s.OauthRep.DeleteAccountByToken(ctx, token)
-	// if err != nil {
-	// 	return nil, oauth.MakeUnauthorized(fmt.Errorf("failed to delete account by token: %w", err))
-	// }
-	// // erase the session token from the cookies (in design too)
-	// p.SessionToken = ""
-	// res = &oauth.LogoutResult{}
-	// res.SessionToken = ""
-	// res.Location = &s.FrontendURL
-	return nil, nil
+	log.Printf(ctx, "oauth.logout")
+	// retrieve the session token from the payload
+	token := p.SessionToken
+	// erase the session token from the database
+	err = s.OauthRep.DeleteAccountByToken(ctx, token)
+	if err != nil {
+		return nil, oauth.MakeUnauthorized(fmt.Errorf("failed to delete account by token: %w", err))
+	}
+	// erase the session token from the cookies (in design too)
+	p.SessionToken = ""
+	res = &oauth.LogoutResult{
+		SessionToken: "",
+	}
+	return res, nil
 }
 
 // Returns the authenticated user's information
@@ -196,11 +200,14 @@ func (s *oauthsrvc) Logout(ctx context.Context, p *oauth.LogoutPayload) (res *oa
 func (s *oauthsrvc) Me(ctx context.Context, p *oauth.MePayload) (res *oauth.AccountUser, err error) {
 	log.Printf(ctx, "oauth.me")
 	// search user id by session token
+	log.Printf(ctx, "session token: %s", p.SessionToken)
 	session, err := s.OauthRep.GetSessionByToken(ctx, p.SessionToken)
+	log.Printf(ctx, "session: %v", session)
 	if err != nil {
 		return nil, oauth.MakeUnauthorized(fmt.Errorf("failed to get account by access token: %w", err))
 	}
 	// check if the session's date is not expired
+	log.Printf(ctx, "session expiration date: %s", session.ExpirationDate.Time)
 	if session.ExpirationDate.Time.Before(time.Now()) {
 		return nil, oauth.MakeUnauthorized(fmt.Errorf("session expired"))
 	}

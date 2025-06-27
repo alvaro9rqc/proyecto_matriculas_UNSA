@@ -9,6 +9,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	goa.design/clue v1.2.0
 	goa.design/goa/v3 v3.21.1
+	goa.design/plugins/v3 v3.21.1
 	golang.org/x/net v0.41.0
 	golang.org/x/oauth2 v0.30.0
 	google.golang.org/api v0.237.0

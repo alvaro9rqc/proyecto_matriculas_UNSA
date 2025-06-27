@@ -1,0 +1,15 @@
+---
+import DashboardLayout from '@/modules/dashboard/core/layouts/DashboardLayout.astro';
+import { authService } from '@/modules/auth/core/services/auth';
+import { LANDING_ROUTE } from '@/modules/landing/core/lib/routes';
+
+const { data: user, error } = await authService(Astro.cookies).getUser();
+
+if (error) {
+  return Astro.redirect(LANDING_ROUTE.fullPath);
+}
+---
+<DashboardLayout user={user}>
+  <h1>List enrollments</h1>
+  <h2>Create enrollment</h2>
+</DashboardLayout>

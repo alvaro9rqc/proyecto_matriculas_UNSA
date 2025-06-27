@@ -13,6 +13,7 @@ import (
 	enrollment "github.com/enrollment/gen/enrollment"
 	"github.com/enrollment/gen/oauth"
 	"github.com/enrollment/gen/queue"
+	user "github.com/enrollment/gen/user"
 	controllers "github.com/enrollment/internal/controllers"
 	"github.com/enrollment/internal/db"
 	repositories "github.com/enrollment/internal/repositories"
@@ -33,7 +34,10 @@ func main() {
 	}
 
 	var (
-		oauthRepo = repositories.NewOauthRepository(conn)
+		oauthRepo        = repositories.NewOauthRepository(conn)
+		adminRepo        = repositories.NewAdministrativeRepository(conn)
+		studentMajorRepo = repositories.NewStudentMajorRepository(conn)
+		speakerRepo      = repositories.NewSpeakerRepository(conn)
 	)
 
 	var (
@@ -41,12 +45,14 @@ func main() {
 		enrollmentSvc enrollment.Service
 		oauthSvc      oauth.Service
 		queueSvc      queue.Service
+		userSvc       user.Service
 	)
 	{
 		courseSvc = controllers.NewCourse()
 		enrollmentSvc = controllers.NewEnrollment()
 		oauthSvc = controllers.NewOauth(cfg, oauthRepo)
 		queueSvc = controllers.NewQueue()
+		userSvc = controllers.NewUser(cfg, adminRepo, studentMajorRepo, speakerRepo)
 	}
 
 	var (
@@ -54,6 +60,7 @@ func main() {
 		enrollmentEndpoints *enrollment.Endpoints
 		oauthEndpoints      *oauth.Endpoints
 		queueEndpoints      *queue.Endpoints
+		userEndpoints       *user.Endpoints
 	)
 	{
 		courseEndpoints = course.NewEndpoints(courseSvc)
@@ -71,6 +78,10 @@ func main() {
 		queueEndpoints = queue.NewEndpoints(queueSvc)
 		queueEndpoints.Use(debug.LogPayloads())
 		queueEndpoints.Use(log.Endpoint)
+
+		userEndpoints = user.NewEndpoints(userSvc)
+		userEndpoints.Use(debug.LogPayloads())
+		userEndpoints.Use(log.Endpoint)
 	}
 
 	errc := make(chan error)

@@ -1,0 +1,15 @@
+---
+import { authService } from '@/modules/auth/core/services/auth';
+import { LANDING_ROUTE } from '@/modules/landing/core/lib/routes';
+import AdminEnrollmentLayout from '@/modules/dashboard/instituciones/admin/matriculas/core/layouts/AdminEnrollmentLayout.astro';
+
+// Esta es una vista que depende del rol de usuario, la autenticación se debe realizar devolviendo el rol del usuario en la institución y asi determinar si es un administrador o un estudiante.
+const { data: user, error } = await authService(Astro.cookies).getUser();
+
+if (error) {
+  return Astro.redirect(LANDING_ROUTE.fullPath);
+}
+---
+<AdminEnrollmentLayout user={user}>
+  <h1>Home</h1>
+</AdminEnrollmentLayout>

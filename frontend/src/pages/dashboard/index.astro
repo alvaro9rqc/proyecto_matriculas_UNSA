@@ -1,23 +1,5 @@
 ---
-import { authApi } from '@/modules/auth/lib/api';
-import { getRouteFromPath } from '@/modules/core/lib/routes';
-import RootLayout from '@/modules/core/layouts/RootLayout.astro';
+import { DASHBOARD_ROUTE } from '@/modules/dashboard/core/lib/routes';
 
-const { data: user, error } = await authApi.getUser();
-
-if (error) {
-  return Astro.redirect('/');
-}
-
-const route = getRouteFromPath(Astro.url.pathname);
-
-if (!route) {
-  return Astro.redirect('/');
-}
-
+return Astro.redirect(DASHBOARD_ROUTE.fullPath);
 ---
-<RootLayout title={route.title}>
-  <h2>Welcome, {user.name}!</h2>
-  <img src={user.avatar_url} alt="xd">
-  <p>{user.email}</p>
-</RootLayout>

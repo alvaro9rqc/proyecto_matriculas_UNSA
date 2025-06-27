@@ -1,0 +1,15 @@
+---
+import { authService } from '@/modules/auth/core/services/auth';
+import Button from '@/modules/core/ui/button.astro';
+import { LANDING_ROUTE } from '@/modules/landing/core/lib/routes';
+import AdminEnrollmentLayout from '@/modules/dashboard/instituciones/admin/matriculas/core/layouts/AdminEnrollmentLayout.astro';
+
+const { data: user, error } = await authService(Astro.cookies).getUser();
+
+if (error) {
+  return Astro.redirect(LANDING_ROUTE.fullPath);
+}
+---
+<AdminEnrollmentLayout user={user}>
+  <h1>Cursos</h1>
+</AdminEnrollmentLayout>
