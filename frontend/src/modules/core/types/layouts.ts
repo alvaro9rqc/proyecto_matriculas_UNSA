@@ -1,4 +1,6 @@
+import type { Route } from '@/modules/core/types/route';
+
 export type RootLayoutProps = {
-  title: string;
+  route: Route;
   class?: string;
 };

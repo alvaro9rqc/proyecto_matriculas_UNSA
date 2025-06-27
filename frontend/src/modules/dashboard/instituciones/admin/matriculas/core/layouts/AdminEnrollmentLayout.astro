@@ -3,15 +3,19 @@ import type { AuthRequired, User } from '@/modules/auth/core/types/user';
 import RootLayout from '@/modules/core/layouts/RootLayout.astro';
 import type { RootLayoutProps } from '@/modules/core/types/layouts';
 import AdminEnrollmentLateralBar from './AdminEnrollmentLateralBar.astro';
+import { getRouteFromPath } from '@/modules/core/lib/routes';
 
 // Por ahora solo se requerira un usuario autenticado, ya que el usuario en la base de datos no tiene un rol como campo
 // Puede comportarse como un administrador o un usuario normal, dependiendo de la institucion a la que pertenezca
-type Props = RootLayoutProps & AuthRequired<User>;
+type Props = AuthRequired<User>;
 
-const { title, user } = Astro.props;
+const { user } = Astro.props;
+
+const route = getRouteFromPath(Astro.url.pathname);
+
 ---
-<RootLayout title={title} class="flex flex-row min-h-screen">
-  <AdminEnrollmentLateralBar user={user}/>
+<RootLayout route={route} class="flex flex-row min-h-screen">
+  <AdminEnrollmentLateralBar user={user} currentRoute={route}/>
   <main class="flex flex-col flex-1 overflow-y-auto">
     <slot />
   </main>

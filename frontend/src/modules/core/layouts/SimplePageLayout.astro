@@ -4,9 +4,9 @@ import RootLayout from '@/modules/core/layouts/RootLayout.astro';
 
 type Props = RootLayoutProps;
 
-const { title } = Astro.props;
+const { route } = Astro.props;
 ---
-<RootLayout title={title}>
+<RootLayout route={route}>
   <div class="flex flex-col min-h-screen items-center justify-center gap-y-10 md:gap-y-16 px-4 md:px-8">
     <slot />
   </div>

@@ -3,11 +3,9 @@ import RootLayout from '@/modules/core/layouts/RootLayout.astro';
 import type { RootLayoutProps } from '@/modules/core/types/layouts';
 import NavBar from '@/modules/landing/core/layouts/NavBar.astro';
 import Footer from '@/modules/landing/core/layouts/Footer.astro';
-
-type Props = RootLayoutProps;
-const { title } = Astro.props;
+import { LANDING_ROUTE } from '../lib/routes';
 ---
-<RootLayout title={title}>
+<RootLayout route={LANDING_ROUTE}>
   <NavBar />
   <main class="mx-auto max-w-7xl flex flex-col items-center px-2 sm:px-4 md:px-8">
     <slot />
