@@ -52,7 +52,7 @@ func main() {
 		enrollmentSvc = controllers.NewEnrollment()
 		oauthSvc = controllers.NewOauth(cfg, oauthRepo)
 		queueSvc = controllers.NewQueue()
-		userSvc = controllers.NewUser(adminRepo, studentMajorRepo, speakerRepo)
+		userSvc = controllers.NewUser(cfg, adminRepo, studentMajorRepo, speakerRepo)
 	}
 
 	var (
