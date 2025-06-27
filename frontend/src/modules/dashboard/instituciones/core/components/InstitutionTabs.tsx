@@ -1,6 +1,6 @@
 import { Roles } from '@/modules/auth/core/lib/roles';
-import { Button } from '@/modules/core/ui/button';
 import { Card, CardContent } from '@/modules/core/ui/card';
+import { Link } from '@/modules/core/ui/link';
 import {
   Tabs,
   TabsContent,
@@ -8,6 +8,7 @@ import {
   TabsTrigger,
 } from '@/modules/core/ui/tabs';
 import type { Institution } from '@/modules/dashboard/instituciones/core/types/institution';
+import { getEnrollmentsPath } from '@/modules/dashboard/instituciones/matriculas/core/lib/routes';
 
 interface InstitutionTabsProps {
   studentInstitutions: Institution[];
@@ -29,8 +30,9 @@ export function InstitutionTabs({
           <CardContent>
             {studentInstitutions.length > 0 ? (
               studentInstitutions.map((institution) => (
-                <Button
+                <Link
                   key={institution.id}
+                  href={getEnrollmentsPath({ institucion_id: institution.id })}
                   className="items-center w-full"
                   variant="ghost"
                   size="lg"
@@ -47,7 +49,7 @@ export function InstitutionTabs({
                     </span>
                   )}
                   {institution.name}
-                </Button>
+                </Link>
               ))
             ) : (
               <p>No tienes instituciones asignadas.</p>
@@ -60,8 +62,9 @@ export function InstitutionTabs({
           <CardContent>
             {adminInstitutions.length > 0 ? (
               adminInstitutions.map((institution) => (
-                <Button
+                <Link
                   key={institution.id}
+                  href={getEnrollmentsPath({ institucion_id: institution.id })}
                   className="items-center w-full"
                   variant="ghost"
                   size="lg"
@@ -78,7 +81,7 @@ export function InstitutionTabs({
                     </span>
                   )}
                   {institution.name}
-                </Button>
+                </Link>
               ))
             ) : (
               <p>No tienes instituciones asignadas.</p>
