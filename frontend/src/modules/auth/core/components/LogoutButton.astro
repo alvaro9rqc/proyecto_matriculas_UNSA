@@ -1,7 +1,15 @@
 ---
 import Button from '@/modules/core/ui/button.astro';
+import { LogOutIcon } from '@lucide/astro';
+
+type Props = {
+  class?: string;
+};
+
+const { class: className } = Astro.props;
 ---
-<Button variant="outline" id="logout-button" class="w-full">
+<Button variant="outline" id="logout-button" class={className}>
+  <LogOutIcon />
   Cerrar sesión
 </Button>
 <script>
