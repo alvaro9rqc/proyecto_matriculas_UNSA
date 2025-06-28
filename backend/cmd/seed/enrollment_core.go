@@ -28,22 +28,38 @@ var MODALITIES [3]string = [3]string{VIRTUAL_MODALITY, PRESENTIAL_MODALITY, HYBR
 
 func createRandomStudent(faker faker.Faker, account db.Account, studentGroup db.StudentGroup) (db.CreateStudentParams, error) {
 	return db.CreateStudentParams{
-		AccountID:      account.ID,
-		Code:           faker.Person().SSN(),
-		StudentGroupID: studentGroup.ID,
+		AccountID: account.ID,
+		Code:      faker.Person().SSN(),
 	}, nil
 }
 
-func createRandomMajor(faker faker.Faker) string {
-	return strings.Join(faker.Lorem().Words(2), " ")
+func createRandomProcess(faker faker.Faker) db.CreateProcessParams {
+	name := strings.Join(faker.Lorem().Words(2), " ")
+
+	randomNumberDay := rand.Intn(14)
+
+	startDay := time.Now().AddDate(0, 0, randomNumberDay-7)
+	endDay := startDay.AddDate(0, 0, randomNumberDay+7)
+
+	return db.CreateProcessParams{
+		Name: name,
+		StartDay: pgtype.Date{
+			Time:  startDay,
+			Valid: true,
+		},
+		EndDay: pgtype.Date{
+			Time:  endDay,
+			Valid: true,
+		},
+	}
 }
 
-func createRandomCourse(faker faker.Faker, major db.Major) db.CreateCourseParams {
+func createRandomCourse(faker faker.Faker, process db.Process) db.CreateCourseParams {
 	return db.CreateCourseParams{
 		Name:        strings.Join(faker.Lorem().Words(2), " "),
 		Credits:     int16(rand.Intn(5) + 1),
 		CycleNumber: int16(rand.Intn(5) + 1),
-		MajorID:     major.ID,
+		ProcessID:   process.ID,
 	}
 }
 
@@ -77,7 +93,7 @@ func seedEnrollmentCoreTables(
 	studentGroupRepo ports.StudentGroupRepositoryInterface,
 	installationRepo ports.InstallationRepositoryInterface,
 	courseRepo ports.CourseRepositoryInterface,
-	majorRepo ports.MajorRepositoryInterface,
+	processRepo ports.ProcessRepositoryInterface,
 	modalityRepo ports.ModalityRepositoryInterface,
 	oauthRepo ports.OauthRepositoryInterface,
 	studentRepo ports.StudentRepositoryInterface,
@@ -104,23 +120,23 @@ func seedEnrollmentCoreTables(
 		}
 	}
 
-	log.Println("Seeding majors...")
+	log.Println("Seeding processes...")
 	for range 20 {
-		majorName := createRandomMajor(faker)
-		err := majorRepo.CreateMajor(ctx, majorName)
+		process := createRandomProcess(faker)
+		err := processRepo.CreateProcess(ctx, process)
 		if err != nil {
-			log.Fatalf("Failed to create major: %v", err)
+			log.Fatalf("Failed to create processw: %v", err)
 		}
 	}
 
 	log.Println("Seeding courses...")
-	majors, err := majorRepo.ListMajors(ctx)
+	processes, err := processRepo.ListAllProcess(ctx)
 	if err != nil {
-		log.Fatalf("Failed to list majors: %v", err)
+		log.Fatalf("Failed to list processes: %v", err)
 	}
 	for range 100 {
-		major := majors[rand.Intn(len(majors))]
-		course := createRandomCourse(faker, major)
+		process := processes[rand.Intn(len(processes))]
+		course := createRandomCourse(faker, process)
 		err := courseRepo.CreateCourse(ctx, course)
 		if err != nil {
 			log.Fatalf("Failed to create course: %v", err)

@@ -22,11 +22,11 @@ func main() {
 		studentGroupRepo   = repositories.NewStudentGroupRepository(conn)
 		installationRepo   = repositories.NewInstallationRepository(conn)
 		courseRepo         = repositories.NewCourseRepository(conn)
-		majorRepo          = repositories.NewMajorRepository(conn)
+		processRepo        = repositories.NewProcessRepository(conn)
 		modalityRepo       = repositories.NewModalityRepository(conn)
 		studentRepo        = repositories.NewStudentRepository(conn)
 		speakerRepo        = repositories.NewSpeakerRepository(conn)
-		studentMajorRepo   = repositories.NewStudentMajorRepository(conn)
+		studentProcessRepo = repositories.NewStudentProcessRepository(conn)
 		sectionSpeakerRepo = repositories.NewSectionSpeakerRepository(conn)
 		sectionRepo        = repositories.NewSectionRepository(conn)
 		slotsRepo          = repositories.NewSlotsRepository(conn)
@@ -42,7 +42,7 @@ func main() {
 		studentGroupRepo,
 		installationRepo,
 		courseRepo,
-		majorRepo,
+		processRepo,
 		modalityRepo,
 		oauthRepo,
 		studentRepo,
@@ -57,8 +57,8 @@ func main() {
 		eventRepo,
 		modalityRepo,
 		studentRepo,
-		majorRepo,
-		studentMajorRepo,
+		processRepo,
+		studentProcessRepo,
 		speakerRepo,
 		sectionSpeakerRepo,
 	)

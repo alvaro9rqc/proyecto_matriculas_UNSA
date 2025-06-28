@@ -1,57 +1,54 @@
 -- +goose Up
 -- +goose StatementBegin
 
--- Student Group Table: Se refiere a los grupos de prioridad de matricula de los estudiantes
+CREATE TABLE process (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(128) UNIQUE NOT NULL,
+    start_day DATE NOT NULL,
+    end_day DATE NOT NULL,
+    CONSTRAINT process_dates CHECK (start_day < end_day)
+);
+
 CREATE TABLE student_group (
     id SMALLSERIAL PRIMARY KEY,
     name VARCHAR(30) NOT NULL,
     priority SMALLINT NOT NULL,
     start_day DATE NOT NULL,
-    end_day DATE NOT NULL
+    end_day DATE NOT NULL,
+    process_id INTEGER NOT NULL,
+    FOREIGN KEY (process_id) REFERENCES process (id) ON DELETE RESTRICT,
+    CONSTRAINT student_group_dates CHECK (start_day < end_day)
 );
 
--- Installation Table: Se refiere al espacio físico donde se llevará a cabo el curso
 CREATE TABLE installation (
     id SERIAL PRIMARY KEY,
     name VARCHAR(40) NOT NULL,
     description VARCHAR(255)
 );
 
--- Major Table: Se refiere a las carreras profesionales que ofrece la universidad
-CREATE TABLE major (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(128) UNIQUE NOT NULL
-);
-
--- Course Table: Se refiere a los cursos que se dictan en la universidad
 CREATE TABLE course (
     id SERIAL PRIMARY KEY,
     name VARCHAR(128) NOT NULL,
     credits SMALLINT NOT NULL,
     cycle_number SMALLINT NOT NULL,
-    major_id INTEGER NOT NULL,
-    FOREIGN KEY (major_id) REFERENCES major (id) ON DELETE RESTRICT,
+    process_id INTEGER NOT NULL,
+    FOREIGN KEY (process_id) REFERENCES process (id) ON DELETE RESTRICT,
     CONSTRAINT credits_value CHECK (credits > 0),
     CONSTRAINT cycle_number_value CHECK (cycle_number > 0)
 );
 
--- Modality Table: Se refiere a las modalidades de estudio de los cursos (presencial, virtual, etc.)
 CREATE TABLE modality (
     id SERIAL PRIMARY KEY,
     name VARCHAR(40) UNIQUE NOT NULL
 );
 
--- Student Table: Se refiere a los estudiantes de la universidad
 CREATE TABLE student (
     id SERIAL PRIMARY KEY,
     code VARCHAR(30) UNIQUE NOT NULL,
     account_id INTEGER UNIQUE NOT NULL,
-    student_group_id SMALLINT NOT NULL,
-    FOREIGN KEY (account_id) REFERENCES account (id) ON DELETE CASCADE,
-    FOREIGN KEY (student_group_id) REFERENCES student_group (id) ON DELETE RESTRICT
+    FOREIGN KEY (account_id) REFERENCES account (id) ON DELETE CASCADE
 );
 
--- Speaker Table: Se refiere a los oradores que dictan los cursos
 CREATE TABLE speaker (
     id SERIAL PRIMARY KEY,
     account_id INTEGER UNIQUE NOT NULL,
@@ -70,7 +67,7 @@ DROP TABLE IF EXISTS modality;
 
 DROP TABLE IF EXISTS course;
 
-DROP TABLE IF EXISTS major;
+DROP TABLE IF EXISTS process;
 
 DROP TABLE IF EXISTS installation;
 

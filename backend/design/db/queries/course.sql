@@ -1,6 +1,6 @@
 -- name: CreateCourse :exec
 INSERT INTO course (
-    name, credits, cycle_number, major_id
+    name, credits, cycle_number, process_id
 ) VALUES (
     $1, $2, $3, $4
 );

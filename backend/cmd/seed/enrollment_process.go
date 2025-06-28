@@ -75,10 +75,10 @@ func createRandomEvent(section db.Section, installations []db.Installation, moda
 	}
 }
 
-func createRandomStudentMajorRelation(student db.FullListStudentsRow, major db.Major) db.CreateStudentMajorParams {
-	return db.CreateStudentMajorParams{
+func createRandomStudentProcessRelation(student db.FullListStudentsRow, process db.Process) db.CreateStudentProcessParams {
+	return db.CreateStudentProcessParams{
 		StudentID: student.ID,
-		MajorID:   major.ID,
+		ProcessID: process.ID,
 	}
 }
 
@@ -91,8 +91,8 @@ func seedEnrollmentProcessTables(
 	eventRepo ports.EventRepositoryInterface,
 	modalityRepo ports.ModalityRepositoryInterface,
 	studentRepo ports.StudentRepositoryInterface,
-	majorRepo ports.MajorRepositoryInterface,
-	studentMajorRepo ports.StudentMajorRepositoryInterface,
+	processRepo ports.ProcessRepositoryInterface,
+	studentProcessRepo ports.StudentProcessRepositoryInterface,
 	speakerRepo ports.SpeakerRepositoryInterface,
 	sectionSpeakerRepo ports.SectionSpeakerRepositoryInterface,
 ) {
@@ -166,7 +166,7 @@ func seedEnrollmentProcessTables(
 		}
 	}
 
-	log.Println("Seeding Student Major Relationships...")
+	log.Println("Seeding Student Process Relationships...")
 	studentsAsync := <-utils.Async(func() ([]db.FullListStudentsRow, error) {
 		return studentRepo.FullListStudents(ctx)
 	})
@@ -174,26 +174,26 @@ func seedEnrollmentProcessTables(
 		log.Fatalf("Failed to list students: %v", studentsAsync.Err)
 	}
 
-	majorsAsync := <-utils.Async(func() ([]db.Major, error) {
-		return majorRepo.ListMajors(ctx)
+	processAsync := <-utils.Async(func() ([]db.Process, error) {
+		return processRepo.ListAllProcess(ctx)
 	})
-	if majorsAsync.Err != nil {
-		log.Fatalf("Failed to list majors: %v", majorsAsync.Err)
+	if processAsync.Err != nil {
+		log.Fatalf("Failed to list processes: %v", processAsync.Err)
 	}
 
 	students := studentsAsync.Value
-	majors := majorsAsync.Value
+	processes := processAsync.Value
 
 	for _, student := range students {
-		numOfMajorsByStudent := rand.Intn(2) + 1
+		numOfProcssByStudent := rand.Intn(2) + 1
 
-		for range numOfMajorsByStudent {
-			major := majors[rand.Intn(len(majors))]
-			studentMajor := createRandomStudentMajorRelation(student, major)
+		for range numOfProcssByStudent {
+			process := processes[rand.Intn(len(processes))]
+			studentProcess := createRandomStudentProcessRelation(student, process)
 
-			err := studentMajorRepo.CreateStudentMajor(ctx, studentMajor)
+			err := studentProcessRepo.CreateStudentProcess(ctx, studentProcess)
 			if err != nil {
-				log.Printf("Failed to create student-major relation for student %d and major %d: %v", student.ID, major.ID, err)
+				log.Printf("Failed to create student-process relation for student %d and process %d: %v", student.ID, process.ID, err)
 			}
 		}
 	}
