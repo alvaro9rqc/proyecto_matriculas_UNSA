@@ -34,10 +34,10 @@ func main() {
 	}
 
 	var (
-		oauthRepo        = repositories.NewOauthRepository(conn)
-		adminRepo        = repositories.NewAdministrativeRepository(conn)
-		studentMajorRepo = repositories.NewStudentMajorRepository(conn)
-		speakerRepo      = repositories.NewSpeakerRepository(conn)
+		oauthRepo = repositories.NewOauthRepository(conn)
+		// adminRepo        = repositories.NewAdministrativeRepository(conn)
+		// studentProcessRepo = repositories.NewStudentProcessRepository(conn)
+		// speakerRepo        = repositories.NewSpeakerRepository(conn)
 	)
 
 	var (
@@ -52,7 +52,7 @@ func main() {
 		enrollmentSvc = controllers.NewEnrollment()
 		oauthSvc = controllers.NewOauth(cfg, oauthRepo)
 		queueSvc = controllers.NewQueue()
-		userSvc = controllers.NewUser(cfg, adminRepo, studentMajorRepo, speakerRepo)
+		// userSvc = controllers.NewUser(cfg, adminRepo, studentMajorRepo, speakerRepo)
 	}
 
 	var (

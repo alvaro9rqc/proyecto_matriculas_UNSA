@@ -8,13 +8,12 @@ CREATE TABLE institution (
     logo_url VARCHAR(255)  -- Optional logo/avatar URL
 );
 
--- Admin User Table: Represents administrative users related to a major
 CREATE TABLE administrative (
     id SERIAL PRIMARY KEY,
     account_id INTEGER UNIQUE NOT NULL,
-    major_id INTEGER NOT NULL,
+    process_id INTEGER NOT NULL,
     FOREIGN KEY (account_id) REFERENCES account (id) ON DELETE CASCADE,
-    FOREIGN KEY (major_id) REFERENCES major (id) ON DELETE RESTRICT
+    FOREIGN KEY (process_id) REFERENCES process (id) ON DELETE RESTRICT
 );
 
 -- +goose StatementEnd
@@ -27,4 +26,3 @@ DROP TABLE IF EXISTS admin_user;
 DROP TABLE IF EXISTS institution;
 
 -- +goose StatementEnd
-

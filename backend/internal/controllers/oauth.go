@@ -29,7 +29,7 @@ type oauthsrvc struct {
 }
 
 // NewOauth returns the oauth service implementation.
-	func NewOauth(cfg *config.MainConfig, oauthRep ports.OauthRepositoryInterface) oauth.Service {
+func NewOauth(cfg *config.MainConfig, oauthRep ports.OauthRepositoryInterface) oauth.Service {
 	return &oauthsrvc{
 		GoogleOAuthConfig: &cfg.GoogleOAuthConfig,
 		OauthRep:          oauthRep,

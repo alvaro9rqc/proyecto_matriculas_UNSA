@@ -6,12 +6,12 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type StudentMajorRepository struct {
+type StudentProcessRepository struct {
 	*db.Queries
 }
 
-func NewStudentMajorRepository(conn *pgx.Conn) ports.StudentMajorRepositoryInterface {
-	return &StudentMajorRepository{
+func NewStudentProcessRepository(conn *pgx.Conn) ports.StudentProcessRepositoryInterface {
+	return &StudentProcessRepository{
 		Queries: db.New(conn),
 	}
 }

@@ -16,7 +16,6 @@ CREATE TABLE slots (
     FOREIGN KEY (section_id) REFERENCES section (id) ON DELETE CASCADE
 );
 
--- Event Table: A los horarios de un curso
 CREATE TABLE event (
     id SERIAL PRIMARY KEY,
     start_date TIMESTAMP NOT NULL,
@@ -30,16 +29,30 @@ CREATE TABLE event (
     FOREIGN KEY (installation_id) REFERENCES installation (id) ON DELETE CASCADE
 );
 
--- Student Major Table: Se refiere a la carrera profesional del estudiante
-CREATE TABLE student_major (
+CREATE TABLE student_student_group (
     student_id INTEGER,
-    major_id INTEGER,
-    PRIMARY KEY (student_id, major_id),
-    FOREIGN KEY (major_id) REFERENCES major (id) ON DELETE CASCADE,
+    student_group_id INTEGER,
+    PRIMARY KEY (student_id, student_group_id),
+    FOREIGN KEY (student_id) REFERENCES student (id) ON DELETE CASCADE,
+    FOREIGN KEY (student_group_id) REFERENCES student_group (id) ON DELETE CASCADE
+);
+
+CREATE TABLE student_process (
+    student_id INTEGER,
+    process_id INTEGER,
+    PRIMARY KEY (student_id, process_id),
+    FOREIGN KEY (process_id) REFERENCES process (id) ON DELETE CASCADE,
     FOREIGN KEY (student_id) REFERENCES student (id) ON DELETE CASCADE
 );
 
--- Student Course Table: Se refiere al curso que un estudiante ha llevado con anterioridad, el numero de intentos y si aprobó o no
+CREATE TABLE student_avalible_courses (
+    student_id INTEGER,
+    course_id INTEGER,
+    PRIMARY KEY (student_id, course_id),
+    FOREIGN KEY (student_id) REFERENCES student (id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES course (id) ON DELETE CASCADE
+);
+
 CREATE TABLE student_course (
     student_id INTEGER,
     course_id INTEGER,
@@ -50,17 +63,6 @@ CREATE TABLE student_course (
     FOREIGN KEY (course_id) REFERENCES course (id) ON DELETE CASCADE
 );
 
--- Course Prerequisite Table: Se refiere a los cursos que son prerequisitos de otro curso
-CREATE TABLE course_prerequisite (
-    course_id INTEGER,
-    prerequisite_id INTEGER,
-    PRIMARY KEY (course_id, prerequisite_id),
-    FOREIGN KEY (course_id) REFERENCES course (id) ON DELETE CASCADE,
-    FOREIGN KEY (prerequisite_id) REFERENCES course (id) ON DELETE CASCADE,
-    CHECK (course_id <> prerequisite_id)
-);
-
--- Tuition Speaker Table: Se refiere a los oradores que dictan un curso
 CREATE TABLE section_speaker (
     section_id INTEGER,
     speaker_id INTEGER,
@@ -78,7 +80,7 @@ DROP TABLE IF EXISTS course_prerequisite;
 
 DROP TABLE IF EXISTS student_course;
 
-DROP TABLE IF EXISTS student_major;
+DROP TABLE IF EXISTS student_process;
 
 DROP TABLE IF EXISTS event;
 

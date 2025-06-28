@@ -1,8 +1,8 @@
 -- name: CreateStudent :exec
 INSERT INTO student (
-    code, account_id, student_group_id
+    code, account_id
 ) VALUES (
-    $1, $2, $3
+    $1, $2
 );
 
 -- name: ListStudents :many

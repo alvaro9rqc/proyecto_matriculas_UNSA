@@ -1,8 +1,8 @@
 -- name: CreateStudentGroup :exec
 INSERT INTO student_group (
-  name, priority, start_day, end_day
+  name, priority, start_day, end_day, process_id
 ) VALUES (
-  $1, $2, $3, $4
+  $1, $2, $3, $4, $5
 );
 
 -- name: UpdateStudentGroup :exec
@@ -24,6 +24,7 @@ SELECT
   name,
   priority,
   start_day,
-  end_day
+  end_day,
+  process_id
 FROM student_group
 ORDER BY priority, start_day;
