@@ -1,11 +1,19 @@
 -- +goose Up
 -- +goose StatementBegin
 
+CREATE TABLE institution (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(128) UNIQUE NOT NULL,
+    logo_url VARCHAR(255)
+);
+
 CREATE TABLE process (
     id SERIAL PRIMARY KEY,
     name VARCHAR(128) NOT NULL,
     start_day DATE NOT NULL,
     end_day DATE NOT NULL,
+    institution_id INTEGER NOT NULL,
+    FOREIGN KEY (institution_id) REFERENCES institution (id) ON DELETE RESTRICT,
     CONSTRAINT process_dates CHECK (start_day < end_day)
 );
 
@@ -70,6 +78,8 @@ DROP TABLE IF EXISTS course;
 DROP TABLE IF EXISTS process;
 
 DROP TABLE IF EXISTS installation;
+
+DROP TABLE IF EXISTS institution;
 
 DROP TABLE IF EXISTS student_group;
 

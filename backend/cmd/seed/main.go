@@ -31,6 +31,7 @@ func main() {
 		sectionRepo        = repositories.NewSectionRepository(conn)
 		slotsRepo          = repositories.NewSlotsRepository(conn)
 		eventRepo          = repositories.NewEventRepository(conn)
+		insstitutionRepo   = repositories.NewInstitutionRepository(conn)
 	)
 
 	seedOauthTables(
@@ -39,6 +40,7 @@ func main() {
 	)
 	seedEnrollmentCoreTables(
 		cfg.Ctx,
+		insstitutionRepo,
 		studentGroupRepo,
 		installationRepo,
 		courseRepo,

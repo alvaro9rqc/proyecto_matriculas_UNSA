@@ -33,7 +33,7 @@ func createRandomStudent(faker faker.Faker, account db.Account, studentGroup db.
 	}, nil
 }
 
-func createRandomProcess(faker faker.Faker) db.CreateProcessParams {
+func createRandomProcess(faker faker.Faker, institution db.Institution) db.CreateProcessParams {
 	name := strings.Join(faker.Lorem().Words(2), " ")
 
 	randomNumberDay := rand.Intn(14)
@@ -51,6 +51,7 @@ func createRandomProcess(faker faker.Faker) db.CreateProcessParams {
 			Time:  endDay,
 			Valid: true,
 		},
+		InstitutionID: institution.ID,
 	}
 }
 
@@ -89,8 +90,19 @@ func createStudentGroup(priority int16, process db.Process) db.CreateStudentGrou
 	}
 }
 
+func createRandomInstitution(faker faker.Faker) db.CreateInstitutionParams {
+	return db.CreateInstitutionParams{
+		Name: faker.Company().Name(),
+		LogoUrl: pgtype.Text{
+			String: faker.Internet().URL(),
+			Valid:  true,
+		},
+	}
+}
+
 func seedEnrollmentCoreTables(
 	ctx context.Context,
+	institutionRepo ports.InstitutionRepositoryInterface,
 	studentGroupRepo ports.StudentGroupRepositoryInterface,
 	installationRepo ports.InstallationRepositoryInterface,
 	courseRepo ports.CourseRepositoryInterface,
@@ -102,9 +114,23 @@ func seedEnrollmentCoreTables(
 ) {
 	faker := faker.New()
 
+	log.Println("Seeding institutions...")
+	for range 5 {
+		institution := createRandomInstitution(faker)
+		err := institutionRepo.CreateInstitution(ctx, institution)
+		if err != nil {
+			log.Fatalf("Failed to create institution: %v", err)
+		}
+	}
+
+	institutions, err := institutionRepo.ListAllInstitutions(ctx)
+	if err != nil {
+		log.Fatalf("Failed to list institutions: %v", err)
+	}
 	log.Println("Seeding processes...")
 	for range 20 {
-		process := createRandomProcess(faker)
+		institution := institutions[rand.Intn(len(institutions))]
+		process := createRandomProcess(faker, institution)
 		err := processRepo.CreateProcess(ctx, process)
 		if err != nil {
 			log.Fatalf("Failed to create processw: %v", err)

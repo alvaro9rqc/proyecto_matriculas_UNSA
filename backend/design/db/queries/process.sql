@@ -1,8 +1,8 @@
 -- name: CreateProcess :exec
-INSERT INTO process (name, start_day, end_day) VALUES ($1, $2, $3);
+INSERT INTO process (name, start_day, end_day, institution_id) VALUES ($1, $2, $3, $4);
 
 -- name: ListAllProcess :many
-SELECT id, name, start_day, end_day
+SELECT *
 FROM process
 ORDER BY start_day;
 

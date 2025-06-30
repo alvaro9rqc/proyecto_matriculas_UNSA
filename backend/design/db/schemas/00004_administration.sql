@@ -1,12 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 
--- Institution Table: Represents a university or educational institution
-CREATE TABLE institution (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(128) UNIQUE NOT NULL,
-    logo_url VARCHAR(255)  -- Optional logo/avatar URL
-);
+
 
 CREATE TABLE administrative (
     id SERIAL PRIMARY KEY,
@@ -21,8 +16,6 @@ CREATE TABLE administrative (
 -- +goose Down
 -- +goose StatementBegin
 
-DROP TABLE IF EXISTS admin_user;
-
-DROP TABLE IF EXISTS institution;
+DROP TABLE IF EXISTS administrative;
 
 -- +goose StatementEnd

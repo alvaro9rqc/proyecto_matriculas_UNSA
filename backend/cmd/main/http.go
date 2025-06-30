@@ -6,15 +6,17 @@ import (
 	"sync"
 	"time"
 
-	coursesvr "github.com/enrollment/gen/http/course/server"
-	enrollmentsvr "github.com/enrollment/gen/http/enrollment/server"
+	// coursesvr "github.com/enrollment/gen/http/course/server"
+	// enrollmentsvr "github.com/enrollment/gen/http/enrollment/server"
+	// course "github.com/enrollment/gen/course"
+	// enrollment "github.com/enrollment/gen/enrollment"
 	oauthsvr "github.com/enrollment/gen/http/oauth/server"
+
 	//"github.com/enrollment/internal/utils"
 
-	"github.com/enrollment/gen/course"
-	"github.com/enrollment/gen/enrollment"
+	// "github.com/enrollment/gen/course"
+	// "github.com/enrollment/gen/enrollment"
 	"github.com/enrollment/gen/oauth"
-	"github.com/enrollment/gen/queue"
 
 	"goa.design/clue/debug"
 	"goa.design/clue/log"
@@ -24,10 +26,10 @@ import (
 func handleHTTPServer(
 	ctx context.Context,
 	port string,
-	courseEndpoints *course.Endpoints,
-	enrollmentEndpoints *enrollment.Endpoints,
+	// courseEndpoints *course.Endpoints,
+	// enrollmentEndpoints *enrollment.Endpoints,
 	oauthEndpoints *oauth.Endpoints,
-	_ *queue.Endpoints,
+	// _ *queue.Endpoints,
 	wg *sync.WaitGroup,
 	errc chan error,
 	dbg bool) {
@@ -47,21 +49,21 @@ func handleHTTPServer(
 	}
 
 	var (
-		courseServer     *coursesvr.Server
-		enrollmentServer *enrollmentsvr.Server
-		oauthServer      *oauthsvr.Server
+		// courseServer     *coursesvr.Server
+		// enrollmentServer *enrollmentsvr.Server
+		oauthServer *oauthsvr.Server
 		// queueServer      *queuesvr.Server
 	)
 	{
 		eh := errorHandler(ctx)
-		courseServer = coursesvr.New(courseEndpoints, mux, dec, enc, eh, nil)
-		enrollmentServer = enrollmentsvr.New(enrollmentEndpoints, mux, dec, enc, eh, nil)
+		// courseServer = coursesvr.New(courseEndpoints, mux, dec, enc, eh, nil)
+		// enrollmentServer = enrollmentsvr.New(enrollmentEndpoints, mux, dec, enc, eh, nil)
 		oauthServer = oauthsvr.New(oauthEndpoints, mux, dec, enc, eh, nil)
 		// queueServer = queuesvr.New(queueEndpoints, mux, dec, enc, eh, nil)
 	}
 
-	coursesvr.Mount(mux, courseServer)
-	enrollmentsvr.Mount(mux, enrollmentServer)
+	// coursesvr.Mount(mux, courseServer)
+	// enrollmentsvr.Mount(mux, enrollmentServer)
 	oauthsvr.Mount(mux, oauthServer)
 
 	var handler http.Handler = mux
@@ -72,12 +74,12 @@ func handleHTTPServer(
 	//handler = utils.SessionTokenMiddleware(handler)
 
 	srv := &http.Server{Addr: ":" + port, Handler: handler, ReadHeaderTimeout: time.Second * 60}
-	for _, m := range courseServer.Mounts {
-		log.Printf(ctx, "HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
-	}
-	for _, m := range enrollmentServer.Mounts {
-		log.Printf(ctx, "HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
-	}
+	// for _, m := range courseServer.Mounts {
+	// 	log.Printf(ctx, "HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
+	// }
+	// for _, m := range enrollmentServer.Mounts {
+	// 	log.Printf(ctx, "HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
+	// }
 	for _, m := range oauthServer.Mounts {
 		log.Printf(ctx, "HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
 	}
