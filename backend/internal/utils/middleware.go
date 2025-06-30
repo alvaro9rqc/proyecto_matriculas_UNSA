@@ -22,3 +22,13 @@ func SessionTokenMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+func GetTokenFromContext(ctx context.Context) string {
+	if ctx == nil {
+		return ""
+	}
+	if value, ok := ctx.Value(SESSION_TOKEN_ID).(string); ok {
+		return value
+	}
+	return ""
+}
