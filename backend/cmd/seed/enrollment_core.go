@@ -73,7 +73,7 @@ func createRandomInstallation(faker faker.Faker) db.CreateInstalationParams {
 	}
 }
 
-func createStudentGroup(priority int16) db.CreateStudentGroupParams {
+func createStudentGroup(priority int16, process db.Process) db.CreateStudentGroupParams {
 	return db.CreateStudentGroupParams{
 		Name:     fmt.Sprintf("Group %d", priority),
 		Priority: priority,
@@ -85,6 +85,7 @@ func createStudentGroup(priority int16) db.CreateStudentGroupParams {
 			Time:  time.Now().AddDate(0, 0, int(priority*7)+6),
 			Valid: true,
 		},
+		ProcessID: process.ID,
 	}
 }
 
@@ -101,13 +102,28 @@ func seedEnrollmentCoreTables(
 ) {
 	faker := faker.New()
 
+	log.Println("Seeding processes...")
+	for range 20 {
+		process := createRandomProcess(faker)
+		err := processRepo.CreateProcess(ctx, process)
+		if err != nil {
+			log.Fatalf("Failed to create processw: %v", err)
+		}
+	}
+
 	log.Println("Seeding student groups...")
 
-	for i := range 5 {
-		studentGroup := createStudentGroup(int16(i + 1))
-		err := studentGroupRepo.CreateStudentGroup(ctx, studentGroup)
-		if err != nil {
-			log.Fatalf("Failed to create student group: %v", err)
+	process, err := processRepo.ListAllProcess(ctx)
+	if err != nil {
+		log.Fatalf("Failed to list processes: %v", err)
+	}
+	for _, p := range process {
+		for i := range 5 {
+			studentGroup := createStudentGroup(int16(i+1), p)
+			err := studentGroupRepo.CreateStudentGroup(ctx, studentGroup)
+			if err != nil {
+				log.Fatalf("Failed to create student group: %v", err)
+			}
 		}
 	}
 
@@ -117,15 +133,6 @@ func seedEnrollmentCoreTables(
 		err := installationRepo.CreateInstalation(ctx, installation)
 		if err != nil {
 			log.Fatalf("Failed to create installation: %v", err)
-		}
-	}
-
-	log.Println("Seeding processes...")
-	for range 20 {
-		process := createRandomProcess(faker)
-		err := processRepo.CreateProcess(ctx, process)
-		if err != nil {
-			log.Fatalf("Failed to create processw: %v", err)
 		}
 	}
 

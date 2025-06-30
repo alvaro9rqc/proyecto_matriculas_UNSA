@@ -11,12 +11,10 @@ SELECT
     s.code,
     a.email,
     a.name,
-    a.surname,
-    sg.name AS student_group_name
+    a.surname
 FROM student s
 JOIN account a ON s.account_id = a.id
-JOIN student_group sg ON s.student_group_id = sg.id
-ORDER BY s.code
+ORDER BY a.surname, a.name
 LIMIT $1
 OFFSET $2;
 
@@ -26,9 +24,7 @@ SELECT
     s.code,
     a.email,
     a.name,
-    a.surname,
-    sg.name AS student_group_name
+    a.surname
 FROM student s
 JOIN account a ON s.account_id = a.id
-JOIN student_group sg ON s.student_group_id = sg.id
-ORDER BY s.code;
+ORDER BY a.surname, a.name;

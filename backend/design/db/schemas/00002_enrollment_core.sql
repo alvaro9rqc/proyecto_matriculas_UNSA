@@ -3,7 +3,7 @@
 
 CREATE TABLE process (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(128) UNIQUE NOT NULL,
+    name VARCHAR(128) NOT NULL,
     start_day DATE NOT NULL,
     end_day DATE NOT NULL,
     CONSTRAINT process_dates CHECK (start_day < end_day)
