@@ -80,7 +80,11 @@ DROP TABLE IF EXISTS course_prerequisite;
 
 DROP TABLE IF EXISTS student_course;
 
+DROP TABLE IF EXISTS student_avalible_courses;
+
 DROP TABLE IF EXISTS student_process;
+
+DROP TABLE IF EXISTS student_student_group;
 
 DROP TABLE IF EXISTS event;
 

@@ -2,7 +2,7 @@
 import { institutionService } from '@/modules/dashboard/instituciones/core/services/institution';
 import { InstitutionList } from '@/modules/dashboard/instituciones/core/components/InstitutionList';
 
-const { data: institutions, error } = await institutionService.getInstitutions();
+const { data: institutions, error } = await institutionService.getInstitutions(Astro.cookies);
 ---
   {
   institutions && !error ? (

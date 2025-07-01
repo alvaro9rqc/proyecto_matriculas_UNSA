@@ -66,6 +66,7 @@ CREATE TABLE speaker (
 -- +goose StatementEnd
 -- +goose Down
 -- +goose StatementBegin
+DROP TABLE IF EXISTS student_group;
 
 DROP TABLE IF EXISTS speaker;
 
@@ -80,7 +81,5 @@ DROP TABLE IF EXISTS process;
 DROP TABLE IF EXISTS installation;
 
 DROP TABLE IF EXISTS institution;
-
-DROP TABLE IF EXISTS student_group;
 
 -- +goose StatementEnd

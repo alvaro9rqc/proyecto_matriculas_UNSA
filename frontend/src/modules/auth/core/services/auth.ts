@@ -14,9 +14,7 @@ class AuthService {
     this.apiAuthUrl = `${BACKEND_URL}/auth`;
   }
 
-  private async validateSessionToken(
-    cookies: AstroCookies,
-  ): ApiResponse<string> {
+  async validateSessionToken(cookies: AstroCookies): ApiResponse<string> {
     const sessionToken = cookies.get('session_token')?.value;
 
     if (!sessionToken) {
