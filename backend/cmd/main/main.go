@@ -11,6 +11,7 @@ import (
 	"github.com/enrollment/config"
 	// course "github.com/enrollment/gen/course"
 	// enrollment "github.com/enrollment/gen/enrollment"
+	"github.com/enrollment/gen/institution"
 	"github.com/enrollment/gen/oauth"
 	user "github.com/enrollment/gen/user"
 	controllers "github.com/enrollment/internal/controllers"
@@ -33,42 +34,34 @@ func main() {
 	}
 
 	var (
-		oauthRepo = repositories.NewOauthRepository(conn)
-		// adminRepo        = repositories.NewAdministrativeRepository(conn)
-		// studentProcessRepo = repositories.NewStudentProcessRepository(conn)
-		// speakerRepo        = repositories.NewSpeakerRepository(conn)
+		oauthRepo       = repositories.NewOauthRepository(conn)
+		institutionRepo = repositories.NewInstitutionRepository(conn)
+		processRepo     = repositories.NewProcessRepository(conn)
 	)
 
 	var (
-		// courseSvc     course.Service
-		// enrollmentSvc enrollment.Service
-		oauthSvc oauth.Service
+		institutionSvc institution.Service
+		oauthSvc       oauth.Service
 		// queueSvc      queue.Service
 		userSvc user.Service
 	)
 	{
-		// courseSvc = controllers.NewCourse()
-		// enrollmentSvc = controllers.NewEnrollment()
+		institutionSvc = controllers.NewInstitution(oauthRepo, institutionRepo, processRepo)
 		oauthSvc = controllers.NewOauth(cfg, oauthRepo)
 		// queueSvc = controllers.NewQueue()
 		// userSvc = controllers.NewUser(cfg, adminRepo, studentMajorRepo, speakerRepo)
 	}
 
 	var (
-		// courseEndpoints     *course.Endpoints
-		// enrollmentEndpoints *enrollment.Endpoints
-		oauthEndpoints *oauth.Endpoints
+		institutionEndpoints *institution.Endpoints
+		oauthEndpoints       *oauth.Endpoints
 		// queueEndpoints      *queue.Endpoints
 		userEndpoints *user.Endpoints
 	)
 	{
-		// 	courseEndpoints = course.NewEndpoints(courseSvc)
-		// 	courseEndpoints.Use(debug.LogPayloads())
-		// 	courseEndpoints.Use(log.Endpoint)
-
-		// enrollmentEndpoints = enrollment.NewEndpoints(enrollmentSvc)
-		// enrollmentEndpoints.Use(debug.LogPayloads())
-		// enrollmentEndpoints.Use(log.Endpoint)
+		institutionEndpoints = institution.NewEndpoints(institutionSvc)
+		institutionEndpoints.Use(debug.LogPayloads())
+		institutionEndpoints.Use(log.Endpoint)
 
 		oauthEndpoints = oauth.NewEndpoints(oauthSvc)
 		oauthEndpoints.Use(debug.LogPayloads())
@@ -97,8 +90,7 @@ func main() {
 	handleHTTPServer(
 		ctx,
 		cfg.HttpPort,
-		// courseEndpoints,
-		// enrollmentEndpoints,
+		institutionEndpoints,
 		oauthEndpoints,
 		// queueEndpoints,
 		&wg,

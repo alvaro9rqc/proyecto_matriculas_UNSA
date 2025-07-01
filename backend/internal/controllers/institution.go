@@ -3,7 +3,9 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"log"
 
+	"github.com/enrollment/gen/db"
 	institution "github.com/enrollment/gen/institution"
 	"github.com/enrollment/internal/ports"
 	"github.com/enrollment/internal/utils"
@@ -12,12 +14,14 @@ import (
 type institutionsrvc struct {
 	OauthRepo       ports.OauthRepositoryInterface
 	InstitutionRepo ports.InstitutionRepositoryInterface
+	ProcessRepo     ports.ProcessRepositoryInterface
 }
 
-func NewInstitution(oauthRepo ports.OauthRepositoryInterface, institutionRepo ports.InstitutionRepositoryInterface) institution.Service {
+func NewInstitution(oauthRepo ports.OauthRepositoryInterface, institutionRepo ports.InstitutionRepositoryInterface, processRepo ports.ProcessRepositoryInterface) institution.Service {
 	return &institutionsrvc{
 		OauthRepo:       oauthRepo,
 		InstitutionRepo: institutionRepo,
+		ProcessRepo:     processRepo,
 	}
 }
 
@@ -45,4 +49,35 @@ func (s *institutionsrvc) ListInstitutions(ctx context.Context) (res []*institut
 	}
 
 	return institutionsByAccount, nil
+}
+
+func (s *institutionsrvc) ListProccesByInstitution(ctx context.Context, payload *institution.ListProccesByInstitutionPayload) (res []*institution.Process, err error) {
+	token := utils.GetTokenFromContext(ctx)
+
+	session, err := s.OauthRepo.GetSessionByToken(ctx, token)
+	if err != nil {
+		return nil, institution.MakeNotAuthorized(fmt.Errorf("failed to get session by token: %w", err))
+	}
+
+	processes, err := s.ProcessRepo.ListProcessByInstitutionId(ctx, db.ListProcessByInstitutionIdParams{
+		ID:            session.AccountID,
+		InstitutionID: payload.InstitutionID,
+	})
+	if err != nil {
+		return nil, institution.MakeInternalServerError(fmt.Errorf("failed to list processes: %w", err))
+	}
+
+	// processesByInstitution := make([]*institution.Process, 0, len(processes))
+	// for _, proc := range processes {
+	// 	processesByInstitution = append(processesByInstitution, &institution.Process{
+	// 		ID:            &proc.ID,
+	// 		Name:          &proc.Name,
+	// 		StartDay:      proc.StartDay.Format("2006-01-02"),
+	// 		EndDay:        proc.EndDay.Format("2006-01-02"),
+	// 		InstitutionID: proc.InstitutionID,
+	// 	})
+	// }
+	log.Println(processes)
+
+	return nil, nil
 }

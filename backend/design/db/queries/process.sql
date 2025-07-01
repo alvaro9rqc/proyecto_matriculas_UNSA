@@ -8,3 +8,12 @@ ORDER BY start_day;
 
 -- name: DeleteProcess :exec
 DELETE FROM process WHERE id = $1;
+
+-- name: ListProcessByInstitutionId :many
+SELECT p.*
+FROM process AS p
+JOIN student_process AS sp ON sp.process_id = p.id
+JOIN student AS s ON sp.student_id = s.id
+JOIN account AS a ON s.account_id = a.id
+WHERE institution_id = $1 AND a.id = $2
+ORDER BY start_day;
