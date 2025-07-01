@@ -9,7 +9,7 @@ export const DASHBOARD_ENROLLMENTS_ROUTE = getRouteFromPath(
   '/dashboard/instituciones/:institucion_id/matriculas',
 );
 
-export const getEnrollmentsPath = ({
+export const getEnrollmentProcessesPath = ({
   institucion_id,
 }: {
   institucion_id: string;
@@ -20,7 +20,7 @@ export const getEnrollmentsPath = ({
   );
 };
 
-export const getEnrollmentPath = ({
+export const getEnrollmentProcessPath = ({
   institucion_id,
   matricula_id,
 }: {
