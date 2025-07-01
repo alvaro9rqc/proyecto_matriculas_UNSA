@@ -49,6 +49,48 @@ func seedOauthTables(ctx context.Context, oauthRepo ports.OauthRepositoryInterfa
 	}
 
 	log.Println("Seeding OAuth accounts...")
+
+	// Developer accounts
+	log.Println("Seeding developer accounts...")
+	var devAccounts = []db.CreateAccountWithProviderNameParams{
+		{
+			Name:         "Luis Gustavo",
+			Surname: 			"Sequeiros Condori",
+			Email: 				"lsequeiros@unsa.edu.pe",
+			AvatarUrl:    AVATAR_URL,
+			ProviderName: GOOGLE_PROVIDER,
+			AccessToken:  faker.RandomStringWithLength(20),
+			RefreshToken: faker.RandomStringWithLength(20),
+		},
+		{
+			Name: 				"Yenaro Joel",
+			Surname:		  "Noa Camino",
+			Email: 				"ynoacamino@gmail.com",
+			AvatarUrl: 		AVATAR_URL,
+			ProviderName: GOOGLE_PROVIDER,
+			AccessToken:  faker.RandomStringWithLength(20),
+			RefreshToken: faker.RandomStringWithLength(20),
+		},
+		{
+			Name:         "Álvaro Raúl",
+			Surname:      "Quispe Condori",
+			Email:        "aquispecondo@unsa.edu.pe",
+			AvatarUrl:    AVATAR_URL,
+			ProviderName: GOOGLE_PROVIDER,
+			AccessToken:  faker.RandomStringWithLength(20),
+			RefreshToken: faker.RandomStringWithLength(20),
+		},
+	}
+
+	for _, devAccount := range devAccounts {
+		err = oauthRepo.CreateAccountWithProviderName(ctx, devAccount)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	log.Println("Seeding random accounts...")
+
 	for range NUM_ACCOUNTS {
 		account := createRandomAccount(faker)
 		err = oauthRepo.CreateAccountWithProviderName(ctx, account)
