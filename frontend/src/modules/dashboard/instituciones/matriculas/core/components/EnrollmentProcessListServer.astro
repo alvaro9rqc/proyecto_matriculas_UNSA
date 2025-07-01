@@ -4,11 +4,11 @@ import { enrollmentProcessService } from '@/modules/dashboard/instituciones/matr
 import type { Institution } from '@/modules/dashboard/instituciones/core/types/institution';
 import { EnrollmentProcessList } from '@/modules/dashboard/instituciones/matriculas/core/components/EnrollmentProcessList';
 
-type Props = AuthRequired<User> & {
+type Props = {
   institution: Institution;
 };
 
-const { user, institution } = Astro.props;
+const { institution } = Astro.props;
 const { data: processes, error } = await enrollmentProcessService().getAllEnrollmentProcesses(institution.id);
 ---
   {

@@ -4,7 +4,7 @@ import { defineAction } from 'astro:actions';
 export const user = {
   getUser: defineAction({
     handler: async (_, context) => {
-      const { data, error } = await authService(context.cookies).getUser();
+      const { data, error } = await authService.getUser(context.cookies);
       if (error) {
         throw error;
       }
@@ -13,7 +13,7 @@ export const user = {
   }),
   logout: defineAction({
     handler: async (_, context) => {
-      const { data, error } = await authService(context.cookies).logout();
+      const { data, error } = await authService.logout(context.cookies);
       if (error) {
         throw error;
       }

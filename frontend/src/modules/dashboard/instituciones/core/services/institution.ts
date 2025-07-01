@@ -10,11 +10,11 @@ class InstitutionService {
     this.apiInstitutionUrl = `${BACKEND_URL}/institutions`;
   }
 
-  async getInstitutions(userId: string): ApiResponse<Institution[]> {
+  async getInstitutions(): ApiResponse<Institution[]> {
     try {
       const response = await fetch(
         // TODO: Change real API URL
-        `${this.apiInstitutionUrl}/grouped/${userId}`,
+        this.apiInstitutionUrl,
         {
           method: 'GET',
         },
@@ -34,7 +34,7 @@ class InstitutionService {
       const data = await response.json();
       return { data, error: undefined };
     } catch (error) {
-      console.log('[getInstitutionsGroupedByRole] Error:', error);
+      console.log('[getInstitutions] Error:', error);
       return {
         data: undefined,
         error: INTERNAL_SERVER_ERROR,
@@ -74,4 +74,4 @@ class InstitutionService {
   }
 }
 
-export const institutionService = () => new InstitutionService();
+export const institutionService = new InstitutionService();
