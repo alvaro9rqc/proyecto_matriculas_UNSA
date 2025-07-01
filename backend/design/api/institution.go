@@ -30,11 +30,11 @@ var ProcessResult = Type("Process", func() {
 	Attribute("name", String, "Name of the process", func() {
 		Example("Fall Semester Enrollment")
 	})
-	Attribute("startDay", String, "Start date of the process in YYYY-MM-DD format", func() {
-		Example("2023-08-01")
+	Attribute("startDay", Int64, "Start date of the process in timestamp format", func() {
+		Example(1700000000)
 	})
-	Attribute("endDay", String, "End date of the process in YYYY-MM-DD format", func() {
-		Example("2023-12-15")
+	Attribute("endDay", Int64, "End date of the process in timestamp format", func() {
+		Example(1700000000)
 	})
 	Attribute("institutionId", Int32, "ID of the institution this process belongs to", func() {
 		Example(1)

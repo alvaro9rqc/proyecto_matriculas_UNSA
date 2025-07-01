@@ -3,7 +3,6 @@ package controllers
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/enrollment/gen/db"
 	institution "github.com/enrollment/gen/institution"
@@ -67,17 +66,19 @@ func (s *institutionsrvc) ListProccesByInstitution(ctx context.Context, payload 
 		return nil, institution.MakeInternalServerError(fmt.Errorf("failed to list processes: %w", err))
 	}
 
-	// processesByInstitution := make([]*institution.Process, 0, len(processes))
-	// for _, proc := range processes {
-	// 	processesByInstitution = append(processesByInstitution, &institution.Process{
-	// 		ID:            &proc.ID,
-	// 		Name:          &proc.Name,
-	// 		StartDay:      proc.StartDay.Format("2006-01-02"),
-	// 		EndDay:        proc.EndDay.Format("2006-01-02"),
-	// 		InstitutionID: proc.InstitutionID,
-	// 	})
-	// }
-	log.Println(processes)
+	processesByInstitution := make([]*institution.Process, 0, len(processes))
+	for _, proc := range processes {
+		startDay := proc.StartDay.Time.Unix()
+		endDay := proc.EndDay.Time.Unix()
 
-	return nil, nil
+		processesByInstitution = append(processesByInstitution, &institution.Process{
+			ID:            &proc.ID,
+			Name:          &proc.Name,
+			StartDay:      &startDay,
+			EndDay:        &endDay,
+			InstitutionID: &proc.InstitutionID,
+		})
+	}
+
+	return processesByInstitution, nil
 }
