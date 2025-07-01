@@ -1,6 +1,6 @@
 export type Institution = {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   logoUrl?: string;
 };

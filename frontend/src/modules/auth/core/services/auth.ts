@@ -9,15 +9,15 @@ import type { User } from '@/modules/auth/core/types/user';
 
 class AuthService {
   private apiAuthUrl: string;
-  private astroCookies: AstroCookies;
 
-  constructor(astroCookies: AstroCookies) {
+  constructor() {
     this.apiAuthUrl = `${BACKEND_URL}/auth`;
-    this.astroCookies = astroCookies;
   }
 
-  private async validateSessionToken(): ApiResponse<string> {
-    const sessionToken = this.astroCookies.get('session_token')?.value;
+  private async validateSessionToken(
+    cookies: AstroCookies,
+  ): ApiResponse<string> {
+    const sessionToken = cookies.get('session_token')?.value;
 
     if (!sessionToken) {
       return {
@@ -28,8 +28,9 @@ class AuthService {
     return { data: sessionToken, error: undefined };
   }
 
-  async getUser(): ApiResponse<User> {
-    const { data: sessionToken, error } = await this.validateSessionToken();
+  async getUser(cookies: AstroCookies): ApiResponse<User> {
+    const { data: sessionToken, error } =
+      await this.validateSessionToken(cookies);
 
     if (error) {
       return {
@@ -68,8 +69,9 @@ class AuthService {
     }
   }
 
-  async logout(): ApiResponse<void> {
-    const { data: sessionToken, error } = await this.validateSessionToken();
+  async logout(cookies: AstroCookies): ApiResponse<void> {
+    const { data: sessionToken, error } =
+      await this.validateSessionToken(cookies);
 
     if (error) {
       return {
@@ -99,7 +101,7 @@ class AuthService {
         };
       }
 
-      this.astroCookies.delete('session_token', {
+      cookies.delete('session_token', {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
@@ -115,5 +117,4 @@ class AuthService {
   }
 }
 
-export const authService = (astroCookies: AstroCookies) =>
-  new AuthService(astroCookies);
+export const authService = new AuthService();
