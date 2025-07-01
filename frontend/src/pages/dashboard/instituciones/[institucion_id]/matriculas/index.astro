@@ -5,10 +5,11 @@ import EnrollmentProcessListServer from '@/modules/dashboard/instituciones/matri
 import InstitutionListSkeleton from '@/modules/dashboard/instituciones/core/components/InstitutionListSkeleton.astro';
 import { DASHBOARD_INSTITUTION_ROUTE } from '@/modules/dashboard/instituciones/core/lib/routes';
 import { institutionService } from '@/modules/dashboard/instituciones/core/services/institution';
+import { LANDING_ROUTE } from '@/modules/landing/core/lib/routes';
 
-const { institution_id } = Astro.params;
+const { institucion_id } = Astro.params;
 
-if (!institution_id) {
+if (!institucion_id) {
   return Astro.redirect(DASHBOARD_INSTITUTION_ROUTE);
 }
 
@@ -18,7 +19,7 @@ if (error) {
   return Astro.redirect(LANDING_ROUTE.fullPath);
 }
 
-const { data: institution, error: institutionError } = await institutionService().getInstitutionById(institution_id);
+const { data: institution, error: institutionError } = await institutionService().getInstitutionById(institucion_id);
 
 if (institutionError) {
   return Astro.redirect(DASHBOARD_INSTITUTION_ROUTE.fullPath);
