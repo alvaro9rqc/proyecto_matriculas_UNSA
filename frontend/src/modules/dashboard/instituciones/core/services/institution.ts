@@ -1,15 +1,13 @@
 import { authService } from '@/modules/auth/core/services/auth';
 import { INTERNAL_SERVER_ERROR } from '@/modules/core/lib/errors';
+import { ApiService } from '@/modules/core/services/api';
 import type { ApiResponse } from '@/modules/core/types/api';
 import type { Institution } from '@/modules/dashboard/instituciones/core/types/institution';
 import type { AstroCookies } from 'astro';
-import { BACKEND_URL } from 'astro:env/client';
 
-class InstitutionService {
-  private apiInstitutionUrl: string;
-
+class InstitutionService extends ApiService {
   constructor() {
-    this.apiInstitutionUrl = `${BACKEND_URL}/institutions`;
+    super('institutions');
   }
 
   async getInstitutions(cookies: AstroCookies): ApiResponse<Institution[]> {
@@ -24,30 +22,14 @@ class InstitutionService {
     }
 
     try {
-      const response = await fetch(
-        // TODO: Change real API URL
-        this.apiInstitutionUrl,
-        {
+      return this.request<Institution[]>({
+        options: {
           method: 'GET',
           headers: {
             Cookie: `session_token=${sessionToken}`,
           },
         },
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        return {
-          data: undefined,
-          error: {
-            status: response.status,
-            message: errorData.message || 'Failed to fetch institutions',
-          },
-        };
-      }
-
-      const data = await response.json();
-      return { data, error: undefined };
+      });
     } catch (error) {
       console.log('[getInstitutions] Error:', error);
       return {
@@ -57,28 +39,29 @@ class InstitutionService {
     }
   }
 
-  async getInstitutionById(institutionId: string): ApiResponse<Institution> {
+  async getInstitutionById(
+    institutionId: string,
+    cookies: AstroCookies,
+  ): ApiResponse<Institution> {
+    const { data: sessionToken, error } =
+      await authService.validateSessionToken(cookies);
+
+    if (error) {
+      return {
+        data: undefined,
+        error: error,
+      };
+    }
     try {
-      const response = await fetch(
-        `${this.apiInstitutionUrl}/${institutionId}`,
-        {
+      return this.request<Institution>({
+        mapping: institutionId,
+        options: {
           method: 'GET',
-        },
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        return {
-          data: undefined,
-          error: {
-            status: response.status,
-            message: errorData.message || 'Failed to fetch institution',
+          headers: {
+            Cookie: `session_token=${sessionToken}`,
           },
-        };
-      }
-
-      const data = await response.json();
-      return { data, error: undefined };
+        },
+      });
     } catch (error) {
       console.log('[getInstitutionById] Error:', error);
       return {
