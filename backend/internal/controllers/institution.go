@@ -54,7 +54,7 @@ func (s *institutionsrvc) ListInstitutions(ctx context.Context) (res []*institut
 	return institutionsByAccount, nil
 }
 
-func (s *institutionsrvc) ListProccesByInstitution(ctx context.Context, payload *institution.ListProccesByInstitutionPayload) (res []*institution.Process, err error) {
+func (s *institutionsrvc) ListProccesByInstitution(ctx context.Context, payload *institution.ListProccesByInstitutionPayload) (res *institution.ListProccesByInstitutionResult, err error) {
 	token := utils.GetTokenFromContext(ctx)
 
 	session, err := s.OauthRepo.GetSessionByToken(ctx, token)
@@ -62,13 +62,27 @@ func (s *institutionsrvc) ListProccesByInstitution(ctx context.Context, payload 
 		return nil, institution.MakeNotAuthorized(fmt.Errorf("failed to get session by token: %w", err))
 	}
 
-	processes, err := s.ProcessRepo.ListProcessByInstitutionId(ctx, db.ListProcessByInstitutionIdParams{
-		ID:            session.AccountID,
-		InstitutionID: payload.InstitutionID,
+	instChan := utils.Async(func() (db.Institution, error) {
+		return s.InstitutionRepo.GetInstitutionByID(ctx, payload.InstitutionID)
 	})
-	if err != nil {
-		return nil, institution.MakeInternalServerError(fmt.Errorf("failed to list processes: %w", err))
+	processesChan := utils.Async(func() ([]db.Process, error) {
+		return s.ProcessRepo.ListProcessByInstitutionId(ctx, db.ListProcessByInstitutionIdParams{
+			ID:            session.AccountID,
+			InstitutionID: payload.InstitutionID,
+		})
+	})
+
+	instAsync := <-instChan
+	processesAsync := <-processesChan
+
+	if instAsync.Err != nil {
+		return nil, institution.MakeInternalServerError(fmt.Errorf("failed to get institution by ID: %w", instAsync.Err))
 	}
+	inst := instAsync.Value
+	if processesAsync.Err != nil {
+		return nil, institution.MakeInternalServerError(fmt.Errorf("failed to list processes: %w", processesAsync.Err))
+	}
+	processes := processesAsync.Value
 
 	processesByInstitution := make([]*institution.Process, 0, len(processes))
 	for _, proc := range processes {
@@ -84,7 +98,12 @@ func (s *institutionsrvc) ListProccesByInstitution(ctx context.Context, payload 
 		})
 	}
 
-	return processesByInstitution, nil
+	return &institution.ListProccesByInstitutionResult{
+		Processes: processesByInstitution,
+		ID:        inst.ID,
+		Name:      inst.Name,
+		LogoURL:   &inst.LogoUrl.String,
+	}, nil
 }
 
 // List all courses available for a student in a specific process

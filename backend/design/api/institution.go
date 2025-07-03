@@ -42,6 +42,16 @@ var ProcessResult = Type("Process", func() {
 	})
 })
 
+var ListProccesByInstitutionResult = Type("ListProccesByInstitutionResult", func() {
+	Description("List of processes available for a specific institution")
+
+	Extend(InstitutionResult)
+
+	Attribute("processes", ArrayOf(ProcessResult), "List of processes for the institution")
+
+	Required("processes")
+})
+
 var _ = Service("institution", func() {
 	Description("Service for managing educational institutions")
 
@@ -72,7 +82,7 @@ var _ = Service("institution", func() {
 			Required("institutionId")
 		})
 
-		Result(ArrayOf(ProcessResult), "List of processes available for the specified institution")
+		Result(ListProccesByInstitutionResult, "List of processes for the institution")
 
 		HTTP(func() {
 			GET("/institutions/{institutionId}/processes")
@@ -96,7 +106,7 @@ var _ = Service("institution", func() {
 		Result(ArrayOf(types.Course))
 
 		HTTP(func() {
-			GET("/dashboard/processes/{processId}/courses")
+			GET("/processes/{processId}/courses")
 			Param("processId", Int32, "ID of the process")
 			Response(StatusOK)
 			Response("not_authorized", StatusForbidden)
