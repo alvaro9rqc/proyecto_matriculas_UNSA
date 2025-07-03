@@ -106,7 +106,7 @@ var _ = Service("institution", func() {
 	})
 
 	Method("ExpandCourse", func() {
-		Description("Expand a course to get detailed information")
+		Description("Expand a course to get detailed information about their events and sections")
 
 		Payload(func() {
 			Attribute("courseId", Int32, "ID of the course to expand", func() {
@@ -115,7 +115,7 @@ var _ = Service("institution", func() {
 			Required("courseId")
 		})
 
-		Result(types.Course)
+		Result(types.SectionWithEvents)
 
 		HTTP(func() {
 			GET("/course/expand/{courseId}")
