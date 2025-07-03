@@ -16,15 +16,17 @@ type institutionsrvc struct {
 	ProcessRepo     ports.ProcessRepositoryInterface
 	StudentRepo     ports.StudentRepositoryInterface
 	CourseRepo      ports.CourseRepositoryInterface
+	SectionRepo     ports.SectionRepositoryInterface
 }
 
-func NewInstitution(oauthRepo ports.OauthRepositoryInterface, institutionRepo ports.InstitutionRepositoryInterface, processRepo ports.ProcessRepositoryInterface, studentRepo ports.StudentRepositoryInterface, courseRepo ports.CourseRepositoryInterface) institution.Service {
+func NewInstitution(oauthRepo ports.OauthRepositoryInterface, institutionRepo ports.InstitutionRepositoryInterface, processRepo ports.ProcessRepositoryInterface, studentRepo ports.StudentRepositoryInterface, courseRepo ports.CourseRepositoryInterface, sectionRepo ports.SectionRepositoryInterface) institution.Service {
 	return &institutionsrvc{
 		OauthRepo:       oauthRepo,
 		InstitutionRepo: institutionRepo,
 		ProcessRepo:     processRepo,
 		StudentRepo:     studentRepo,
 		CourseRepo:      courseRepo,
+		SectionRepo:     sectionRepo,
 	}
 }
 
@@ -117,4 +119,19 @@ func (s *institutionsrvc) ListAllCoursesAvailableByStudentInProcess(ctx context.
 	}
 
 	return coursesAvailable, nil
+}
+
+// Expand a course to get detailed information about their events and sections
+func (s *institutionsrvc) ExpandCourse(ctx context.Context, p *institution.ExpandCoursePayload) (res []*institution.SectionWithEvents, err error) {
+	token := utils.GetTokenFromContext(ctx)
+	_, err = s.OauthRepo.GetSessionByToken(ctx, token)
+	if err != nil {
+		return nil, institution.MakeNotAuthorized(fmt.Errorf("failed to get session by token: %w", err))
+	}
+
+	//rows, err := s.SectionRepo.ListDetailedSectionByCourseId(ctx, p.CourseID)
+	//if err != nil {
+	//	return nil, institution.MakeInternalServerError(fmt.Errorf("failed to list detailed sections by course ID: %w", err))
+	//}
+	return
 }

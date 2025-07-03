@@ -115,7 +115,7 @@ var _ = Service("institution", func() {
 			Required("courseId")
 		})
 
-		Result(types.SectionWithEvents)
+		Result(ArrayOf(types.SectionWithEvents))
 
 		HTTP(func() {
 			GET("/course/expand/{courseId}")
