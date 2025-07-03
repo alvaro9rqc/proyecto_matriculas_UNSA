@@ -15,14 +15,16 @@ type institutionsrvc struct {
 	InstitutionRepo ports.InstitutionRepositoryInterface
 	ProcessRepo     ports.ProcessRepositoryInterface
 	StudentRepo     ports.StudentRepositoryInterface
+	CourseRepo      ports.CourseRepositoryInterface
 }
 
-func NewInstitution(oauthRepo ports.OauthRepositoryInterface, institutionRepo ports.InstitutionRepositoryInterface, processRepo ports.ProcessRepositoryInterface, studentRepo ports.StudentRepositoryInterface) institution.Service {
+func NewInstitution(oauthRepo ports.OauthRepositoryInterface, institutionRepo ports.InstitutionRepositoryInterface, processRepo ports.ProcessRepositoryInterface, studentRepo ports.StudentRepositoryInterface, courseRepo ports.CourseRepositoryInterface) institution.Service {
 	return &institutionsrvc{
 		OauthRepo:       oauthRepo,
 		InstitutionRepo: institutionRepo,
 		ProcessRepo:     processRepo,
 		StudentRepo:     studentRepo,
+		CourseRepo:      courseRepo,
 	}
 }
 
