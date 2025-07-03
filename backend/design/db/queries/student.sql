@@ -28,3 +28,9 @@ SELECT
 FROM student s
 JOIN account a ON s.account_id = a.id
 ORDER BY a.surname, a.name;
+
+-- name: GetStudentIdByToken :one
+SELECT s.id
+FROM student s
+JOIN account a ON s.account_id = a.id
+WHERE a.access_token = $1;
