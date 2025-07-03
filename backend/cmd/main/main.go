@@ -40,6 +40,7 @@ func main() {
 		processRepo     = repositories.NewProcessRepository(conn)
 		studentRepo     = repositories.NewStudentRepository(conn)
 		courseRepo      = repositories.NewCourseRepository(conn)
+		sectionRepo     = repositories.NewSectionRepository(conn)
 	)
 
 	//Initialize services
@@ -50,7 +51,7 @@ func main() {
 		userSvc user.Service
 	)
 	{
-		institutionSvc = controllers.NewInstitution(oauthRepo, institutionRepo, processRepo, studentRepo, courseRepo)
+		institutionSvc = controllers.NewInstitution(oauthRepo, institutionRepo, processRepo, studentRepo, courseRepo, sectionRepo)
 		oauthSvc = controllers.NewOauth(cfg, oauthRepo)
 		// queueSvc = controllers.NewQueue()
 		// userSvc = controllers.NewUser(cfg, adminRepo, studentMajorRepo, speakerRepo)

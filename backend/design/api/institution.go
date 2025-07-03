@@ -115,4 +115,25 @@ var _ = Service("institution", func() {
 
 	})
 
+	Method("ExpandCourse", func() {
+		Description("Expand a course to get detailed information about their events and sections")
+
+		Payload(func() {
+			Attribute("courseId", Int32, "ID of the course to expand", func() {
+				Example(1)
+			})
+			Required("courseId")
+		})
+
+		Result(ArrayOf(types.SectionWithEvents))
+
+		HTTP(func() {
+			GET("/course/expand/{courseId}")
+			Param("courseId", Int32, "ID of the course")
+			Response(StatusOK)
+			Response("not_authorized", StatusForbidden)
+			Response("internal_server_error", StatusInternalServerError)
+		})
+	})
+
 })
