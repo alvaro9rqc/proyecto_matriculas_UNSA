@@ -22,3 +22,13 @@ SELECT
     *
 FROM course
 ORDER BY cycle_number, name;
+
+-- name: ListAllCoursesAvailableByStudentInProcess :many
+SELECT
+    c.id AS course_id,
+    c.name AS course_name,
+    c.credits,
+    c.cycle_number
+FROM course c
+JOIN student_avalible_courses sac ON sac.course_id = c.id
+WHERE sac.student_id = $1 AND c.process_id = $2;
