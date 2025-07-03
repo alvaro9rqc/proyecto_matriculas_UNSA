@@ -34,9 +34,9 @@ var Course = Type("Course", func() {
 
 	Extend(CoursePayload)
 
-	Attribute("id", String, func() {
+	Attribute("id", Int, func() {
 		Description("Unique identifier for the course")
-		Example("144")
+		Example(144)
 	})
 
 	Required("id")

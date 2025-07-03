@@ -89,5 +89,32 @@ func (s *institutionsrvc) ListProccesByInstitution(ctx context.Context, payload 
 
 // List all courses available for a student in a specific process
 func (s *institutionsrvc) ListAllCoursesAvailableByStudentInProcess(ctx context.Context, p *institution.ListAllCoursesAvailableByStudentInProcessPayload) (res []*institution.Course, err error) {
-	return
+	token := utils.GetTokenFromContext(ctx)
+	_, err = s.OauthRepo.GetSessionByToken(ctx, token)
+	if err != nil {
+		return nil, institution.MakeNotAuthorized(fmt.Errorf("failed to get session by token: %w", err))
+	}
+
+	studentId, err := s.StudentRepo.GetStudentIdByToken(ctx, token)
+
+	raw_courses, err := s.CourseRepo.ListAllCoursesAvailableByStudentInProcess(ctx, db.ListAllCoursesAvailableByStudentInProcessParams{
+		StudentID: studentId,
+		ProcessID: p.ProcessID,
+	})
+
+	if err != nil {
+		return nil, institution.MakeInternalServerError(fmt.Errorf("failed to list courses: %w", err))
+	}
+
+	coursesAvailable := make([]*institution.Course, 0, len(raw_courses))
+	for _, course := range raw_courses {
+		coursesAvailable = append(coursesAvailable, &institution.Course{
+			ID:          int(course.CourseID),
+			Name:        course.CourseName,
+			Credits:     int(course.Credits),
+			CicleNumber: int(course.CycleNumber),
+		})
+	}
+
+	return coursesAvailable, nil
 }
