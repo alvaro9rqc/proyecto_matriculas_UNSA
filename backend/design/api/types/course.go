@@ -119,5 +119,5 @@ var SectionWithEvents = Type("SectionWithEvents", func() {
 		Description("List of events associated with this section")
 	})
 
-	Required("id", "name", "events")
+	Required("id", "section_name", "taken_places", "total_places", "events")
 })
