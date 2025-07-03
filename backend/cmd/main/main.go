@@ -28,19 +28,19 @@ func main() {
 		panic(err)
 	}
 
-	conn, err := db.ConnectDB(cfg)
+	pool, err := db.ConnectDB(cfg)
 	if err != nil {
 		panic(err)
 	}
 
 	// Initialize repositories
 	var (
-		oauthRepo       = repositories.NewOauthRepository(conn)
-		institutionRepo = repositories.NewInstitutionRepository(conn)
-		processRepo     = repositories.NewProcessRepository(conn)
-		studentRepo     = repositories.NewStudentRepository(conn)
-		courseRepo      = repositories.NewCourseRepository(conn)
-		sectionRepo     = repositories.NewSectionRepository(conn)
+		oauthRepo       = repositories.NewOauthRepository(pool)
+		institutionRepo = repositories.NewInstitutionRepository(pool)
+		processRepo     = repositories.NewProcessRepository(pool)
+		studentRepo     = repositories.NewStudentRepository(pool)
+		courseRepo      = repositories.NewCourseRepository(pool)
+		sectionRepo     = repositories.NewSectionRepository(pool)
 	)
 
 	//Initialize services

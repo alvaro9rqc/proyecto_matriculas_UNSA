@@ -2,21 +2,22 @@ package db
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type ConnectDBConfig interface {
 	GetConnectDBConfig() (string, context.Context)
 }
 
-func ConnectDB(cfg ConnectDBConfig) (*pgx.Conn, error) {
+func ConnectDB(cfg ConnectDBConfig) (*pgxpool.Pool, error) {
 	databaseURL, ctx := cfg.GetConnectDBConfig()
 
-	conn, err := pgx.Connect(ctx, databaseURL)
+	pool, err := pgxpool.New(ctx, databaseURL)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	return conn, nil
+	return pool, nil
 }
