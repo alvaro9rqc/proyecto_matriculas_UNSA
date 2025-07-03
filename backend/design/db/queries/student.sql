@@ -33,4 +33,5 @@ ORDER BY a.surname, a.name;
 SELECT s.id
 FROM student s
 JOIN account a ON s.account_id = a.id
-WHERE a.access_token = $1;
+JOIN account_session ase ON a.id = ase.account_id
+WHERE ase.token = $1;
