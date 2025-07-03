@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/enrollment/gen/db"
 	institution "github.com/enrollment/gen/institution"
@@ -129,9 +130,35 @@ func (s *institutionsrvc) ExpandCourse(ctx context.Context, p *institution.Expan
 		return nil, institution.MakeNotAuthorized(fmt.Errorf("failed to get session by token: %w", err))
 	}
 
-	//rows, err := s.SectionRepo.ListDetailedSectionByCourseId(ctx, p.CourseID)
-	//if err != nil {
-	//	return nil, institution.MakeInternalServerError(fmt.Errorf("failed to list detailed sections by course ID: %w", err))
-	//}
+	map_sec_idx := map[int32]int{}
+
+	rows, err := s.SectionRepo.ListDetailedSectionByCourseId(ctx, p.CourseID)
+
+	for _, row := range rows {
+		idx, exits := map_sec_idx[row.SectionID]
+		if !exits {
+			idx = len(res)
+			map_sec_idx[row.SectionID] = idx
+			res = append(res, &institution.SectionWithEvents{
+				ID:          int(row.SectionID),
+				SectionName: row.SectionName,
+				TakenPlaces: int(row.TakenPlaces),
+				TotalPlaces: int(row.TotalPlaces),
+				Events:      []*institution.DetailedEvent{},
+			})
+		}
+		if row.EventID.Valid {
+			res[idx].Events = append(res[idx].Events, &institution.DetailedEvent{
+				ID:               int(row.EventID.Int32),
+				StartDate:        row.StartDate.Time.Format(time.RFC3339),
+				EndDate:          row.EndDate.Time.Format(time.RFC3339),
+				SectionID:        int(row.SectionID),
+				InstallationID:   int(row.InstallationID.Int32),
+				InstallationName: row.InstallationName.String,
+				ModalityID:       int(row.ModalityID.Int32),
+				ModalityName:     row.ModalityName.String,
+			})
+		}
+	}
 	return
 }
