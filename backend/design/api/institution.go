@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/enrollment/design/api/types"
 	. "goa.design/goa/v3/dsl"
 )
 
@@ -80,6 +81,29 @@ var _ = Service("institution", func() {
 			Response("not_authorized", StatusForbidden)
 			Response("internal_server_error", StatusInternalServerError)
 		})
+	})
+
+	Method("ListAllCoursesAvailableByStudentInProcess", func() {
+		Description("List all courses available for a student in a specific process")
+
+		Payload(func() {
+			Attribute("processId", Int32, "ID of the process to list courses for", func() {
+				Example(1)
+			})
+			Required("processId")
+		})
+
+		Result(ArrayOf(types.Course))
+
+		HTTP(func() {
+			GET("/dashboard/processes/{processId}/courses")
+			Param("processId", Int32, "ID of the process")
+			Response(StatusOK)
+			Response("not_authorized", StatusForbidden)
+			Response("internal_server_error", StatusInternalServerError)
+			Response("not_found", StatusNotFound)
+		})
+
 	})
 
 })
