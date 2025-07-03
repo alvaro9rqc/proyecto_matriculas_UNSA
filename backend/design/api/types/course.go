@@ -41,3 +41,83 @@ var Course = Type("Course", func() {
 
 	Required("id")
 })
+
+var DetailedEvent = Type("DetailedEvent", func() {
+	Description("Represents an event related to a course")
+
+	Attribute("id", Int, func() {
+		Description("Unique identifier for the event")
+		Example(1)
+	})
+
+	Attribute("start_date", String, func() {
+		Format(FormatDateTime) // ISO 8601
+		Description("Start date and time of the event")
+		Example("2025-08-19T10:00:00Z")
+	})
+
+	Attribute("end_date", String, func() {
+		Format(FormatDateTime)
+		Description("End date and time of the event")
+		Example("2025-08-19T12:00:00Z")
+	})
+
+	Attribute("section_id", Int, func() {
+		Description("ID of the section associated with this event")
+		Example(2)
+	})
+
+	Attribute("installation_id", Int, func() {
+		Description("ID of the installation where the event takes place")
+		Example(5)
+	})
+
+	Attribute("installation_name", String, func() {
+		Description("Name of the installation where the event takes place")
+		Example("Laboratorio de Cómputo 1")
+	})
+
+	Attribute("modality_id", Int, func() {
+		Description("ID of the modality associated with the event")
+		Example(1)
+	})
+
+	Attribute("modality_name", String, func() {
+		Description("Name of the modality (e.g., Presencial, Virtual)")
+		Example("Presencial")
+	})
+
+	Required("id", "start_date", "end_date", "section_id", "installation_id", "modality_id", "installation_name", "modality_name")
+})
+
+var SectionWithEvents = Type("SectionWithEvents", func() {
+	Description("Section with associated events")
+
+	Attribute("id", Int, func() {
+		Description("Unique identifier for the section")
+		Example(1)
+	})
+
+	Attribute("section_name", String, func() {
+		Description("Name of the section")
+		Example("Sección A")
+	})
+
+	Attribute("taken_places", Int, func() {
+		Description("Number of places taken in the section")
+		Example(25)
+		Minimum(0)
+	})
+
+	Attribute("total_places", Int, func() {
+		Description("Total number of places in the section")
+		Example(30)
+		Minimum(1)
+	})
+
+	Attribute("events", ArrayOf(DetailedEvent), func() {
+		Description("List of events associated with this section")
+	})
+
+	Required("id", "name", "events")
+})
