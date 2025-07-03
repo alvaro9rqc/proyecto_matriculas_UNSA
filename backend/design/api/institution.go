@@ -49,8 +49,6 @@ var _ = Service("institution", func() {
 
 	Error("internal_server_error", ErrorResult, "An internal server error occurred")
 
-	Error("not_found", ErrorResult, "The requested resource was not found")
-
 	// Institutions service provides endpoints for managing educational institutions.
 	Method("ListInstitutions", func() {
 		Description("List all educational institutions avaliable for the user")
@@ -103,7 +101,6 @@ var _ = Service("institution", func() {
 			Response(StatusOK)
 			Response("not_authorized", StatusForbidden)
 			Response("internal_server_error", StatusInternalServerError)
-			Response("not_found", StatusNotFound)
 		})
 
 	})
