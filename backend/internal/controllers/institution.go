@@ -82,3 +82,8 @@ func (s *institutionsrvc) ListProccesByInstitution(ctx context.Context, payload 
 
 	return processesByInstitution, nil
 }
+
+// List all courses available for a student in a specific process
+func (s *institutionsrvc) ListAllCoursesAvailableByStudentInProcess(ctx context.Context, p *institution.ListAllCoursesAvailableByStudentInProcessPayload) (res []*institution.Course, err error) {
+	return
+}
