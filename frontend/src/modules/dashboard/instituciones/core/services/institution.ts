@@ -2,7 +2,10 @@ import { authService } from '@/modules/auth/core/services/auth';
 import { INTERNAL_SERVER_ERROR } from '@/modules/core/lib/errors';
 import { ApiService } from '@/modules/core/services/api';
 import type { ApiResponse } from '@/modules/core/types/api';
-import type { Institution } from '@/modules/dashboard/instituciones/core/types/institution';
+import type {
+  Institution,
+  InstitutionWithProcesses,
+} from '@/modules/dashboard/instituciones/core/types/institution';
 import type { AstroCookies } from 'astro';
 
 class InstitutionService extends ApiService {
@@ -39,10 +42,10 @@ class InstitutionService extends ApiService {
     }
   }
 
-  async getInstitutionById(
+  async getInstitutionByIdWithProcesses(
     institutionId: string,
     cookies: AstroCookies,
-  ): ApiResponse<Institution> {
+  ): ApiResponse<InstitutionWithProcesses> {
     const { data: sessionToken, error } =
       await authService.validateSessionToken(cookies);
 
@@ -53,7 +56,7 @@ class InstitutionService extends ApiService {
       };
     }
     try {
-      return this.request<Institution>({
+      return this.request<InstitutionWithProcesses>({
         mapping: institutionId,
         options: {
           method: 'GET',

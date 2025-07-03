@@ -7,20 +7,17 @@ import {
   CardTitle,
 } from '@/modules/core/ui/card';
 import { Link } from '@/modules/core/ui/link';
-import type { Institution } from '@/modules/dashboard/instituciones/core/types/institution';
+import type { InstitutionWithProcesses } from '@/modules/dashboard/instituciones/core/types/institution';
 import { getEnrollmentProcessPath } from '@/modules/dashboard/instituciones/matriculas/core/lib/routes';
-import type { EnrollmentProcess } from '@/modules/dashboard/instituciones/matriculas/core/types/process';
 import { LANDING_ROUTE } from '@/modules/landing/core/lib/routes';
 import { ArrowLeftIcon } from 'lucide-react';
 
 interface EnrollmentProcessListProps {
-  institution: Institution;
-  processes: EnrollmentProcess[];
+  institution: InstitutionWithProcesses;
 }
 
 export function EnrollmentProcessList({
   institution,
-  processes,
 }: EnrollmentProcessListProps) {
   return (
     <Card className="w-64 sm:w-md md:w-xl grow">
@@ -36,8 +33,8 @@ export function EnrollmentProcessList({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {processes.length > 0 ? (
-          processes.map((process) => (
+        {institution.processes.length > 0 ? (
+          institution.processes.map((process) => (
             <Link
               key={process.id}
               href={getEnrollmentProcessPath({
