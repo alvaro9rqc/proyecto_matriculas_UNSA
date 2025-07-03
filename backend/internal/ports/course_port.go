@@ -11,4 +11,5 @@ type CourseRepositoryInterface interface {
 	DeleteCourse(ctx context.Context, id int32) error
 	ListCourses(ctx context.Context) ([]db.Course, error)
 	UpdateCourse(ctx context.Context, arg db.UpdateCourseParams) error
+	ListAllCoursesAvailableByStudentInProcess(ctx context.Context, arg db.ListAllCoursesAvailableByStudentInProcessParams) ([]db.ListAllCoursesAvailableByStudentInProcessRow, error)
 }
