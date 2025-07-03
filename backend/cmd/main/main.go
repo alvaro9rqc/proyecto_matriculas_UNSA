@@ -33,12 +33,15 @@ func main() {
 		panic(err)
 	}
 
+	// Initialize repositories
 	var (
 		oauthRepo       = repositories.NewOauthRepository(conn)
 		institutionRepo = repositories.NewInstitutionRepository(conn)
 		processRepo     = repositories.NewProcessRepository(conn)
+		studentRepo     = repositories.NewStudentRepository(conn)
 	)
 
+	//Initialize services
 	var (
 		institutionSvc institution.Service
 		oauthSvc       oauth.Service
@@ -46,7 +49,7 @@ func main() {
 		userSvc user.Service
 	)
 	{
-		institutionSvc = controllers.NewInstitution(oauthRepo, institutionRepo, processRepo)
+		institutionSvc = controllers.NewInstitution(oauthRepo, institutionRepo, processRepo, studentRepo)
 		oauthSvc = controllers.NewOauth(cfg, oauthRepo)
 		// queueSvc = controllers.NewQueue()
 		// userSvc = controllers.NewUser(cfg, adminRepo, studentMajorRepo, speakerRepo)
