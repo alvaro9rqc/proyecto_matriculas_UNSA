@@ -25,3 +25,8 @@ JOIN student_process AS sp ON sp.process_id = p.id
 JOIN student AS s ON sp.student_id = s.id
 WHERE s.id = $1
 ORDER BY start_day;
+
+-- name: GetProcessById :one
+SELECT *
+FROM process
+WHERE id = $1;
