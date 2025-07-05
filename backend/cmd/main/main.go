@@ -11,7 +11,7 @@ import (
 	"github.com/enrollment/config"
 	// course "github.com/enrollment/gen/course"
 	// enrollment "github.com/enrollment/gen/enrollment"
-	"github.com/enrollment/gen/institution"
+	"github.com/enrollment/gen/enrollment"
 	"github.com/enrollment/gen/oauth"
 	user "github.com/enrollment/gen/user"
 	controllers "github.com/enrollment/internal/controllers"
@@ -45,7 +45,7 @@ func main() {
 
 	//Initialize services
 	var (
-		institutionSvc institution.Service
+		institutionSvc enrollment.Service
 		oauthSvc       oauth.Service
 		// queueSvc      queue.Service
 		userSvc user.Service
@@ -58,13 +58,13 @@ func main() {
 	}
 
 	var (
-		institutionEndpoints *institution.Endpoints
+		institutionEndpoints *enrollment.Endpoints
 		oauthEndpoints       *oauth.Endpoints
 		// queueEndpoints      *queue.Endpoints
 		userEndpoints *user.Endpoints
 	)
 	{
-		institutionEndpoints = institution.NewEndpoints(institutionSvc)
+		institutionEndpoints = enrollment.NewEndpoints(institutionSvc)
 		institutionEndpoints.Use(debug.LogPayloads())
 		institutionEndpoints.Use(log.Endpoint)
 

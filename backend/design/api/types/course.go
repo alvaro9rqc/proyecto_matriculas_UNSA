@@ -50,16 +50,15 @@ var DetailedEvent = Type("DetailedEvent", func() {
 		Example(1)
 	})
 
-	Attribute("start_date", String, func() {
-		Format(FormatDateTime) // ISO 8601
+	Attribute("start_date", Int64, func() {
 		Description("Start date and time of the event")
-		Example("2025-08-19T10:00:00Z")
+		Example(1724064000)
+
 	})
 
-	Attribute("end_date", String, func() {
-		Format(FormatDateTime)
+	Attribute("end_date", Int64, func() {
 		Description("End date and time of the event")
-		Example("2025-08-19T12:00:00Z")
+		Example(1724074800)
 	})
 
 	Attribute("section_id", Int, func() {

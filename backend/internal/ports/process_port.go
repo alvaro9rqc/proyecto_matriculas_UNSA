@@ -12,4 +12,5 @@ type ProcessRepositoryInterface interface {
 	DeleteProcess(ctx context.Context, id int32) error
 	ListProcessByInstitutionId(ctx context.Context, arg db.ListProcessByInstitutionIdParams) ([]db.Process, error)
 	ListProcessByStudentId(ctx context.Context, id int32) ([]db.Process, error)
+	GetProcessById(ctx context.Context, id int32) (db.Process, error)
 }
