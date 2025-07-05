@@ -52,8 +52,18 @@ var ListProccesByInstitutionResult = Type("ListProccesByInstitutionResult", func
 	Required("processes")
 })
 
-var _ = Service("institution", func() {
-	Description("Service for managing educational institutions")
+var ListAllCoursesAvailableByStudentInProcessResult = Type("ListAllCoursesAvailableByStudentInProcessResult", func() {
+	Description("List of courses available for a student in a specific process")
+
+	Extend(ProcessResult)
+
+	Attribute("courses", ArrayOf(types.Course), "List of courses available for the student in the process")
+
+	Required("courses")
+})
+
+var _ = Service("enrollment", func() {
+	Description("The enrollment service provides endpoints for managing educational institutions and their processes.")
 
 	Error("not_authorized", ErrorResult, "User is not authorized to access this resource")
 
@@ -85,7 +95,7 @@ var _ = Service("institution", func() {
 		Result(ListProccesByInstitutionResult, "List of processes for the institution")
 
 		HTTP(func() {
-			GET("/institutions/{institutionId}/processes")
+			GET("/institutions/{institutionId}")
 			Param("institutionId", Int32, "ID of the institution")
 			Response(StatusOK)
 			Response("not_authorized", StatusForbidden)
@@ -103,7 +113,7 @@ var _ = Service("institution", func() {
 			Required("processId")
 		})
 
-		Result(ArrayOf(types.Course))
+		Result(ListAllCoursesAvailableByStudentInProcessResult)
 
 		HTTP(func() {
 			GET("/processes/{processId}/courses")
@@ -128,7 +138,7 @@ var _ = Service("institution", func() {
 		Result(ArrayOf(types.SectionWithEvents))
 
 		HTTP(func() {
-			GET("/course/expand/{courseId}")
+			GET("/courses/{courseId}")
 			Param("courseId", Int32, "ID of the course")
 			Response(StatusOK)
 			Response("not_authorized", StatusForbidden)
